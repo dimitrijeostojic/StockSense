@@ -1,3 +1,7 @@
 <Solution>
+  <Project Path="Application/Application.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" />
   <Project Path="StockSense.API/StockSense.API.csproj" />
+  <Project Path="UnitTests/UnitTests.csproj" />
 </Solution>
