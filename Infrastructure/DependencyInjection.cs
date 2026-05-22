@@ -1,5 +1,7 @@
-﻿using Infrastructure.Data;
+﻿using Application.Behaviors;
+using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +10,7 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
 
@@ -21,5 +23,8 @@ public static class DependencyInjection
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
                 .AddInterceptors(interceptor);
         });
+
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
+        return services;
     }
 }

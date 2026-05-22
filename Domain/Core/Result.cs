@@ -1,6 +1,6 @@
 ﻿namespace Domain.Core;
 
-public sealed class Result<T> where T : class
+public class Result<T> where T : class
 {
     public bool IsSuccess => Error == Error.None;
     public T? Value { get; }
