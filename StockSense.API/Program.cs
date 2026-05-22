@@ -2,6 +2,8 @@ using Application;
 using Application.Abstractions;
 using Infrastructure;
 using StockSense.API.Accessors;
+using StockSense.API.Logging;
+using StockSense.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpLoggingInterceptor<ErrorHttpLoggingInterceptor>();
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 
 var app = builder.Build();
@@ -25,7 +29,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
