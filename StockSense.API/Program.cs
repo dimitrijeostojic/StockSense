@@ -2,6 +2,7 @@ using Application;
 using Application.Abstractions;
 using Infrastructure;
 using StockSense.API.Accessors;
+using StockSense.API.Extensions;
 using StockSense.API.Logging;
 using StockSense.API.Middlewares;
 
@@ -31,6 +32,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthorization();
+
+await app.ApplyMigrationAsync();
 
 app.MapControllers();
 
