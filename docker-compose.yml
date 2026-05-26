@@ -66,6 +66,8 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=StockSense;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
       RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_DEFAULT_USER}
+      RabbitMQ__Password: ${RABBITMQ_DEFAULT_PASS}
       Redis__ConnectionString: "stocksense-redis:6379"
     networks:
       - stocksense-network
