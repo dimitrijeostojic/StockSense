@@ -56,28 +56,28 @@ services:
       retries: 5
       start_period: 10s
 
-  stocksense-api:
-    build:
-      context: .
-      dockerfile: StockSense.API/Dockerfile
-    container_name: stocksense-api
-    ports:
-      - "5000:8080"
-    environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=StockSense;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
-      RabbitMQ__Host: rabbitmq
-      RabbitMQ__Username: ${RABBITMQ_DEFAULT_USER}
-      RabbitMQ__Password: ${RABBITMQ_DEFAULT_PASS}
-      Redis__ConnectionString: "stocksense-redis:6379"
-    networks:
-      - stocksense-network
-    depends_on:
-      sqlserver:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+  # stocksense-api:
+  #   build:
+  #     context: .
+  #     dockerfile: StockSense.API/Dockerfile
+  #   container_name: stocksense-api
+  #   ports:
+  #     - "5000:8080"
+  #   environment:
+  #     ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=StockSenseDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+  #     RabbitMQ__Host: rabbitmq
+  #     RabbitMQ__Username: ${RABBITMQ_DEFAULT_USER}
+  #     RabbitMQ__Password: ${RABBITMQ_DEFAULT_PASS}
+  #     Redis__ConnectionString: "stocksense-redis:6379"
+  #   networks:
+  #     - stocksense-network
+  #   depends_on:
+  #     sqlserver:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
 
 volumes:
   sqlserver_data:
