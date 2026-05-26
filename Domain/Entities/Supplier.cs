@@ -2,13 +2,14 @@
 
 public class Supplier : AuditableEntity
 {
-    public string Name { get; private set; } = string.Empty;
-    public string ContactName { get; private set; } = string.Empty;
-    public string ContactEmail { get; private set; } = string.Empty;
-    public string ContactPhone { get; private set; } = string.Empty;
-
-    public ICollection<Order> Orders { get; set; } = [];
-    public ICollection<Product> Products { get; set; } = [];
+    public string? Name { get; private set; }
+    public string? ContactName { get; private set; }
+    public string? ContactEmail { get; private set; }
+    public string? ContactPhone { get; private set; }
+    public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
+    private readonly List<Order> _orders = [];
+    public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
+    private readonly List<Product> _products = [];
 
     public static Supplier CreateSupplier(string name, string contactName, string contactEmail, string contactPhone)
     {

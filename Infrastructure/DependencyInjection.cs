@@ -1,4 +1,5 @@
 ﻿using Application.Behaviors;
+using Domain.Abstractions;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using MediatR;
@@ -23,6 +24,8 @@ public static class DependencyInjection
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
                 .AddInterceptors(interceptor);
         });
+
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
         return services;
