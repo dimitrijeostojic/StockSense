@@ -1,4 +1,4 @@
-﻿using Application.Behaviors;
+using Application.Behaviors;
 using Domain.Abstractions;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
@@ -14,8 +14,11 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
+    private const string _sectionName = "Redis";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+
+
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
@@ -43,10 +46,11 @@ public static class DependencyInjection
             });
         });
 
+
         services.AddStackExchangeRedisCache(options =>
         {
-            var redisOptions = services.BuildServiceProvider().GetRequiredService<IOptions<RedisOptions>>().Value;
-            options.Configuration = redisOptions.ConnectionString;
+            var redisOptions = configuration.GetSection(_sectionName).Get<RedisOptions>();
+            options.Configuration = redisOptions!.ConnectionString;
         });
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
