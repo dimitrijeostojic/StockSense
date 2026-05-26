@@ -5,6 +5,7 @@ using StockSense.API.Accessors;
 using StockSense.API.Extensions;
 using StockSense.API.Logging;
 using StockSense.API.Middlewares;
+using StockSense.API.OptionsSetup;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpLoggingInterceptor<ErrorHttpLoggingInterceptor>();
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
+
+builder.Services.ConfigureOptions<RabbitMqOptionsSetup>();
+builder.Services.ConfigureOptions<RedisOptionsSetup>();
 
 var app = builder.Build();
 
