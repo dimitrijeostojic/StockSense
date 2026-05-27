@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.RepositoryImplementations;
 
@@ -24,13 +25,8 @@ public sealed class CategoryRepository(ApplicationDbContext dbContext)
         throw new NotImplementedException();
     }
 
-    public Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Category?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAsync(Category category, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        return await _dbContext.Categories.FirstOrDefaultAsync(c => c.PublicId == publicId, cancellationToken);
     }
 }

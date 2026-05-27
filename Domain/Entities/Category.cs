@@ -21,4 +21,17 @@ public class Category : AuditableEntity
             Description = description
         };
     }
+
+    public Category WithName(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Name = name;
+        return this;
+    }
+
+    public Category WithDescription(string? description)
+    {
+        Description = description;
+        return this;
+    }
 }
