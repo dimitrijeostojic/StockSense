@@ -15,11 +15,10 @@ public class OrderItem : Entity
     }
 
 
-    internal static OrderItem Create(int orderId, int productId, int quantity, decimal unitPrice)
+    internal static OrderItem Create(int productId, int quantity, decimal unitPrice)
     {
         return new OrderItem
         {
-            OrderId = orderId,
             Quantity = quantity,
             UnitPrice = unitPrice,
             ProductId = productId

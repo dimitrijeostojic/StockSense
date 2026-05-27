@@ -31,7 +31,7 @@ public class Product : AuditableEntity
 
     public void AddStockEntry(int quantity, StockEntryType type, string notes)
     {
-        var entry = StockEntry.Create(Id, quantity, DateTime.UtcNow, notes, type);
+        var entry = StockEntry.Create(quantity, DateTime.UtcNow, notes, type);
         _stockEntries.Add(entry);
     }
 }

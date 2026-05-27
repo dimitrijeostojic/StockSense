@@ -25,6 +25,8 @@ builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 builder.Services.ConfigureOptions<RabbitMqOptionsSetup>();
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -11,11 +11,10 @@ public class StockEntry : Entity
     public StockEntryType StockEntryType { get; private set; }
     public Product? Product { get; private set; }
 
-    internal static StockEntry Create(int productId, int quantity, DateTime entryDate, string notes, StockEntryType stockEntryType)
+    internal static StockEntry Create(int quantity, DateTime entryDate, string notes, StockEntryType stockEntryType)
     {
         return new StockEntry
         {
-            ProductId = productId,
             Quantity = quantity,
             EntryDate = entryDate,
             Notes = notes,

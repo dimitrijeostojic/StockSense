@@ -11,7 +11,7 @@ internal sealed class CategoryEntityConfiguration : IEntityTypeConfiguration<Cat
         builder.ToTable("Categories");
 
         builder.HasKey(c => c.Id);
-        builder.Property(c => c.Name).HasMaxLength(255);
+        builder.Property(c => c.Name).IsRequired().HasMaxLength(255);
         builder.Property(c => c.Description).HasMaxLength(255);
         builder.Property(c => c.CreatedBy).IsRequired().HasMaxLength(255);
         builder.Property(c => c.ModifiedBy).HasMaxLength(255);

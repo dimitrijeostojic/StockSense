@@ -26,7 +26,7 @@ public class Order : AuditableEntity
 
     public void AddItem(int productId, int quantity, decimal unitPrice)
     {
-        var item = OrderItem.Create(Id, productId, quantity, unitPrice);
+        var item = OrderItem.Create(productId, quantity, unitPrice);
         _orderItems.Add(item);
     }
 }

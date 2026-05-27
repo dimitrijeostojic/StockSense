@@ -1,8 +1,10 @@
 using Application.Behaviors;
 using Domain.Abstractions;
+using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Options;
+using Infrastructure.RepositoryImplementations;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +20,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
 
-
+        services.AddRepositories();
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
@@ -56,6 +58,15 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
+        return services;
+    }
+
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        // services.AddScoped<IProductRepository, ProductRepository>();
+        // services.AddScoped<ISupplierRepository, SupplierRepository>();
+        // services.AddScoped<IOrderRepository, OrderRepository>();
         return services;
     }
 }
