@@ -1,4 +1,4 @@
-﻿namespace Application.Common.Extensions;
+﻿namespace Application.Common.Collections;
 
 public abstract class EntityCollectionResult<T>
 {

@@ -1,4 +1,4 @@
-﻿using Application.Common.Extensions;
+﻿using Application.Common.Collections;
 
 namespace Application.Category.GetAll;
 

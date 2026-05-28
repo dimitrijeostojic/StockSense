@@ -20,9 +20,9 @@ public sealed class CategoryRepository(ApplicationDbContext dbContext)
         _dbContext.Categories.Remove(category);
     }
 
-    public Task<IEnumerable<Category>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Category>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Categories.ToListAsync(cancellationToken);
     }
 
     public async Task<Category?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
