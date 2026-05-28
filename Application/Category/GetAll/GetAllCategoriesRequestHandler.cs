@@ -13,12 +13,11 @@ internal sealed class GetAllCategoriesRequestHandler(
     public async Task<TResult<GetAllCategoriesResponse>> Handle(GetAllCategoriesRequest request, CancellationToken cancellationToken)
     {
         var categories = await _categoryRepository.GetAllAsync(cancellationToken);
-        var categoryDtos = categories.Select(c => new GetAllCategoriesDto()
-        {
-            Name = c.Name,
-            Description = c.Description,
-            PublicId = c.PublicId
-        }).ToList();
+        var categoryDtos = categories.Select(c => new GetAllCategoriesDto(
+            c.Name,
+            c.Description,
+            c.PublicId
+        )).ToList();
         return TResult<GetAllCategoriesResponse>.Success(new GetAllCategoriesResponse(categoryDtos));
     }
 }
