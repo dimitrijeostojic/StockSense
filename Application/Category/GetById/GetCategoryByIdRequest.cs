@@ -4,4 +4,4 @@ using MediatR;
 namespace Application.Category.GetById;
 
 public sealed record GetCategoryByIdRequest(Guid CategoryPublicId)
-    : IRequest<Result<GetCategoryByIdResponse>>;
+    : IRequest<TResult<GetCategoryByIdResponse>>;

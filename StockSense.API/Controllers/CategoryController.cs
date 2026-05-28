@@ -1,4 +1,6 @@
 ﻿using Application.Category.Create;
+using Application.Category.Delete;
+using Application.Category.GetAll;
 using Application.Category.GetById;
 using Application.Category.Update;
 using MediatR;
@@ -31,6 +33,20 @@ public class CategoryController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid publicId, [FromBody] UpdateCategoryRequestBody request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new UpdateCategoryRequest(publicId, request.Name, request.Description), cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpDelete("{publicId}")]
+    public async Task<IActionResult> DeleteCategory([FromRoute] Guid publicId, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new DeleteCategoryRequest(publicId), cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllCategoriesAsync(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetAllCategoriesRequest(), cancellationToken);
         return result.ToActionResult();
     }
 }

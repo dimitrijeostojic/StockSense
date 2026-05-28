@@ -4,4 +4,4 @@ using MediatR;
 namespace Application.Category.Create;
 
 public sealed record CreateCategoryRequest(string Name, string Description)
-    : IRequest<Result<CreateCategoryResponse>>;
+    : IRequest<TResult<CreateCategoryResponse>>;

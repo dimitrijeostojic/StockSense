@@ -1,23 +1,24 @@
-namespace Domain.Core;
+﻿namespace Domain.Core;
 
-public class Result<T> : IResult where T : class
+public class Result
 {
-    public bool IsSuccess => Error == Error.None;
-    public T? Value { get; }
-    public Error? Error { get; }
+    public bool IsSuccess { get; }
 
-    private Result(T? value)
+    public Error Error { get; }
+
+    public Result()
     {
-        Value = value;
+        IsSuccess = true;
         Error = Error.None;
     }
 
-    private Result(Error error)
+    public Result(Error error)
     {
-        Value = default;
+        IsSuccess = false;
         Error = error;
     }
 
-    public static Result<T> Success(T? value) => new(value);
-    public static Result<T> Failure(Error error) => new(error);
+
+    public static Result Success() => new();
+    public static Result Failure(Error error) => new(error);
 }

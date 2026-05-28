@@ -7,17 +7,17 @@ namespace Application.Category.GetById;
 
 internal sealed class GetCategoryByIdRequestHandler(
     ICategoryRepository categoryRepository)
-    : IRequestHandler<GetCategoryByIdRequest, Result<GetCategoryByIdResponse>>
+    : IRequestHandler<GetCategoryByIdRequest, TResult<GetCategoryByIdResponse>>
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
 
-    public async Task<Result<GetCategoryByIdResponse>> Handle(GetCategoryByIdRequest request, CancellationToken cancellationToken)
+    public async Task<TResult<GetCategoryByIdResponse>> Handle(GetCategoryByIdRequest request, CancellationToken cancellationToken)
     {
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, cancellationToken);
         if (category == null)
         {
-            return Result<GetCategoryByIdResponse>.Failure(CategoryErrors.NotFound);
+            return TResult<GetCategoryByIdResponse>.Failure(CategoryErrors.NotFound);
         }
-        return Result<GetCategoryByIdResponse>.Success(new GetCategoryByIdResponse(category.Name, category.Description, category.PublicId));
+        return TResult<GetCategoryByIdResponse>.Success(new GetCategoryByIdResponse(category.Name, category.Description, category.PublicId));
     }
 }

@@ -4,27 +4,26 @@ using Domain.Core;
 using Domain.RepositoryInterfaces;
 using MediatR;
 
-namespace Application.Category.Update;
+namespace Application.Category.Delete;
 
-internal sealed class UpdateCategoryRequestHandler(
+internal sealed class DeleteCategoryRequestHandler(
     ICategoryRepository categoryRepository,
-    IUnitOfWork unitOfWork)
-    : IRequestHandler<UpdateCategoryRequest, TResult<UpdateCategoryResponse>>
+    IUnitOfWork unitOfWork
+    )
+    : IRequestHandler<DeleteCategoryRequest, Result>
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 
-    public async Task<TResult<UpdateCategoryResponse>> Handle(UpdateCategoryRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteCategoryRequest request, CancellationToken cancellationToken)
     {
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, cancellationToken);
         if (category == null)
         {
-            return TResult<UpdateCategoryResponse>.Failure(CategoryErrors.NotFound);
+            return Result.Failure(CategoryErrors.NotFound);
         }
-        category = category.WithName(request.Name)
-            .WithDescription(request.Description);
-
+        _categoryRepository.Delete(category);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return TResult<UpdateCategoryResponse>.Success(new UpdateCategoryResponse(category.Name, category.Description, category.PublicId));
+        return Result.Success();
     }
 }
