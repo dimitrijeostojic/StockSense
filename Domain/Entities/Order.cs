@@ -13,7 +13,7 @@ public class Order : AuditableEntity
 
     private readonly List<OrderItem> _orderItems = [];
 
-    public static Order CreateOrder(int supplierId, DateTime orderDate, string notes)
+    public static Order CreateOrder(int supplierId, DateTime orderDate, string? notes)
     {
         return new Order
         {

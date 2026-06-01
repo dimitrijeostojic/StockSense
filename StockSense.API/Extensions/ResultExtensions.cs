@@ -1,4 +1,5 @@
-﻿using Domain.Core;
+﻿using Application.Common.Errors;
+using Domain.Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StockSense.API.Extensions;
@@ -9,7 +10,7 @@ public static class ResultExtensions
     {
         if (!result.IsSuccess)
         {
-            if (result.Error?.Type == ErrorType.NotFound)
+            if (result.Error == ApplicationErrors.NotFound)
             {
                 return new NotFoundObjectResult(result.Error);
             }
@@ -26,7 +27,7 @@ public static class ResultExtensions
     {
         if (!result.IsSuccess)
         {
-            if (result.Error?.Type == ErrorType.NotFound)
+            if (result.Error == ApplicationErrors.NotFound)
             {
                 return new NotFoundObjectResult(result.Error);
             }

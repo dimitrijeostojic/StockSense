@@ -16,7 +16,7 @@ internal sealed class GetCategoryByIdRequestHandler(
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, cancellationToken);
         if (category == null)
         {
-            return TResult<GetCategoryByIdResponse>.Failure(CategoryErrors.NotFound);
+            return TResult<GetCategoryByIdResponse>.Failure(ApplicationErrors.NotFound);
         }
         return TResult<GetCategoryByIdResponse>.Success(new GetCategoryByIdResponse(category.Name, category.Description, category.PublicId));
     }

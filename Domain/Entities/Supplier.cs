@@ -2,7 +2,7 @@
 
 public class Supplier : AuditableEntity
 {
-    public string? Name { get; private set; }
+    public string Name { get; private set; } = null!;
     public string? ContactName { get; private set; }
     public string? ContactEmail { get; private set; }
     public string? ContactPhone { get; private set; }
@@ -11,7 +11,7 @@ public class Supplier : AuditableEntity
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
     private readonly List<Product> _products = [];
 
-    public static Supplier CreateSupplier(string name, string contactName, string contactEmail, string contactPhone)
+    public static Supplier CreateSupplier(string name, string? contactName, string? contactEmail, string? contactPhone)
     {
         return new Supplier
         {
@@ -20,5 +20,26 @@ public class Supplier : AuditableEntity
             ContactEmail = contactEmail,
             ContactPhone = contactPhone
         };
+    }
+
+    public Supplier WithName(string name)
+    {
+        Name = name;
+        return this;
+    }
+    public Supplier WithContactName(string? contactName)
+    {
+        ContactName = contactName;
+        return this;
+    }
+    public Supplier WithContactEmail(string? contactEmail)
+    {
+        ContactEmail = contactEmail;
+        return this;
+    }
+    public Supplier WithContactPhone(string? contactPhone)
+    {
+        ContactPhone = contactPhone;
+        return this;
     }
 }

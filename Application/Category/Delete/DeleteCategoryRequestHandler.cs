@@ -20,7 +20,7 @@ internal sealed class DeleteCategoryRequestHandler(
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, cancellationToken);
         if (category == null)
         {
-            return Result.Failure(CategoryErrors.NotFound);
+            return Result.Failure(ApplicationErrors.NotFound);
         }
         _categoryRepository.Delete(category);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

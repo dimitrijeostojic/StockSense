@@ -1,0 +1,27 @@
+﻿using FluentValidation;
+
+namespace Application.Supplier.Update;
+
+public sealed class UpdateSupplierValidator
+    : AbstractValidator<UpdateSupplierRequest>
+{
+    public UpdateSupplierValidator()
+    {
+        RuleFor(x => x.SupplierPublicId)
+            .NotEmpty().WithMessage("SupplierPublicId is required.");
+
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+
+        RuleFor(x => x.ContactName)
+           .MaximumLength(255)
+           .WithMessage("Supplier contact name must not exceed 255 characters.");
+        RuleFor(x => x.ContactEmail)
+            .MaximumLength(255)
+            .WithMessage("Supplier contact email must not exceed 255 characters.");
+        RuleFor(x => x.ContactPhone)
+            .MaximumLength(20)
+            .WithMessage("Supplier contact phone must not exceed 20 characters.");
+    }
+}

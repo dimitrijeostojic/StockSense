@@ -19,7 +19,7 @@ internal sealed class UpdateCategoryRequestHandler(
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, cancellationToken);
         if (category == null)
         {
-            return TResult<UpdateCategoryResponse>.Failure(CategoryErrors.NotFound);
+            return TResult<UpdateCategoryResponse>.Failure(ApplicationErrors.NotFound);
         }
         category = category.WithName(request.Name)
             .WithDescription(request.Description);
