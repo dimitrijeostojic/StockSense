@@ -48,6 +48,10 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
 
     public async Task<Order?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Orders.FirstOrDefaultAsync(o => o.PublicId == publicId, cancellationToken);
+        return await _dbContext.Orders
+            .Include(o => o.Supplier)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.PublicId == publicId, cancellationToken);
     }
 }
