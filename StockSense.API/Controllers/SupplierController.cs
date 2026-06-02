@@ -1,7 +1,7 @@
-﻿using Application.Supplier.Delete;
-using Application.Supplier.GetAll;
-using Application.Supplier.GetById;
-using Application.SupplierManagement.CreateSupplier;
+﻿using Application.SupplierManagement.CreateSupplier;
+using Application.SupplierManagement.DeleteSupplier;
+using Application.SupplierManagement.GetAllSuppliers;
+using Application.SupplierManagement.GetSupplierById;
 using Application.SupplierManagement.UpdateSupplier;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

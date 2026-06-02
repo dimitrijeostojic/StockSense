@@ -1,7 +1,7 @@
-﻿using Application.Order.Delete;
-using Application.Order.GetAll;
-using Application.Order.GetById;
-using Application.OrderManagement.CreateOrder;
+﻿using Application.OrderManagement.CreateOrder;
+using Application.OrderManagement.DeleteOrder;
+using Application.OrderManagement.GetAllOrders;
+using Application.OrderManagement.GetOrderById;
 using Application.OrderManagement.UpdateOrder;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

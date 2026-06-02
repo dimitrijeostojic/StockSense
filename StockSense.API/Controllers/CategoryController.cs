@@ -1,7 +1,7 @@
-﻿using Application.Category.Delete;
-using Application.Category.GetAll;
-using Application.Category.GetById;
-using Application.CategoryManagement.CreateCategory;
+﻿using Application.CategoryManagement.CreateCategory;
+using Application.CategoryManagement.DeleteCategory;
+using Application.CategoryManagement.GetAllCategories;
+using Application.CategoryManagement.GetCategoryById;
 using Application.CategoryManagement.UpdateCategory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
