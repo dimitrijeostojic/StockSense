@@ -21,7 +21,9 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
 
     public async Task<(IEnumerable<Order> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
-        var query = _dbContext.Orders.AsQueryable();
+        var query = _dbContext.Orders
+            .Include(o => o.Supplier)
+            .AsQueryable();
 
         //sort
         if (!string.IsNullOrEmpty(sortBy))

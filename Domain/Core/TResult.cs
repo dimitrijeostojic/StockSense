@@ -1,10 +1,10 @@
 namespace Domain.Core;
 
-public class TResult<T> : IResult where T : class
+public class TResult<T> where T : class
 {
     public bool IsSuccess => Error == Error.None;
     public T? Value { get; }
-    public Error? Error { get; }
+    public Error? Error { get; } = Error.None;
 
     private TResult(T? value)
     {

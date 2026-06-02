@@ -8,7 +8,7 @@ public sealed class ValidationPipelineBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
-    where TResponse : IResult
+    where TResponse : TResult<TResponse>
 {
     public async Task<TResponse> Handle(
         TRequest request,

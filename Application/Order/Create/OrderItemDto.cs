@@ -2,5 +2,4 @@
 
 public sealed record OrderItemDto(
     Guid ProductPublicId,
-    int Quantity,
-    decimal UnitPrice);
+    int Quantity);
