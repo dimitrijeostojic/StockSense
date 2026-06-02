@@ -79,6 +79,7 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IJwtRepository, JwtRepository>();
         return services;
     }
 }
