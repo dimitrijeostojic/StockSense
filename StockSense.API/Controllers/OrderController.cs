@@ -2,6 +2,7 @@
 using Application.Order.Delete;
 using Application.Order.GetAll;
 using Application.Order.GetById;
+using Application.Order.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
@@ -25,7 +26,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPut("{publicId:Guid}")]
     public async Task<IActionResult> UpdateOrderAsync([FromRoute] Guid publicId, [FromBody] UpdateOrderRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var request = new UpdateOrderRequest(publicId, requestBody.Name, requestBody.ContactName, requestBody.ContactEmail, requestBody.ContactPhone);
+        var request = new UpdateOrderRequest(publicId, requestBody.SupplierPublicId, requestBody.OrderDate, requestBody.Notes, requestBody.OrderItemsDto);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

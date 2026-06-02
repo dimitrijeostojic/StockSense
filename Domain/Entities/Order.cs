@@ -29,4 +29,36 @@ public class Order : AuditableEntity
         var item = OrderItem.Create(productId, quantity, unitPrice);
         _orderItems.Add(item);
     }
+    public void RemoveItem(Guid OrderItemPublicId)
+    {
+        var item = _orderItems.FirstOrDefault(oi => oi.PublicId == OrderItemPublicId);
+        if (item == null)
+        {
+            throw new Exception($"Order item with PublicId {OrderItemPublicId} not found.");
+        }
+        _orderItems.Remove(item);
+    }
+
+    public Order WithSupplierId(int supplierId)
+    {
+        SupplierId = supplierId;
+        return this;
+    }
+    public Order WithOrderDate(DateTime orderDate)
+    {
+        OrderDate = orderDate;
+        return this;
+    }
+    public Order WithNotes(string? notes)
+    {
+        Notes = notes;
+        return this;
+    }
+    public Order WithOrderStatus(OrderStatus orderStatus)
+    {
+        OrderStatus = orderStatus;
+        return this;
+    }
+
+
 }
