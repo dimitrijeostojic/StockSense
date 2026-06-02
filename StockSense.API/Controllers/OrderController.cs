@@ -1,4 +1,7 @@
 ﻿using Application.Order.Create;
+using Application.Order.Delete;
+using Application.Order.GetAll;
+using Application.Order.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;

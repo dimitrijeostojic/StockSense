@@ -38,6 +38,6 @@ internal sealed class CreateOrderRequestHandler(
         }
         await _orderRepository.AddAsync(order, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return TResult<CreateOrderResponse>.Success(new CreateOrderResponse(order.PublicId, order.OrderStatus, order.OrderDate, order.Notes, supplier.PublicId));
+        return TResult<CreateOrderResponse>.Success(new CreateOrderResponse(order.PublicId, order.OrderStatus, order.OrderDate, order.Notes, supplier.PublicId, supplier.Name));
     }
 }

@@ -3,8 +3,8 @@
 namespace Application.Order.GetAll;
 
 public sealed class GetAllOrdersResponse(
-IEnumerable<OrderDto> items,
+IEnumerable<GetAllOrdersDto> items,
     int totalCount,
     int pageNumber,
     int pageSize
-    ) : PagedResponse<OrderDto>(items, totalCount, pageNumber, pageSize);
+    ) : PagedResponse<GetAllOrdersDto>(items, totalCount, pageNumber, pageSize);

@@ -7,4 +7,5 @@ public sealed record CreateOrderResponse(
     OrderStatus Status,
     DateTime OrderDate,
     string? Notes,
-    Guid SupplierPublicId);
+    Guid SupplierPublicId,
+    string SupplierName);

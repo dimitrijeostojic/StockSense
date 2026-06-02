@@ -14,7 +14,7 @@ internal sealed class GetAllOrdersRequestHandler(
     {
         var (orders, totalCount) = await _orderRepository.GetAllAsync(request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, cancellationToken);
 
-        var orderDtos = orders.Select(order => new OrderDto(
+        var orderDtos = orders.Select(order => new GetAllOrdersDto(
             order.PublicId,
             order.OrderDate,
             order.OrderStatus,

@@ -2,7 +2,7 @@
 
 namespace Application.Order.GetAll;
 
-public sealed record OrderDto(Guid PublicId,
+public sealed record GetAllOrdersDto(Guid PublicId,
     DateTime OrderDate,
     OrderStatus OrderStatus,
     string SupplierName);
