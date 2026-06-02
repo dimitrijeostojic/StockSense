@@ -27,10 +27,13 @@ internal sealed class CreateOrderRequestHandler(
         }
         var order = Domain.Entities.Order.CreateOrder(supplier.Id, request.OrderDate, request.Notes);
 
+        var productIds = request.OrderItemsDto.Select(i => i.ProductPublicId).ToList();
+        var products = await _productRepository.GetByPublicIdsAsync(productIds, cancellationToken);
+        var productMap = products.ToDictionary(p => p.PublicId);
+
         foreach (var item in request.OrderItemsDto)
         {
-            var product = await _productRepository.GetByPublicIdAsync(item.ProductPublicId, cancellationToken);
-            if (product == null)
+            if (!productMap.TryGetValue(item.ProductPublicId, out var product))
             {
                 return TResult<CreateOrderResponse>.Failure(ApplicationErrors.NotFound);
             }

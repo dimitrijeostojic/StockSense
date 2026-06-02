@@ -62,4 +62,11 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .Include(p => p.Supplier)
             .FirstOrDefaultAsync(p => p.PublicId == publicId, cancellationToken);
     }
+
+    public async Task<List<Product>> GetByPublicIdsAsync(IEnumerable<Guid> publicIds, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Products
+            .Where(p => publicIds.Contains(p.PublicId))
+            .ToListAsync(cancellationToken);
+    }
 }
