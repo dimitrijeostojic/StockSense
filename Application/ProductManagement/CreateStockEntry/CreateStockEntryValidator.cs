@@ -3,7 +3,7 @@
 namespace Application.ProductManagement.CreateStockEntry;
 
 public sealed class CreateStockEntryValidator
-    : AbstractValidator<CreateStockEntryRequestBody>
+    : AbstractValidator<CreateStockEntryRequest>
 {
     public CreateStockEntryValidator()
     {

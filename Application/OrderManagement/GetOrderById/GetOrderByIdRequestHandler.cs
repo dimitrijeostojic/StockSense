@@ -1,5 +1,4 @@
 ﻿using Application.Common.Errors;
-using Application.Order.GetById;
 using Domain.Abstractions;
 using Domain.Core;
 using Domain.RepositoryInterfaces;
