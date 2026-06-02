@@ -11,6 +11,7 @@ public static class MigrationExtensions
     {
         using var scope = app.ApplicationServices.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var authDb = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApplicationDbContext>>();
 
         AsyncRetryPolicy retryPolicy = Policy
@@ -30,6 +31,13 @@ public static class MigrationExtensions
             logger.LogInformation("Applying database migrations...");
             await db.Database.MigrateAsync();
             logger.LogInformation("Migrations applied successfully.");
+
+        });
+        await retryPolicy.ExecuteAsync(async () =>
+        {
+            logger.LogInformation("Applying auth database migrations...");
+            await authDb.Database.MigrateAsync();
+            logger.LogInformation("Auth migrations applied successfully.");
         });
     }
 }

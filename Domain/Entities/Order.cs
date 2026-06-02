@@ -12,13 +12,15 @@ public class Order : AuditableEntity
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
 
     private readonly List<OrderItem> _orderItems = [];
+    public Guid TenantPublicId { get; private set; }
 
-    public static Order CreateOrder(int supplierId, DateTime orderDate, string? notes)
+    public static Order CreateOrder(int supplierId, DateTime orderDate, string? notes, Guid tenantPublicId)
     {
         return new Order
         {
             SupplierId = supplierId,
             OrderDate = orderDate,
+            TenantPublicId = tenantPublicId,
             Notes = notes,
             OrderStatus = OrderStatus.Pending
         };

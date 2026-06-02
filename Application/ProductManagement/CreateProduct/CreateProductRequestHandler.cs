@@ -34,7 +34,8 @@ internal sealed class CreateProductRequestHandler(
             request.Price,
             request.MinimumStockQuantity,
             category.Id,
-            supplier.Id);
+            supplier.Id,
+            Guid.NewGuid());
 
         await _productRepository.AddAsync(product, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

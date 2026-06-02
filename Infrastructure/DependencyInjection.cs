@@ -24,7 +24,6 @@ public static class DependencyInjection
         services.AddRepositories();
 
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AuthDbContext>());
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
@@ -39,12 +38,9 @@ public static class DependencyInjection
         });
         services.AddDbContext<AuthDbContext>((sp, options) =>
         {
-            var interceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
-
             options.UseSqlServer(
                 configuration.GetConnectionString("AuthConnection"),
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
-                .AddInterceptors(interceptor);
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
 
         services.AddMassTransit(x =>

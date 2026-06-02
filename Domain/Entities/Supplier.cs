@@ -10,15 +10,17 @@ public class Supplier : AuditableEntity
     private readonly List<Order> _orders = [];
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
     private readonly List<Product> _products = [];
+    public Guid TenantPublicId { get; private set; }
 
-    public static Supplier CreateSupplier(string name, string? contactName, string? contactEmail, string? contactPhone)
+    public static Supplier CreateSupplier(string name, string? contactName, string? contactEmail, string? contactPhone, Guid tenantPublicId)
     {
         return new Supplier
         {
             Name = name,
             ContactName = contactName,
             ContactEmail = contactEmail,
-            ContactPhone = contactPhone
+            ContactPhone = contactPhone,
+            TenantPublicId = tenantPublicId
         };
     }
 

@@ -16,13 +16,14 @@ public class Product : AuditableEntity
     public IReadOnlyCollection<StockEntry> StockEntries => _stockEntries.AsReadOnly();
     private readonly List<OrderItem> _orderItems = [];
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
+    public Guid TenantPublicId { get; private set; }
 
     private Product()
     {
 
     }
 
-    public static Product CreateProduct(string name, string? description, decimal price, int minimumStockQuantity, int categoryId, int supplierId)
+    public static Product CreateProduct(string name, string? description, decimal price, int minimumStockQuantity, int categoryId, int supplierId, Guid tenantPublicId)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         return new Product
@@ -32,7 +33,8 @@ public class Product : AuditableEntity
             Price = price,
             MinimumStockQuantity = minimumStockQuantity,
             CategoryId = categoryId,
-            SupplierId = supplierId
+            SupplierId = supplierId,
+            TenantPublicId = tenantPublicId
         };
     }
 

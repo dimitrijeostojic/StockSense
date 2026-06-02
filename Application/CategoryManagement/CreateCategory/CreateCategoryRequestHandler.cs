@@ -15,7 +15,7 @@ internal sealed class CreateCategoryRequestHandler(
 
     public async Task<TResult<CreateCategoryResponse>> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Category category = Domain.Entities.Category.Create(request.Name, request.Description);
+        Domain.Entities.Category category = Domain.Entities.Category.Create(request.Name, request.Description, Guid.NewGuid());
         await _categoryRepository.AddAsync(category, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return TResult<CreateCategoryResponse>.Success(new CreateCategoryResponse(category.Name, category.Description, category.PublicId));

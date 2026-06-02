@@ -25,7 +25,7 @@ internal sealed class CreateOrderRequestHandler(
         {
             return TResult<CreateOrderResponse>.Failure(ApplicationErrors.NotFound);
         }
-        var order = Domain.Entities.Order.CreateOrder(supplier.Id, request.OrderDate, request.Notes);
+        var order = Domain.Entities.Order.CreateOrder(supplier.Id, request.OrderDate, request.Notes, Guid.NewGuid());
 
         var productIds = request.OrderItemsDto.Select(i => i.ProductPublicId).ToList();
         var products = await _productRepository.GetByPublicIdsAsync(productIds, cancellationToken);

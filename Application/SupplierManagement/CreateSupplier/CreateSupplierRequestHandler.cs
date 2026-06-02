@@ -20,7 +20,8 @@ internal sealed class CreateSupplierRequestHandler(
             request.Name,
             request.ContactName,
             request.ContactEmail,
-            request.ContactPhone);
+            request.ContactPhone,
+            Guid.NewGuid());
 
         await _supplierRepository.AddAsync(supplierEntity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
