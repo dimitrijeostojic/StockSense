@@ -1,8 +1,11 @@
-﻿using Application.Product.Create;
-using Application.Product.Delete;
-using Application.Product.GetAll;
-using Application.Product.GetById;
-using Application.Product.Update;
+﻿using Application.ProductManagement.CreateProduct;
+using Application.ProductManagement.CreateStockEntry;
+using Application.ProductManagement.DeleteProduct;
+using Application.ProductManagement.GetAllProducts;
+using Application.ProductManagement.GetAllStockEntries;
+using Application.ProductManagement.GetProductById;
+using Application.ProductManagement.GetStockEntryByProductId;
+using Application.ProductManagement.UpdateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
@@ -50,6 +53,30 @@ public class ProductController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("{publicId:Guid}/stockentry")]
+    public async Task<IActionResult> GetAllStockEntriesAsync([FromRoute] Guid publicId, CancellationToken cancellationToken)
+    {
+        var request = new GetAllStockEntriesRequest(publicId);
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("{publicId:Guid}/stockentry/{entryPublicId:Guid}")]
+    public async Task<IActionResult> GetStockEntryByIdAsync([FromRoute] Guid publicId, [FromRoute] Guid entryPublicId, CancellationToken cancellationToken)
+    {
+        var request = new GetStockEntryByIdRequest(publicId, entryPublicId);
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("{publicId:Guid}/stockentry")]
+    public async Task<IActionResult> CreateStockEntryAsync([FromRoute] Guid publicId, [FromBody] CreateStockEntryRequestBody requestBody, CancellationToken cancellationToken)
+    {
+        var request = new CreateStockEntryRequest(publicId, requestBody.Quantity, requestBody.Notes, requestBody.StockEntryType);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

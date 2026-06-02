@@ -60,6 +60,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         return await _dbContext.Products
             .Include(p => p.Category)
             .Include(p => p.Supplier)
+            .Include(p => p.StockEntries)
             .FirstOrDefaultAsync(p => p.PublicId == publicId, cancellationToken);
     }
 

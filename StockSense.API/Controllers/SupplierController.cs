@@ -1,8 +1,8 @@
-﻿using Application.Supplier.Create;
-using Application.Supplier.Delete;
+﻿using Application.Supplier.Delete;
 using Application.Supplier.GetAll;
 using Application.Supplier.GetById;
-using Application.Supplier.Update;
+using Application.SupplierManagement.CreateSupplier;
+using Application.SupplierManagement.UpdateSupplier;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;

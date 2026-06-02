@@ -1,8 +1,8 @@
-﻿using Application.Category.Create;
-using Application.Category.Delete;
+﻿using Application.Category.Delete;
 using Application.Category.GetAll;
 using Application.Category.GetById;
-using Application.Category.Update;
+using Application.CategoryManagement.CreateCategory;
+using Application.CategoryManagement.UpdateCategory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;

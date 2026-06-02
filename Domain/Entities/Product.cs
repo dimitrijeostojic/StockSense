@@ -36,10 +36,11 @@ public class Product : AuditableEntity
         };
     }
 
-    public void AddStockEntry(int quantity, StockEntryType type, string notes)
+    public StockEntry AddStockEntry(int quantity, StockEntryType type, string? notes)
     {
         var entry = StockEntry.Create(quantity, DateTime.UtcNow, notes, type);
         _stockEntries.Add(entry);
+        return entry;
     }
 
     public Product WithName(string name)
