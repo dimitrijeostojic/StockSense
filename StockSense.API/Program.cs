@@ -5,6 +5,7 @@ using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using StockSense.API.Accessors;
 using StockSense.API.Extensions;
 using StockSense.API.Logging;
@@ -64,6 +65,40 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
 });
 
+builder.Services.AddOpenApi(options =>
+{
+    options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        var securitySchemes = new Dictionary<string, IOpenApiSecurityScheme>
+        {
+            ["Bearer"] = new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                In = ParameterLocation.Header,
+                BearerFormat = "Json Web Token"
+            }
+        };
+        document.Components ??= new();
+        document.Components.SecuritySchemes = securitySchemes;
+
+        document.Paths
+            .Values
+            .SelectMany(p => p.Operations!.Values)
+            .ToList()
+            .ForEach(operation =>
+            {
+                operation.Security ??= [];
+                operation.Security.Add(new()
+                {
+                    [new("Bearer", document)] = []
+                });
+            });
+
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
@@ -71,6 +106,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/openapi/v1.json", "StockSense API V1");
+    });
 }
 
 app.UseHttpsRedirection();

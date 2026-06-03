@@ -28,6 +28,7 @@ public static class DependencyInjection
 
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IAuthUnitOfWork>(sp => sp.GetRequiredService<AuthDbContext>());
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
@@ -82,6 +83,7 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
         return services;
     }
 

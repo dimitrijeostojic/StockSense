@@ -13,6 +13,18 @@ public sealed class AuthDbContext(DbContextOptions<AuthDbContext> options) : Ide
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<Tenant>().ToTable("Tenants");
+
+        builder.Entity<Tenant>().HasKey(o => o.Id);
+        builder.Entity<Tenant>().Property(o => o.Name).IsRequired().HasMaxLength(255);
+        builder.Entity<Tenant>().Property(o => o.PIB).IsRequired().HasMaxLength(255);
+        builder.Entity<Tenant>().Property(o => o.Address).IsRequired().HasMaxLength(255);
+
+        builder.Entity<Tenant>()
+            .HasMany(t => t.ApplicationUsers)
+            .WithOne(u => u.Tenant)
+            .HasForeignKey(u => u.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
     public IDbTransaction BeginTransaction()
