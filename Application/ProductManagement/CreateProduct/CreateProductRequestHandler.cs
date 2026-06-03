@@ -25,7 +25,7 @@ internal sealed class CreateProductRequestHandler(
     public async Task<TResult<CreateProductResponse>> Handle(CreateProductRequest request, CancellationToken cancellationToken)
     {
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, _currentUserAccessor.TenantPublicId, cancellationToken);
-        var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, cancellationToken);
+        var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, _currentUserAccessor.TenantPublicId, cancellationToken);
         if (category == null || supplier == null)
         {
             return TResult<CreateProductResponse>.Failure(ApplicationErrors.NotFound);

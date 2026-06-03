@@ -19,10 +19,11 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
         _dbContext.Remove(order);
     }
 
-    public async Task<(IEnumerable<Order> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Order> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Orders
             .Include(o => o.Supplier)
+            .Where(o => o.TenantPublicId == tenantPublicId)
             .AsQueryable();
 
         //sort
@@ -46,12 +47,12 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
         return (items, totalCount);
     }
 
-    public async Task<Order?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
+    public async Task<Order?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Orders
             .Include(o => o.Supplier)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
-            .FirstOrDefaultAsync(o => o.PublicId == publicId, cancellationToken);
+            .FirstOrDefaultAsync(o => o.PublicId == publicId && o.TenantPublicId == tenantPublicId, cancellationToken);
     }
 }

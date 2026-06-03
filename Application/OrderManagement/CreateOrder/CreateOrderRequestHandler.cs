@@ -23,7 +23,7 @@ internal sealed class CreateOrderRequestHandler(
 
     public async Task<TResult<CreateOrderResponse>> Handle(CreateOrderRequest request, CancellationToken cancellationToken)
     {
-        var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, cancellationToken);
+        var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, _currentUserAccessor.TenantPublicId, cancellationToken);
         if (supplier == null)
         {
             return TResult<CreateOrderResponse>.Failure(ApplicationErrors.NotFound);
@@ -31,7 +31,7 @@ internal sealed class CreateOrderRequestHandler(
         var order = Domain.Entities.Order.CreateOrder(supplier.Id, request.OrderDate, request.Notes, _currentUserAccessor.TenantPublicId);
 
         var productIds = request.OrderItemsDto.Select(i => i.ProductPublicId).ToList();
-        var products = await _productRepository.GetByPublicIdsAsync(productIds, cancellationToken);
+        var products = await _productRepository.GetByPublicIdsAsync(productIds, _currentUserAccessor.TenantPublicId, cancellationToken);
         var productMap = products.ToDictionary(p => p.PublicId);
 
         foreach (var item in request.OrderItemsDto)

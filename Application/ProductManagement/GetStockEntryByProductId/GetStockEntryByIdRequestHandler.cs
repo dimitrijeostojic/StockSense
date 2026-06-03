@@ -1,4 +1,5 @@
 ﻿using Application.Common.Errors;
+using Application.Common.Interfaces;
 using Domain.Core;
 using Domain.RepositoryInterfaces;
 using MediatR;
@@ -6,14 +7,17 @@ using MediatR;
 namespace Application.ProductManagement.GetStockEntryByProductId;
 
 internal sealed class GetStockEntryByIdRequestHandler(
-    IProductRepository productRepository)
+    IProductRepository productRepository,
+    ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<GetStockEntryByIdRequest, TResult<GetStockEntryByIdResponse>>
 {
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
 
+    private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
+
     public async Task<TResult<GetStockEntryByIdResponse>> Handle(GetStockEntryByIdRequest request, CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetByPublicIdAsync(request.ProductPublicId, cancellationToken);
+        var product = await _productRepository.GetByPublicIdAsync(request.ProductPublicId, _currentUserAccessor.TenantPublicId, cancellationToken);
         if (product == null)
         {
             return TResult<GetStockEntryByIdResponse>.Failure(ApplicationErrors.NotFound);

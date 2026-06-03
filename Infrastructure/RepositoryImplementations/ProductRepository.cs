@@ -19,12 +19,13 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         _dbContext.Products.Remove(product);
     }
 
-    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
 
         var query = _dbContext.Products
             .Include(p => p.Category)
             .Include(p => p.Supplier)
+            .Where(p => p.TenantPublicId == tenantPublicId)
             .AsQueryable();
 
         //search
@@ -55,19 +56,19 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         return (items, totalCount);
     }
 
-    public async Task<Product?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
             .Include(p => p.Category)
             .Include(p => p.Supplier)
             .Include(p => p.StockEntries)
-            .FirstOrDefaultAsync(p => p.PublicId == publicId, cancellationToken);
+            .FirstOrDefaultAsync(p => p.PublicId == publicId && p.TenantPublicId == tenantPublicId, cancellationToken);
     }
 
-    public async Task<List<Product>> GetByPublicIdsAsync(IEnumerable<Guid> publicIds, CancellationToken cancellationToken = default)
+    public async Task<List<Product>> GetByPublicIdsAsync(IEnumerable<Guid> publicIds, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
-            .Where(p => publicIds.Contains(p.PublicId))
+            .Where(p => publicIds.Contains(p.PublicId) && p.TenantPublicId == tenantPublicId)
             .ToListAsync(cancellationToken);
     }
 }

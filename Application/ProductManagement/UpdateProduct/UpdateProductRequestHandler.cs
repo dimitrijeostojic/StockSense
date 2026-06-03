@@ -25,8 +25,8 @@ internal sealed class UpdateProductRequestHandler(
     public async Task<TResult<UpdateProductResponse>> Handle(UpdateProductRequest request, CancellationToken cancellationToken)
     {
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryId, _currentUserAccessor.TenantPublicId, cancellationToken);
-        var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierId, cancellationToken);
-        var product = await _productRepository.GetByPublicIdAsync(request.ProductPublicId, cancellationToken);
+        var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierId, _currentUserAccessor.TenantPublicId, cancellationToken);
+        var product = await _productRepository.GetByPublicIdAsync(request.ProductPublicId, _currentUserAccessor.TenantPublicId, cancellationToken);
         if (product == null || category == null || supplier == null)
         {
             return TResult<UpdateProductResponse>.Failure(ApplicationErrors.NotFound);

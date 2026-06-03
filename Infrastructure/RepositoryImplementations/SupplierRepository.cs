@@ -19,9 +19,9 @@ public sealed class SupplierRepository(ApplicationDbContext dbContext) : ISuppli
         _dbContext.Suppliers.Remove(supplier);
     }
 
-    public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        var query = _dbContext.Suppliers.AsQueryable();
+        var query = _dbContext.Suppliers.Where(o => o.TenantPublicId == tenantPublicId).AsQueryable();
 
         //search
         if (!string.IsNullOrEmpty(searchTerm))
@@ -51,8 +51,8 @@ public sealed class SupplierRepository(ApplicationDbContext dbContext) : ISuppli
         return (items, totalCount);
     }
 
-    public async Task<Supplier?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
+    public async Task<Supplier?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Suppliers.FirstOrDefaultAsync(s => s.PublicId == publicId, cancellationToken);
+        return await _dbContext.Suppliers.FirstOrDefaultAsync(s => s.PublicId == publicId && s.TenantPublicId == tenantPublicId, cancellationToken);
     }
 }

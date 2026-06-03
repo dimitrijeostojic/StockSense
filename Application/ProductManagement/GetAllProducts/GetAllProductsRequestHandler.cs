@@ -1,18 +1,22 @@
-﻿using Domain.Core;
+﻿using Application.Common.Interfaces;
+using Domain.Core;
 using Domain.RepositoryInterfaces;
 using MediatR;
 
 namespace Application.ProductManagement.GetAllProducts;
 
 internal sealed class GetAllProductsRequestHandler(
-    IProductRepository productRepository)
+    IProductRepository productRepository,
+    ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<GetAllProductsRequest, TResult<GetAllProductsResponse>>
 {
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
 
+    private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
+
     public async Task<TResult<GetAllProductsResponse>> Handle(GetAllProductsRequest request, CancellationToken cancellationToken)
     {
-        var (items, totalCount) = await _productRepository.GetAllAsync(request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, cancellationToken);
+        var (items, totalCount) = await _productRepository.GetAllAsync(request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, _currentUserAccessor.TenantPublicId, cancellationToken);
 
         var dtos = items.Select(p => new GetAllProductsDto(
             p.PublicId,
