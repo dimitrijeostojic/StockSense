@@ -9,6 +9,11 @@ public sealed class ApplicationUser : IdentityUser
     public int TenantId { get; private set; }
     public Tenant? Tenant { get; private set; }
 
+    private ApplicationUser()
+    {
+
+    }
+
     public static ApplicationUser Create(string userName, string email, string? firstName, string? lastName, int tenantId)
     {
         return new ApplicationUser

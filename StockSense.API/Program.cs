@@ -1,5 +1,5 @@
 using Application;
-using Application.Abstractions;
+using Application.Common.Interfaces;
 using Infrastructure;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

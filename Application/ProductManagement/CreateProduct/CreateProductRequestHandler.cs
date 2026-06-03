@@ -1,4 +1,5 @@
 ﻿using Application.Common.Errors;
+using Application.Common.Interfaces;
 using Domain.Abstractions;
 using Domain.Core;
 using Domain.RepositoryInterfaces;
@@ -10,7 +11,8 @@ internal sealed class CreateProductRequestHandler(
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
     ISupplierRepository supplierRepository,
-    IUnitOfWork unitOfWork
+    IUnitOfWork unitOfWork,
+    ICurrentUserAccessor currentUserAccessor
     )
     : IRequestHandler<CreateProductRequest, TResult<CreateProductResponse>>
 {
@@ -18,6 +20,7 @@ internal sealed class CreateProductRequestHandler(
     private readonly ICategoryRepository _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
     private readonly ISupplierRepository _supplierRepository = supplierRepository ?? throw new ArgumentNullException(nameof(supplierRepository));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+    private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
 
     public async Task<TResult<CreateProductResponse>> Handle(CreateProductRequest request, CancellationToken cancellationToken)
     {
@@ -35,7 +38,7 @@ internal sealed class CreateProductRequestHandler(
             request.MinimumStockQuantity,
             category.Id,
             supplier.Id,
-            Guid.NewGuid());
+            _currentUserAccessor.TenantPublicId);
 
         await _productRepository.AddAsync(product, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

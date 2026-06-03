@@ -1,3 +1,4 @@
+using Application.Abstractions.Services;
 using Application.Behaviors;
 using Domain.Abstractions;
 using Domain.Entities;
@@ -6,6 +7,7 @@ using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Options;
 using Infrastructure.RepositoryImplementations;
+using Infrastructure.Services;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +24,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddRepositories();
+        services.AddServices();
 
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
@@ -79,7 +82,12 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
-        services.AddScoped<IJwtRepository, JwtRepository>();
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
         return services;
     }
 }

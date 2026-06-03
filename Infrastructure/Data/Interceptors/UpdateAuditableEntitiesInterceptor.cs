@@ -1,4 +1,4 @@
-﻿using Application.Abstractions;
+﻿using Application.Common.Interfaces;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

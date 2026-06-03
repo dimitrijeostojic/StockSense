@@ -1,5 +1,5 @@
-﻿using Domain.Entities;
-using Domain.RepositoryInterfaces;
+﻿using Application.Abstractions.Services;
+using Domain.Entities;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -7,13 +7,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Infrastructure.RepositoryImplementations;
+namespace Infrastructure.Services;
 
-public sealed class JwtRepository(IOptions<JwtOptions> options) : IJwtRepository
+public sealed class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenService
 {
     private readonly JwtOptions _options = options.Value;
 
-    public async Task<string> GenerateTokenAsync(ApplicationUser user, IEnumerable<string> roles)
+    public string GenerateTokenAsync(ApplicationUser user, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -22,6 +22,11 @@ public sealed class JwtRepository(IOptions<JwtOptions> options) : IJwtRepository
             new (JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new ("tenant_public_id", user.TenantId.ToString())
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)), SecurityAlgorithms.HmacSha256);
 

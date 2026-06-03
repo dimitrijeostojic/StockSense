@@ -1,4 +1,5 @@
 ﻿using Application.Common.Errors;
+using Application.Common.Interfaces;
 using Domain.Abstractions;
 using Domain.Core;
 using Domain.RepositoryInterfaces;
@@ -10,13 +11,15 @@ internal sealed class CreateOrderRequestHandler(
     IOrderRepository orderRepository,
     ISupplierRepository supplierRepository,
     IProductRepository productRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<CreateOrderRequest, TResult<CreateOrderResponse>>
 {
     private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
     private readonly ISupplierRepository _supplierRepository = supplierRepository ?? throw new ArgumentNullException(nameof(supplierRepository));
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+    private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
 
     public async Task<TResult<CreateOrderResponse>> Handle(CreateOrderRequest request, CancellationToken cancellationToken)
     {
@@ -25,7 +28,7 @@ internal sealed class CreateOrderRequestHandler(
         {
             return TResult<CreateOrderResponse>.Failure(ApplicationErrors.NotFound);
         }
-        var order = Domain.Entities.Order.CreateOrder(supplier.Id, request.OrderDate, request.Notes, Guid.NewGuid());
+        var order = Domain.Entities.Order.CreateOrder(supplier.Id, request.OrderDate, request.Notes, _currentUserAccessor.TenantPublicId);
 
         var productIds = request.OrderItemsDto.Select(i => i.ProductPublicId).ToList();
         var products = await _productRepository.GetByPublicIdsAsync(productIds, cancellationToken);

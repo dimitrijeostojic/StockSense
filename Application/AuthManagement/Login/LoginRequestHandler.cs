@@ -1,7 +1,7 @@
-﻿using Application.Common.Errors;
+﻿using Application.Abstractions.Services;
+using Application.Common.Errors;
 using Domain.Core;
 using Domain.Entities;
-using Domain.RepositoryInterfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,11 +9,11 @@ namespace Application.AuthManagement.Login;
 
 internal sealed class LoginRequestHandler(
     UserManager<ApplicationUser> userManager,
-    IJwtRepository jwtRepository)
+    IJwtTokenService jwtRepository)
     : IRequestHandler<LoginRequest, TResult<LoginResponse>>
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-    private readonly IJwtRepository _jwtRepository = jwtRepository ?? throw new ArgumentNullException(nameof(jwtRepository));
+    private readonly IJwtTokenService _jwtRepository = jwtRepository ?? throw new ArgumentNullException(nameof(jwtRepository));
 
     public async Task<TResult<LoginResponse>> Handle(LoginRequest request, CancellationToken cancellationToken)
     {

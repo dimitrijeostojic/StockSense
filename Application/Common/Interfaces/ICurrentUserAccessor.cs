@@ -1,4 +1,4 @@
-﻿namespace Application.Abstractions;
+﻿namespace Application.Common.Interfaces;
 
 public interface ICurrentUserAccessor
 {
