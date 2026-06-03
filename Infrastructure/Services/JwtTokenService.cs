@@ -13,7 +13,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenSer
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GenerateTokenAsync(ApplicationUser user, IEnumerable<string> roles)
+    public string GenerateToken(ApplicationUser user, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {

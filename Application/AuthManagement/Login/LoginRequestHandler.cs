@@ -28,7 +28,7 @@ internal sealed class LoginRequestHandler(
                 new LoginResponse(null, null, RequiresTwoFactor: true, UserId: user.Id));
         }
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = await _jwtRepository.GenerateTokenAsync(user, roles);
+        var accessToken = _jwtRepository.GenerateToken(user, roles);
         var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
         return TResult<LoginResponse>.Success(new LoginResponse
         (accessToken, null, isTwoFactorEnabled, user.Id));

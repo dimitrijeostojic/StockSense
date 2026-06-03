@@ -25,8 +25,8 @@ public sealed class CategoryRepository(ApplicationDbContext dbContext)
         return await _dbContext.Categories.Where(c => c.TenantPublicId == tenantPublicId).ToListAsync(cancellationToken);
     }
 
-    public async Task<Category?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
+    public async Task<Category?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Categories.FirstOrDefaultAsync(c => c.PublicId == publicId, cancellationToken);
+        return await _dbContext.Categories.FirstOrDefaultAsync(c => c.PublicId == publicId && c.TenantPublicId == tenantPublicId, cancellationToken);
     }
 }
