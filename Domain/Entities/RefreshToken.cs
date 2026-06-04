@@ -12,6 +12,7 @@ public sealed class RefreshToken : Entity
 
     private RefreshToken()
     {
+
     }
 
     public static RefreshToken Create(string userId)
