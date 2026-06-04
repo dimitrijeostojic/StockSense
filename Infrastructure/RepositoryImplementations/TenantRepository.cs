@@ -19,9 +19,9 @@ public sealed class TenantRepository(AuthDbContext authDbContext) : ITenantRepos
         _authDbContext.Tenants.Remove(tenant);
     }
 
-    public Task<IEnumerable<Tenant>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Tenant>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _authDbContext.Tenants.ToListAsync(cancellationToken);
     }
 
     public async Task<Tenant?> GetByIdAsync(int tenantId, CancellationToken cancellationToken)
