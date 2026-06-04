@@ -7,12 +7,10 @@ using MediatR;
 namespace Application.OrderManagement.EventHandlers;
 
 internal sealed class OrderReceivedDomainEventHandler(
-    IOrderRepository orderRepository,
     ICurrentUserAccessor currentUserAccessor,
     IProductRepository productRepository,
     IUnitOfWork unitOfWork) : INotificationHandler<OrderReceivedDomainEvent>
 {
-    private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
