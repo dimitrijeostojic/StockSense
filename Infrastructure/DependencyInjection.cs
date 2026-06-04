@@ -1,5 +1,4 @@
 using Application.Abstractions.Services;
-using Application.Behaviors;
 using Domain.Abstractions;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
@@ -9,7 +8,6 @@ using Infrastructure.Options;
 using Infrastructure.RepositoryImplementations;
 using Infrastructure.Services;
 using MassTransit;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +27,6 @@ public static class DependencyInjection
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IAuthUnitOfWork>(sp => sp.GetRequiredService<AuthDbContext>());
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {

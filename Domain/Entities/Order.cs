@@ -1,4 +1,6 @@
-﻿using Domain.Enums;
+﻿using Domain.Core;
+using Domain.Enums;
+using Domain.Events;
 
 namespace Domain.Entities;
 
@@ -56,11 +58,28 @@ public class Order : AuditableEntity
         Notes = notes;
         return this;
     }
-    public Order WithOrderStatus(OrderStatus orderStatus)
+    public TResult<Order> WithOrderStatus(OrderStatus orderStatus)
     {
-        OrderStatus = orderStatus;
-        return this;
-    }
+        if (OrderStatus == OrderStatus.Pending && orderStatus == OrderStatus.Confirmed
+            || OrderStatus == OrderStatus.Pending && orderStatus == OrderStatus.Cancelled)
+        {
+            OrderStatus = orderStatus;
+            return TResult<Order>.Success(this);
+        }
 
+        if (OrderStatus == OrderStatus.Confirmed && orderStatus == OrderStatus.Received
+            || OrderStatus == OrderStatus.Confirmed && orderStatus == OrderStatus.Cancelled)
+        {
+            OrderStatus = orderStatus;
+            if (OrderStatus == OrderStatus.Received)
+            {
+                RaiseDomainEvent(new OrderReceivedDomainEvent(PublicId, OrderItems));
+            }
+            return TResult<Order>.Success(this);
+        }
+
+        return TResult<Order>.Failure(new Error("Order", $"Invalid order status transition from {OrderStatus} to {orderStatus}."));
+
+    }
 
 }

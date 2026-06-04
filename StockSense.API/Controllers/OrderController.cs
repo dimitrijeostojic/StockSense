@@ -3,6 +3,7 @@ using Application.OrderManagement.DeleteOrder;
 using Application.OrderManagement.GetAllOrders;
 using Application.OrderManagement.GetOrderById;
 using Application.OrderManagement.UpdateOrder;
+using Application.OrderManagement.UpdateOrderStatus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
@@ -50,6 +51,14 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateOrderAsync([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
     {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPatch("{publicId:Guid}/status")]
+    public async Task<IActionResult> UpdateOrderStatusAsync([FromRoute] Guid publicId, [FromBody] UpdateOrderStatusRequestBody requestBody, CancellationToken cancellationToken)
+    {
+        var request = new UpdateOrderStatusRequest(publicId, requestBody.Status);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

@@ -56,6 +56,13 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         return (items, totalCount);
     }
 
+    public async Task<List<Product>> GetByIdsAsync(List<int> productIds, Guid tenantPublicId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products
+            .Where(p => productIds.Contains(p.Id) && p.TenantPublicId == tenantPublicId)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Product?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
