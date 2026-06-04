@@ -13,4 +13,5 @@ public static class ApplicationErrors
     public static readonly Error TwoFactorNotEnabled = new("ApplicationErrors.TwoFactorNotEnabled", "Two-factor authentication is not enabled for this user.");
     public static readonly Error UnauthorizedRole = new("ApplicationErrors.UnauthorizedRole", "Access is restricted to administrators and managers only.");
     public static readonly Error DeleteFailure = new("ApplicationErrors.DeleteFailure", "Failed to delete user.");
+    public static readonly Error PIBAlreadyExists = new("ApplicationErrors.PIBAlreadyExists", "A tenant with this PIB already exists.");
 }

@@ -8,4 +8,5 @@ public interface ITenantRepository
     Task<Tenant?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Tenant>> GetAllAsync(CancellationToken cancellationToken = default);
     void Delete(Tenant tenant);
+    Task<Tenant?> GetByPIBAsync(string PIB, CancellationToken cancellationToken = default);
 }

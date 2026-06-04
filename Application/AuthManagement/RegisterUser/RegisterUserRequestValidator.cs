@@ -2,9 +2,9 @@
 
 namespace Application.AuthManagement.RegisterUser;
 
-public sealed class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
+public sealed class RegisterUserRequestValidator : AbstractValidator<RegisterUserRequest>
 {
-    public RegisterUserValidator()
+    public RegisterUserRequestValidator()
     {
 
         RuleFor(x => x.FirstName)

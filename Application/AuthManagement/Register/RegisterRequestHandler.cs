@@ -1,4 +1,5 @@
-﻿using Application.Common.Errors;
+﻿using Application.Abstractions.Services;
+using Application.Common.Errors;
 using Application.Constants;
 using Domain.Abstractions;
 using Domain.Core;
@@ -13,12 +14,16 @@ namespace Application.AuthManagement.Register;
 internal sealed class RegisterRequestHandler
     (UserManager<ApplicationUser> userManager,
     ITenantRepository tenantRepository,
-    IAuthUnitOfWork authUnitOfWork)
+    IAuthUnitOfWork authUnitOfWork,
+    IJwtTokenService jwtTokenService,
+    IRefreshTokenRepository refreshTokenRepository)
         : IRequestHandler<RegisterRequest, TResult<RegisterResponse>>
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly ITenantRepository _tenantRepository = tenantRepository ?? throw new ArgumentNullException(nameof(tenantRepository));
     private readonly IAuthUnitOfWork _authUnitOfWork = authUnitOfWork ?? throw new ArgumentNullException(nameof(authUnitOfWork));
+    private readonly IJwtTokenService _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
+    private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
 
     public async Task<TResult<RegisterResponse>> Handle(RegisterRequest request, CancellationToken cancellationToken)
     {
@@ -26,6 +31,11 @@ internal sealed class RegisterRequestHandler
         if (user != null)
         {
             return TResult<RegisterResponse>.Failure(ApplicationErrors.EmailAlreadyExists);
+        }
+        var existingTenant = await _tenantRepository.GetByPIBAsync(request.PIB, cancellationToken);
+        if (existingTenant != null)
+        {
+            return TResult<RegisterResponse>.Failure(ApplicationErrors.PIBAlreadyExists);
         }
         var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address);
         await _tenantRepository.AddAsync(tenant, cancellationToken);
@@ -49,7 +59,12 @@ internal sealed class RegisterRequestHandler
             return TResult<RegisterResponse>.Failure(
                 new Error("Register.Error", roleResult.Errors.First().Description));
         }
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenService.GenerateToken(user, roles);
+        var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
+        await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
+        await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 
-        return TResult<RegisterResponse>.Success(new RegisterResponse("User registered successfully."));
+        return TResult<RegisterResponse>.Success(new RegisterResponse(token, refreshToken.Token));
     }
 }
