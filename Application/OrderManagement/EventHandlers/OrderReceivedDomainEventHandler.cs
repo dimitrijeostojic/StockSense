@@ -27,7 +27,7 @@ internal sealed class OrderReceivedDomainEventHandler(
             {
                 throw new Exception("Product not found");
             }
-            var stockEntry = product.AddStockEntry(orderItem.Quantity, Domain.Enums.StockEntryType.In, null);
+            product.AddStockEntry(orderItem.Quantity, Domain.Enums.StockEntryType.In, null);
         }
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
