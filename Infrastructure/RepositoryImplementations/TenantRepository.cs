@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.RepositoryImplementations;
 
@@ -23,8 +24,8 @@ public sealed class TenantRepository(AuthDbContext authDbContext) : ITenantRepos
         throw new NotImplementedException();
     }
 
-    public Task<Tenant?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
+    public async Task<Tenant?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _authDbContext.Tenants.Include(t => t.ApplicationUsers).FirstOrDefaultAsync(t => t.PublicId == publicId, cancellationToken);
     }
 }
