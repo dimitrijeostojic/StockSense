@@ -13,7 +13,8 @@ internal sealed class RefreshTokenRequestHandler(
     IRefreshTokenRepository refreshTokenRepository,
     IAuthUnitOfWork authUnitOfWork,
     UserManager<ApplicationUser> userManager,
-    IJwtTokenService jwtTokenService
+    IJwtTokenService jwtTokenService,
+    ITenantRepository tenantRepository
     )
     : IRequestHandler<RefreshTokenRequest, TResult<RefreshTokenResponse>>
 {
@@ -21,6 +22,7 @@ internal sealed class RefreshTokenRequestHandler(
     private readonly IAuthUnitOfWork _authUnitOfWork = authUnitOfWork ?? throw new ArgumentNullException(nameof(authUnitOfWork));
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly IJwtTokenService _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
+    private readonly ITenantRepository _tenantRepository = tenantRepository ?? throw new ArgumentNullException(nameof(tenantRepository));
 
     public async Task<TResult<RefreshTokenResponse>> Handle(RefreshTokenRequest request, CancellationToken cancellationToken)
     {
@@ -33,12 +35,19 @@ internal sealed class RefreshTokenRequestHandler(
         // Token rotation — revoke old, issue new
         existingRefreshToken = existingRefreshToken.Revoke();
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
+
         var newRefreshToken = Domain.Entities.RefreshToken.Create(existingRefreshToken.UserId!);
         await _refreshTokenRepository.AddAsync(newRefreshToken, cancellationToken);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 
+        var tenant = await _tenantRepository.GetByIdAsync(existingRefreshToken.User!.TenantId, cancellationToken);
+        if (tenant is null)
+        {
+            return TResult<RefreshTokenResponse>.Failure(ApplicationErrors.NotFound);
+        }
+
         var roles = await _userManager.GetRolesAsync(existingRefreshToken.User!);
-        var newAccessToken = _jwtTokenService.GenerateToken(existingRefreshToken.User!, roles);
+        var newAccessToken = _jwtTokenService.GenerateToken(existingRefreshToken.User!, tenant.PublicId, roles);
 
         return TResult<RefreshTokenResponse>.Success(new RefreshTokenResponse(newAccessToken, newRefreshToken.Token!));
     }

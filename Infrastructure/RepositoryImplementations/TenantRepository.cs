@@ -24,6 +24,11 @@ public sealed class TenantRepository(AuthDbContext authDbContext) : ITenantRepos
         throw new NotImplementedException();
     }
 
+    public async Task<Tenant?> GetByIdAsync(int tenantId, CancellationToken cancellationToken)
+    {
+        return await _authDbContext.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, cancellationToken);
+    }
+
     public async Task<Tenant?> GetByPIBAsync(string PIB, CancellationToken cancellationToken = default)
     {
         return await _authDbContext.Tenants.FirstOrDefaultAsync(t => t.PIB == PIB, cancellationToken);

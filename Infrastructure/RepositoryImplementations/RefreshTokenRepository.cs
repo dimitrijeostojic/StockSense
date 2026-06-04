@@ -16,6 +16,6 @@ public sealed class RefreshTokenRepository(AuthDbContext authDbContext) : IRefre
 
     public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken)
     {
-        return await _authDbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
+        return await _authDbContext.RefreshTokens.Include(rt => rt.User).FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
     }
 }

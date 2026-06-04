@@ -59,8 +59,9 @@ internal sealed class RegisterRequestHandler
             return TResult<RegisterResponse>.Failure(
                 new Error("Register.Error", roleResult.Errors.First().Description));
         }
+
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, roles);
+        var token = _jwtTokenService.GenerateToken(user, tenant.PublicId, roles);
         var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
         await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
