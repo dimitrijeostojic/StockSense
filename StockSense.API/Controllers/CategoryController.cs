@@ -4,6 +4,7 @@ using Application.CategoryManagement.GetAllCategories;
 using Application.CategoryManagement.GetCategoryById;
 using Application.CategoryManagement.UpdateCategory;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
 
@@ -11,6 +12,7 @@ namespace StockSense.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CategoryController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

@@ -10,15 +10,15 @@ public sealed class UpdateAuditableEntitiesInterceptor(ICurrentUserAccessor curr
 {
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
 
-    public override ValueTask<int> SavedChangesAsync(
-        SaveChangesCompletedEventData eventData,
-        int result,
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+        DbContextEventData eventData,
+        InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
         var dbContext = eventData.Context;
         if (dbContext == null)
         {
-            return base.SavedChangesAsync(eventData, result, cancellationToken);
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
         var entries = dbContext.ChangeTracker.Entries<AuditableEntity>();
 
@@ -35,6 +35,7 @@ public sealed class UpdateAuditableEntitiesInterceptor(ICurrentUserAccessor curr
                 entry.Property(e => e.CreatedBy).CurrentValue = _currentUserAccessor.UserId;
             }
         }
-        return new ValueTask<int>(result);
+        return new ValueTask<InterceptionResult<int>>(result);
     }
+
 }

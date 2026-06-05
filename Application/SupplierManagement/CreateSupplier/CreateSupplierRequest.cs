@@ -5,7 +5,7 @@ namespace Application.SupplierManagement.CreateSupplier;
 
 public sealed record CreateSupplierRequest(
     string Name,
-    string? ContactName,
+    string ContactName,
     string? ContactEmail,
-    string? ContactPhone)
+    string ContactPhone)
     : IRequest<TResult<CreateSupplierResponse>>;
