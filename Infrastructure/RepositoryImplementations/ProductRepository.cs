@@ -19,7 +19,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         _dbContext.Products.Remove(product);
     }
 
-    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(Guid tenantPublicId, string? searchTerm = null, string? sortBy = null, bool isAscending = false, int pageNumber = 1, int pageSize = 1000, CancellationToken cancellationToken = default)
     {
 
         var query = _dbContext.Products

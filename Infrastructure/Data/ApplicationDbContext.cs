@@ -19,7 +19,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-
         return base.SaveChangesAsync(cancellationToken);
     }
 }

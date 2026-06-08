@@ -16,7 +16,7 @@ internal sealed class GetAllProductsRequestHandler(
 
     public async Task<TResult<GetAllProductsResponse>> Handle(GetAllProductsRequest request, CancellationToken cancellationToken)
     {
-        var (items, totalCount) = await _productRepository.GetAllAsync(request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, _currentUserAccessor.TenantPublicId, cancellationToken);
+        var (items, totalCount) = await _productRepository.GetAllAsync(_currentUserAccessor.TenantPublicId, request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, cancellationToken);
 
         var dtos = items.Select(p => new GetAllProductsDto(
             p.PublicId,

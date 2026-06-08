@@ -21,9 +21,9 @@ public sealed class ValidationPipelineBehavior<TRequest, TResponse>(
         var context = new ValidationContext<TRequest>(request);
 
         var failures = validators
-            .Select(v => v.Validate(context))
-            .SelectMany(r => r.Errors)
-            .Where(f => f != null)
+            .Select(validator => validator.Validate(request))
+            .SelectMany(validationResult => validationResult.Errors)
+            .Where(validationFailure => validationFailure != null)
             .ToList();
 
         if (failures.Count != 0)

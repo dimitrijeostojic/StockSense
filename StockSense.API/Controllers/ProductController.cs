@@ -3,6 +3,7 @@ using Application.ProductManagement.CreateStockEntry;
 using Application.ProductManagement.DeleteProduct;
 using Application.ProductManagement.GetAllProducts;
 using Application.ProductManagement.GetAllStockEntries;
+using Application.ProductManagement.GetCurrentStock;
 using Application.ProductManagement.GetProductById;
 using Application.ProductManagement.GetStockEntryByProductId;
 using Application.ProductManagement.UpdateProduct;
@@ -19,9 +20,9 @@ public class ProductController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProductsAsync([FromQuery] string searchTerm, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string sortBy, [FromQuery] bool isAscending, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllProductsAsync([FromQuery] string? searchTerm, [FromQuery] string? sortBy, [FromQuery] bool isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000, CancellationToken cancellationToken = default)
     {
-        var request = new GetAllProductsRequest(searchTerm, sortBy, isAscending, pageSize, pageNumber);
+        var request = new GetAllProductsRequest(searchTerm, sortBy, isAscending, pageNumber, pageSize);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }
@@ -77,6 +78,14 @@ public class ProductController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> CreateStockEntryAsync([FromRoute] Guid publicId, [FromBody] CreateStockEntryRequestBody requestBody, CancellationToken cancellationToken)
     {
         var request = new CreateStockEntryRequest(publicId, requestBody.Quantity, requestBody.Notes, requestBody.StockEntryType);
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("{publicId:Guid}/stock")]
+    public async Task<IActionResult> GetCurrentStockAsync([FromRoute] Guid publicId, CancellationToken cancellationToken)
+    {
+        var request = new GetCurrentStockRequest(publicId);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }
