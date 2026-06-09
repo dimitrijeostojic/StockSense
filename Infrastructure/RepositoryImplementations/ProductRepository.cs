@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,11 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
     public async Task AddAsync(Product product, CancellationToken cancellationToken = default)
     {
         await _dbContext.Products.AddAsync(product, cancellationToken);
+    }
+
+    public async Task<int> CountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Products.Where(p => p.TenantPublicId == tenantPublicId).CountAsync(cancellationToken);
     }
 
     public void Delete(Product product)
@@ -56,9 +62,10 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         return (items, totalCount);
     }
 
-    public async Task<List<Product>> GetByIdsAsync(List<int> productIds, Guid tenantPublicId, CancellationToken cancellationToken)
+    public async Task<List<Product>> GetByIdsAsync(List<int> productIds, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
+            .Include(p => p.StockEntries)
             .Where(p => productIds.Contains(p.Id) && p.TenantPublicId == tenantPublicId)
             .ToListAsync(cancellationToken);
     }
@@ -76,6 +83,32 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
     {
         return await _dbContext.Products
             .Where(p => publicIds.Contains(p.PublicId) && p.TenantPublicId == tenantPublicId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> NumberOfProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products
+            .Include(p => p.StockEntries)
+            .Where(p => p.TenantPublicId == tenantPublicId && p.StockEntries.Sum(se => se.StockEntryType == Domain.Enums.StockEntryType.In ? +se.Quantity : -se.Quantity) < p.MinimumStockQuantity)
+            .CountAsync(cancellationToken);
+    }
+    public async Task<ICollection<Product>> Top5ProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products
+            .Include(p => p.StockEntries)
+            .Include(p => p.Category)
+            .Include(p => p.Supplier)
+            .Where(p => p.TenantPublicId == tenantPublicId)
+            .Select(p => new
+            {
+                Product = p,
+                CurrentStock = p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity)
+            })
+           .Where(x => x.CurrentStock < x.Product.MinimumStockQuantity)
+            .OrderBy(x => x.CurrentStock)
+            .Take(5)
+            .Select(x => x.Product)
             .ToListAsync(cancellationToken);
     }
 }

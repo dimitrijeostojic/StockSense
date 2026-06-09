@@ -55,4 +55,14 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
                 .ThenInclude(oi => oi.Product)
             .FirstOrDefaultAsync(o => o.PublicId == publicId && o.TenantPublicId == tenantPublicId, cancellationToken);
     }
+
+    public async Task<ICollection<Order>> GetLatestOrders(Guid tenantPublicId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Orders.Include(o => o.Supplier).Where(o => o.TenantPublicId == tenantPublicId).OrderByDescending(o => o.CreatedAt).Take(3).ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> GetNumberOfActiveOrders(Guid tenantPublicId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Orders.Where(o => (o.TenantPublicId == tenantPublicId && (o.OrderStatus == Domain.Enums.OrderStatus.Pending || o.OrderStatus == Domain.Enums.OrderStatus.Confirmed))).CountAsync(cancellationToken);
+    }
 }

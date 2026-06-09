@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.Events;
 
 namespace Domain.Entities;
 
@@ -42,6 +43,11 @@ public class Product : AuditableEntity
     {
         var entry = StockEntry.Create(quantity, DateTime.UtcNow, notes, type);
         _stockEntries.Add(entry);
+        var currentStock = StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity);
+        if (currentStock < MinimumStockQuantity)
+        {
+            RaiseDomainEvent(new LowStockDomainEvent(PublicId, quantity));
+        }
         return entry;
     }
 
