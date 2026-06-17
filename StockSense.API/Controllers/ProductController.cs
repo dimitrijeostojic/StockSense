@@ -1,4 +1,5 @@
-﻿using Application.ProductManagement.CreateProduct;
+﻿using Application.Constants;
+using Application.ProductManagement.CreateProduct;
 using Application.ProductManagement.CreateStockEntry;
 using Application.ProductManagement.DeleteProduct;
 using Application.ProductManagement.GetAllProducts;
@@ -8,6 +9,7 @@ using Application.ProductManagement.GetProductById;
 using Application.ProductManagement.GetStockEntryByProductId;
 using Application.ProductManagement.UpdateProduct;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
 
@@ -15,6 +17,7 @@ namespace StockSense.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProductController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -44,6 +47,7 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("{publicId:Guid}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteProductAsync([FromRoute] Guid publicId, CancellationToken cancellationToken)
     {
         var request = new DeleteProductRequest(publicId);

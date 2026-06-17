@@ -3,6 +3,7 @@ using Application.CategoryManagement.DeleteCategory;
 using Application.CategoryManagement.GetAllCategories;
 using Application.CategoryManagement.GetCategoryById;
 using Application.CategoryManagement.UpdateCategory;
+using Application.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("{publicId}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteCategory([FromRoute] Guid publicId, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new DeleteCategoryRequest(publicId), cancellationToken);

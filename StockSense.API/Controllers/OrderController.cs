@@ -1,10 +1,12 @@
-﻿using Application.OrderManagement.CreateOrder;
+﻿using Application.Constants;
+using Application.OrderManagement.CreateOrder;
 using Application.OrderManagement.DeleteOrder;
 using Application.OrderManagement.GetAllOrders;
 using Application.OrderManagement.GetOrderById;
 using Application.OrderManagement.UpdateOrder;
 using Application.OrderManagement.UpdateOrderStatus;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
 
@@ -12,6 +14,7 @@ namespace StockSense.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class OrderController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -41,6 +44,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("{publicId:Guid}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteOrderAsync([FromRoute] Guid publicId, CancellationToken cancellationToken)
     {
         var request = new DeleteOrderRequest(publicId);

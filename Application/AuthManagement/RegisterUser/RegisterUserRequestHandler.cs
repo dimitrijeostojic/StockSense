@@ -2,7 +2,6 @@
 using Application.Common.Errors;
 using Application.Common.Interfaces;
 using Application.Constants;
-using Domain.Abstractions;
 using Domain.Core;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
@@ -14,14 +13,12 @@ namespace Application.AuthManagement.RegisterUser;
 internal sealed class RegisterUserRequestHandler(
     ICurrentUserAccessor currentUserAccessor,
     ITenantRepository tenantRepository,
-    UserManager<ApplicationUser> userManager,
-    IUnitOfWork unitOfWork)
+    UserManager<ApplicationUser> userManager)
     : IRequestHandler<RegisterUserRequest, TResult<RegisterUserResponse>>
 {
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
     private readonly ITenantRepository _tenantRepository = tenantRepository ?? throw new ArgumentNullException(nameof(tenantRepository));
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-    private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
 
     public async Task<TResult<RegisterUserResponse>> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
     {
