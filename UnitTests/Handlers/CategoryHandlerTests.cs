@@ -10,6 +10,8 @@ using Domain.RepositoryInterfaces;
 using FluentAssertions;
 using NSubstitute;
 using UnitTests.Helpers;
+using Xunit;
+using DomainCategory = Domain.Entities.Category;
 
 namespace UnitTests.Handlers;
 

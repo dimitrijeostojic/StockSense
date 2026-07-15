@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Domain.Enums;
 using FluentAssertions;
+using Xunit;
 
 namespace UnitTests.Domain;
 

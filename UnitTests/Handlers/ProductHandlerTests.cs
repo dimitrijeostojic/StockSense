@@ -11,6 +11,9 @@ using FluentAssertions;
 using NSubstitute;
 using UnitTests.Helpers;
 using Xunit;
+using DomainCategory = Domain.Entities.Category;
+using DomainProduct = Domain.Entities.Product;
+using DomainSupplier = Domain.Entities.Supplier;
 
 namespace UnitTests.Handlers;
 

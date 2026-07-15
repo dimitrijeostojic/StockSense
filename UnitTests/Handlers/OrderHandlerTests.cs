@@ -8,6 +8,7 @@ using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.RepositoryInterfaces;
+using DomainSupplier = Domain.Entities.Supplier;
 using FluentAssertions;
 using NSubstitute;
 using UnitTests.Helpers;

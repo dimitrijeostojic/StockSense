@@ -11,6 +11,7 @@ using FluentAssertions;
 using NSubstitute;
 using UnitTests.Helpers;
 using Xunit;
+using DomainSupplier = Domain.Entities.Supplier;
 
 namespace UnitTests.Handlers;
 

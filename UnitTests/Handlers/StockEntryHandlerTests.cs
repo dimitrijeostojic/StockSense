@@ -11,6 +11,7 @@ using MediatR;
 using NSubstitute;
 using UnitTests.Helpers;
 using Xunit;
+using DomainProduct = Domain.Entities.Product;
 
 namespace UnitTests.Handlers;
 
