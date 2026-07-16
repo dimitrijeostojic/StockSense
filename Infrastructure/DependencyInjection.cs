@@ -70,10 +70,10 @@ public static class DependencyInjection
         {
             var redisOptions = configuration.GetSection(_sectionName).Get<RedisOptions>();
             options.Configuration = redisOptions!.ConnectionString;
-            options.
         });
 
         services.Decorate<ICategoryRepository, CachedCategoryRepository>();
+        services.Decorate<ISupplierRepository, CachedSupplierRepository>();
 
         return services;
     }
