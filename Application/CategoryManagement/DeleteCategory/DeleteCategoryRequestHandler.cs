@@ -25,7 +25,7 @@ internal sealed class DeleteCategoryRequestHandler(
         {
             return Result.Failure(ApplicationErrors.NotFound);
         }
-        _categoryRepository.Delete(category);
+        await _categoryRepository.DeleteAsync(category, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }

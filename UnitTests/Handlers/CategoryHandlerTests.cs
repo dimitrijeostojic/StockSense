@@ -273,7 +273,7 @@ public sealed class DeleteCategoryRequestHandlerTests
 
         await _sut.Handle(new DeleteCategoryRequest(publicId), CancellationToken.None);
 
-        _categoryRepository.Received(1).Delete(category);
+        await _categoryRepository.Received(1).DeleteAsync(category, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public sealed class DeleteCategoryRequestHandlerTests
 
         await _sut.Handle(new DeleteCategoryRequest(Guid.NewGuid()), CancellationToken.None);
 
-        _categoryRepository.DidNotReceive().Delete(Arg.Any<DomainCategory>());
+        await _categoryRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainCategory>(), Arg.Any<CancellationToken>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

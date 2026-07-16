@@ -6,6 +6,7 @@ using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Options;
 using Infrastructure.RepositoryImplementations;
+using Infrastructure.RepositoryImplementations.Cached;
 using Infrastructure.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
@@ -69,7 +70,10 @@ public static class DependencyInjection
         {
             var redisOptions = configuration.GetSection(_sectionName).Get<RedisOptions>();
             options.Configuration = redisOptions!.ConnectionString;
+            options.
         });
+
+        services.Decorate<ICategoryRepository, CachedCategoryRepository>();
 
         return services;
     }
