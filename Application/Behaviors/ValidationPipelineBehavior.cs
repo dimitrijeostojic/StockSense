@@ -16,7 +16,9 @@ public sealed class ValidationPipelineBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next)
     {
         if (!validators.Any())
+        {
             return await next();
+        }
 
         var context = new ValidationContext<TRequest>(request);
 

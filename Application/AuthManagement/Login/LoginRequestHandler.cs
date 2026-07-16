@@ -30,11 +30,6 @@ internal sealed class LoginRequestHandler(
         {
             return TResult<LoginResponse>.Failure(ApplicationErrors.InvalidCredentials);
         }
-        if (user.TwoFactorEnabled)
-        {
-            return TResult<LoginResponse>.Success(
-                new LoginResponse(null, null, RequiresTwoFactor: true, UserId: user.Id));
-        }
 
         var tenant = await _tenantRepository.GetByIdAsync(user.TenantId, cancellationToken);
         if (tenant is null)

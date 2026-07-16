@@ -15,4 +15,5 @@ public static class ApplicationErrors
     public static readonly Error DeleteFailure = new("ApplicationErrors.DeleteFailure", "Failed to delete user.");
     public static readonly Error PIBAlreadyExists = new("ApplicationErrors.PIBAlreadyExists", "A tenant with this PIB already exists.");
     public static readonly Error InvalidOrderStatusTransition = new("ApplicationErrors.InvalidOrderStatusTransition", "The requested order status transition is invalid.");
+    public static readonly Error UserLockedOut = new("ApplicationErrors.UserLockedOut", "This account has been locked out.");
 }

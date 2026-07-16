@@ -32,22 +32,32 @@ internal sealed class RefreshTokenRequestHandler(
             return TResult<RefreshTokenResponse>.Failure(ApplicationErrors.InvalidRefreshToken);
         }
 
-        // Token rotation — revoke old, issue new
-        existingRefreshToken = existingRefreshToken.Revoke();
-        await _authUnitOfWork.SaveChangesAsync(cancellationToken);
+        if (existingRefreshToken.User is null)
+        {
+            return TResult<RefreshTokenResponse>.Failure(ApplicationErrors.NotFound);
+        }
+
+        if (await _userManager.IsLockedOutAsync(existingRefreshToken.User))
+        {
+            return TResult<RefreshTokenResponse>.Failure(ApplicationErrors.UserLockedOut);
+        }
 
         var newRefreshToken = Domain.Entities.RefreshToken.Create(existingRefreshToken.UserId!);
+
+        using var transaction = _authUnitOfWork.BeginTransaction();
+        existingRefreshToken.Revoke();
         await _refreshTokenRepository.AddAsync(newRefreshToken, cancellationToken);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
+        transaction.Commit();
 
-        var tenant = await _tenantRepository.GetByIdAsync(existingRefreshToken.User!.TenantId, cancellationToken);
+        var tenant = await _tenantRepository.GetByIdAsync(existingRefreshToken.User.TenantId, cancellationToken);
         if (tenant is null)
         {
             return TResult<RefreshTokenResponse>.Failure(ApplicationErrors.NotFound);
         }
 
-        var roles = await _userManager.GetRolesAsync(existingRefreshToken.User!);
-        var newAccessToken = _jwtTokenService.GenerateToken(existingRefreshToken.User!, tenant.PublicId, roles);
+        var roles = await _userManager.GetRolesAsync(existingRefreshToken.User);
+        var newAccessToken = _jwtTokenService.GenerateToken(existingRefreshToken.User, tenant.PublicId, roles);
 
         return TResult<RefreshTokenResponse>.Success(new RefreshTokenResponse(newAccessToken, newRefreshToken.Token!));
     }

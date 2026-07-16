@@ -32,11 +32,15 @@ internal sealed class RegisterRequestHandler
         {
             return TResult<RegisterResponse>.Failure(ApplicationErrors.EmailAlreadyExists);
         }
+
         var existingTenant = await _tenantRepository.GetByPIBAsync(request.PIB, cancellationToken);
         if (existingTenant != null)
         {
             return TResult<RegisterResponse>.Failure(ApplicationErrors.PIBAlreadyExists);
         }
+
+        using var transaction = _authUnitOfWork.BeginTransaction();
+
         var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address);
         await _tenantRepository.AddAsync(tenant, cancellationToken);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
@@ -46,26 +50,22 @@ internal sealed class RegisterRequestHandler
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            _tenantRepository.Delete(tenant);
-            await _authUnitOfWork.SaveChangesAsync(cancellationToken);
-            return TResult<RegisterResponse>.Failure(new Error("Register.Error", string.Join(", ", result.Errors.Select(e => e.Description))));
+            return TResult<RegisterResponse>.Failure(ApplicationErrors.RegistrationFailed);
         }
+
         var roleResult = await _userManager.AddToRoleAsync(user, Roles.Admin);
         if (!roleResult.Succeeded)
         {
-            await _userManager.DeleteAsync(user);
-            _tenantRepository.Delete(tenant);
-            await _authUnitOfWork.SaveChangesAsync(cancellationToken);
-            return TResult<RegisterResponse>.Failure(
-                new Error("Register.Error", roleResult.Errors.First().Description));
+            return TResult<RegisterResponse>.Failure(ApplicationErrors.RegistrationFailed);
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, tenant.PublicId, roles);
+        var accessToken = _jwtTokenService.GenerateToken(user, tenant.PublicId, roles);
         var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
         await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 
-        return TResult<RegisterResponse>.Success(new RegisterResponse(token, refreshToken.Token));
+        transaction.Commit();
+        return TResult<RegisterResponse>.Success(new RegisterResponse(accessToken, refreshToken.Token));
     }
 }

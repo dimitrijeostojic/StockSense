@@ -24,6 +24,18 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
 
         RuleFor(x => x.Password)
             .NotEmpty()
-            .MinimumLength(6);
+            .MinimumLength(8);
+
+        RuleFor(x => x.CompanyName)
+            .NotEmpty()
+            .MaximumLength(255);
+
+        RuleFor(x => x.PIB)
+            .NotEmpty()
+            .MaximumLength(255);
+
+        RuleFor(x => x.Address)
+            .NotEmpty()
+            .MaximumLength(255);
     }
 }

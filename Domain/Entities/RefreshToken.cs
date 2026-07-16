@@ -26,9 +26,8 @@ public sealed class RefreshToken : Entity
         };
     }
 
-    public RefreshToken Revoke()
+    public void Revoke()
     {
         IsRevoked = true;
-        return this;
     }
 }
