@@ -25,7 +25,7 @@ internal sealed class DeleteSupplierRequestHandler(
         {
             return Result.Failure(ApplicationErrors.NotFound);
         }
-        _supplierRepository.Delete(supplier);
+        await _supplierRepository.DeleteAsync(supplier, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }

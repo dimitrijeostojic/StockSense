@@ -14,9 +14,10 @@ public sealed class SupplierRepository(ApplicationDbContext dbContext) : ISuppli
         await _dbContext.Suppliers.AddAsync(supplier, cancellationToken);
     }
 
-    public void Delete(Supplier supplier)
+    public Task DeleteAsync(Supplier supplier, CancellationToken cancellationToken = default)
     {
         _dbContext.Suppliers.Remove(supplier);
+        return Task.CompletedTask;
     }
 
     public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
