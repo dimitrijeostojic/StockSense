@@ -38,7 +38,7 @@ internal sealed class LoginRequestHandler(
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _jwtRepository.GenerateToken(user, tenant.PublicId, roles);
+        var accessToken = _jwtRepository.GenerateToken(user, tenant.PublicId, tenant.Name, roles);
         var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
         await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

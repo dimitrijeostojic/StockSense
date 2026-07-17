@@ -57,7 +57,7 @@ internal sealed class RefreshTokenRequestHandler(
         }
 
         var roles = await _userManager.GetRolesAsync(existingRefreshToken.User);
-        var newAccessToken = _jwtTokenService.GenerateToken(existingRefreshToken.User, tenant.PublicId, roles);
+        var newAccessToken = _jwtTokenService.GenerateToken(existingRefreshToken.User, tenant.PublicId, tenant.Name, roles);
 
         return TResult<RefreshTokenResponse>.Success(new RefreshTokenResponse(newAccessToken, newRefreshToken.Token!));
     }

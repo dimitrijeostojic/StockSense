@@ -7,7 +7,6 @@ using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System.Data;
 
 namespace Application.AuthManagement.Register;
 
@@ -60,7 +59,7 @@ internal sealed class RegisterRequestHandler
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _jwtTokenService.GenerateToken(user, tenant.PublicId, roles);
+        var accessToken = _jwtTokenService.GenerateToken(user, tenant.PublicId, tenant.Name, roles);
         var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
         await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);

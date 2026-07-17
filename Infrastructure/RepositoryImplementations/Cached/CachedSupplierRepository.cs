@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.RepositoryInterfaces;
-using Infrastructure.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -32,26 +31,8 @@ public sealed class CachedSupplierRepository(
         return await _decorated.GetAllAsync(searchTerm, sortBy, isAscending, pageNumber, pageSize, tenantPublicId, cancellationToken);
     }
 
-    public async Task<Supplier?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public Task<Supplier?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        string key = $"supplier-{publicId}-{tenantPublicId}";
-        var cachedSupplier = await _distributedCache.GetStringAsync(key, cancellationToken);
-        Supplier? supplier;
-        if (string.IsNullOrEmpty(cachedSupplier))
-        {
-            supplier = await _decorated.GetByPublicIdAsync(publicId, tenantPublicId, cancellationToken);
-            if (supplier == null)
-            {
-                return supplier;
-            }
-            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(supplier), CacheDefaults.DefaultOptions, cancellationToken);
-            return supplier;
-        }
-        supplier = JsonConvert.DeserializeObject<Supplier>(cachedSupplier, new JsonSerializerSettings()
-        {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            ContractResolver = new PrivateResolver()
-        });
-        return supplier;
+        return _decorated.GetByPublicIdAsync(publicId, tenantPublicId, cancellationToken);
     }
 }

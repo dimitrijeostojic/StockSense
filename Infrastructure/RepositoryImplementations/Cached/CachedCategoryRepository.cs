@@ -53,27 +53,8 @@ public sealed class CachedCategoryRepository(
         return categories;
     }
 
-    public async Task<Category?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public Task<Category?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        string key = $"category-{publicId}-{tenantPublicId}";
-        var cachedCategory = await _distributedCache.GetStringAsync(key, cancellationToken);
-        Category? category;
-        if (string.IsNullOrEmpty(cachedCategory))
-        {
-            category = await _decorated.GetByPublicIdAsync(publicId, tenantPublicId, cancellationToken);
-            if (category == null)
-            {
-                return category;
-            }
-            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(category), CacheDefaults.DefaultOptions, cancellationToken);
-            return category;
-        }
-        category = JsonConvert.DeserializeObject<Category>(cachedCategory, new JsonSerializerSettings()
-        {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            ContractResolver = new PrivateResolver()
-        })!;
-
-        return category;
+        return _decorated.GetByPublicIdAsync(publicId, tenantPublicId, cancellationToken);
     }
 }

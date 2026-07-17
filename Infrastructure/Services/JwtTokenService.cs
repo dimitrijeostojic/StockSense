@@ -13,14 +13,15 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenSer
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GenerateToken(ApplicationUser user, Guid tenantPublicId, IEnumerable<string> roles)
+    public string GenerateToken(ApplicationUser user, Guid tenantPublicId, string tenantName, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
             new (JwtRegisteredClaimNames.Sub, user.Id),
             new (JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty),
             new (JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new ("tenant_public_id", tenantPublicId.ToString())
+            new ("tenant_public_id", tenantPublicId.ToString()),
+            new ("tenant_name", tenantName)
         };
 
         foreach (var role in roles)
