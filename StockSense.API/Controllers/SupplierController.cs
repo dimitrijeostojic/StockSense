@@ -21,7 +21,7 @@ public class SupplierController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllSuppliersAsync([FromQuery] string? searchTerm, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string? sortBy, [FromQuery] bool isAscending, CancellationToken cancellationToken)
     {
-        var request = new GetAllSuppliersRequest(searchTerm, sortBy, isAscending, pageSize, pageNumber);
+        var request = new GetAllSuppliersRequest(searchTerm, sortBy, isAscending, pageNumber, pageSize);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }
