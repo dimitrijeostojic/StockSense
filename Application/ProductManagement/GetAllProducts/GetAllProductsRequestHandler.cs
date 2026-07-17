@@ -24,6 +24,7 @@ internal sealed class GetAllProductsRequestHandler(
             p.Description,
             p.Price,
             p.MinimumStockQuantity,
+           p.StockEntries.Sum(se => se.StockEntryType == Domain.Enums.StockEntryType.In ? se.Quantity : -se.Quantity),
             p.Category!.PublicId,
             p.Category.Name,
             p.Supplier!.PublicId,

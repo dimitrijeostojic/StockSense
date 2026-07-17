@@ -6,6 +6,7 @@ public sealed record GetAllProductsDto(
     string? Description,
     decimal Price,
     int MinimumStockQuantity,
+    int ActualStockQuantity,
     Guid CategoryPublicId,
     string CategoryName,
     Guid SupplierPublicId,

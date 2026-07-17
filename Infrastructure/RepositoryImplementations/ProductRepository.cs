@@ -31,6 +31,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         var query = _dbContext.Products
             .Include(p => p.Category)
             .Include(p => p.Supplier)
+            .Include(p => p.StockEntries)
             .Where(p => p.TenantPublicId == tenantPublicId)
             .AsQueryable();
 
