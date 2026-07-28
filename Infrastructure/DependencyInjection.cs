@@ -2,6 +2,7 @@ using Application.Abstractions.Services;
 using Domain.Abstractions;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Interceptors;
@@ -15,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Quartz;
 
 namespace Infrastructure;
 
@@ -78,6 +80,8 @@ public static class DependencyInjection
         services.Decorate<ICategoryRepository, CachedCategoryRepository>();
         services.Decorate<ISupplierRepository, CachedSupplierRepository>();
 
+        services.ConfigureBackgroundJobs();
+
         return services;
     }
 
@@ -95,6 +99,21 @@ public static class DependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        return services;
+    }
+
+    public static IServiceCollection ConfigureBackgroundJobs(this IServiceCollection services)
+    {
+
+        services.AddQuartz(configure =>
+        {
+            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+            configure.AddJob<ProcessOutboxMessagesJob>(jobKey)
+                .AddTrigger(trigger => trigger.ForJob(jobKey)
+                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever()));
+        });
+
+        services.AddQuartzHostedService();
         return services;
     }
 }
