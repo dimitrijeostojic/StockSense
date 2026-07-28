@@ -255,7 +255,7 @@ public sealed class DeleteSupplierRequestHandlerTests
 
         await _sut.Handle(new DeleteSupplierRequest(publicId), CancellationToken.None);
 
-        _supplierRepository.Received(1).Delete(supplier);
+        await _supplierRepository.Received(1).DeleteAsync(supplier, Arg.Any<CancellationToken>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -279,7 +279,7 @@ public sealed class DeleteSupplierRequestHandlerTests
 
         await _sut.Handle(new DeleteSupplierRequest(Guid.NewGuid()), CancellationToken.None);
 
-        _supplierRepository.DidNotReceive().Delete(Arg.Any<DomainSupplier>());
+        await _supplierRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainSupplier>(), Arg.Any<CancellationToken>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

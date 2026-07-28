@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
+using Infrastructure.Interceptors;
 using Infrastructure.Options;
 using Infrastructure.RepositoryImplementations;
 using Infrastructure.RepositoryImplementations.Cached;
@@ -26,17 +27,19 @@ public static class DependencyInjection
         services.AddServices();
 
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
+        services.AddScoped<ConvertDomainEventToOutboxMessagesInterceptor>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IAuthUnitOfWork>(sp => sp.GetRequiredService<AuthDbContext>());
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var interceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+            var interceptor2 = sp.GetRequiredService<ConvertDomainEventToOutboxMessagesInterceptor>();
 
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
-                .AddInterceptors(interceptor);
+                .AddInterceptors(interceptor, interceptor2);
         });
         services.AddDbContext<AuthDbContext>((sp, options) =>
         {

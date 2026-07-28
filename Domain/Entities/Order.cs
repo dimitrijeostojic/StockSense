@@ -1,10 +1,11 @@
 ﻿using Domain.Core;
 using Domain.Enums;
 using Domain.Events;
+using Domain.Primitives;
 
 namespace Domain.Entities;
 
-public class Order : AuditableEntity
+public class Order : AggregateRoot
 {
     public int SupplierId { get; private set; }
     public DateTime OrderDate { get; private set; }

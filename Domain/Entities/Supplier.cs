@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Primitives;
 
-public class Supplier : AuditableEntity
+namespace Domain.Entities;
+
+public class Supplier : AggregateRoot
 {
     public string Name { get; private set; } = null!;
     public string? ContactName { get; private set; }

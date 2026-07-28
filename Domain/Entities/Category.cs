@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Primitives;
 
-public class Category : AuditableEntity
+namespace Domain.Entities;
+
+public class Category : AggregateRoot
 {
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }

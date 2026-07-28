@@ -1,9 +1,10 @@
 ﻿using Domain.Enums;
 using Domain.Events;
+using Domain.Primitives;
 
 namespace Domain.Entities;
 
-public class Product : AuditableEntity
+public class Product : AggregateRoot
 {
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }

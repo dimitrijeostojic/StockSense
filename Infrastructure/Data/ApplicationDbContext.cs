@@ -1,5 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
+using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -11,6 +12,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<Product> Products { get; set; }
     public DbSet<StockEntry> StockEntries { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
