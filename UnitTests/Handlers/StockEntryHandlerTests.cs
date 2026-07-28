@@ -182,7 +182,6 @@ public sealed class GetAllStockEntriesRequestHandlerTests
         var product = EntityFactory.CreateProduct(minimumStock: 0);
         product.AddStockEntry(5, StockEntryType.In, "batch 1");
         product.AddStockEntry(3, StockEntryType.Out, null);
-        product.ClearDomainEvents();
 
         _productRepository.GetByPublicIdAsync(productPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(product);
@@ -241,7 +240,6 @@ public sealed class GetStockEntryByIdRequestHandlerTests
         var productPublicId = Guid.NewGuid();
         var product = EntityFactory.CreateProduct(minimumStock: 0);
         var entry = product.AddStockEntry(7, StockEntryType.In, "notes");
-        product.ClearDomainEvents();
 
         _productRepository.GetByPublicIdAsync(productPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(product);

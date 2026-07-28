@@ -110,7 +110,6 @@ public sealed class ProductEntityTests
     {
         var product = BuildProduct(minStock: 0);
         product.AddStockEntry(20, StockEntryType.In, null);
-        product.ClearDomainEvents();
 
         // Taking 18 out → remaining 2, still >= 0 (minStock)
         product.AddStockEntry(18, StockEntryType.Out, null);
@@ -124,8 +123,6 @@ public sealed class ProductEntityTests
     {
         var product = BuildProduct(minStock: 100);
         product.AddStockEntry(1, StockEntryType.In, null);
-
-        product.ClearDomainEvents();
 
         product.DomainEvents.Should().BeEmpty();
     }

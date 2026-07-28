@@ -160,7 +160,6 @@ public sealed class OrderEntityTests
         var order = BuildPendingOrder();
         order.WithOrderStatus(OrderStatus.Confirmed);
         order.WithOrderStatus(OrderStatus.Received);
-        order.ClearDomainEvents();
 
         var result = order.WithOrderStatus(OrderStatus.Cancelled);
 
