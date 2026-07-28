@@ -20,7 +20,7 @@ public sealed class ConvertDomainEventToOutboxMessagesInterceptor : SaveChangesI
             .Select(x => x.Entity)
             .SelectMany(aggregateRoot =>
             {
-                var domainEvents = aggregateRoot.DomainEvents;
+                var domainEvents = aggregateRoot.DomainEvents.ToList();
                 aggregateRoot.ClearDomainEvents();
                 return domainEvents;
             }).Select(domainEvent => new OutboxMessage()

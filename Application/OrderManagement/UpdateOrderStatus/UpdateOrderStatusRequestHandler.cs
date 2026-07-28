@@ -25,7 +25,7 @@ internal sealed class UpdateOrderStatusRequestHandler(
             return TResult<UpdateOrderStatusResponse>.Failure(ApplicationErrors.NotFound);
         }
 
-        var orderResult = order.WithOrderStatus(request.Status);
+        var orderResult = order.WithOrderStatus(request.Status, _currentUserAccessor.TenantPublicId);
         if (!orderResult.IsSuccess)
         {
             return TResult<UpdateOrderStatusResponse>.Failure(ApplicationErrors.InvalidOrderStatusTransition);

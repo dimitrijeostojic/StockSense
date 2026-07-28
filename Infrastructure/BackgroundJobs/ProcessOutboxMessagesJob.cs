@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Primitives;
 using Infrastructure.Data;
-using MassTransit.Mediator;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Quartz;
@@ -25,12 +25,15 @@ internal class ProcessOutboxMessagesJob(
 
         foreach (var message in messages)
         {
-            var domainEvent = JsonConvert.DeserializeObject<IDomainEvent>(message.Content);
+            var domainEvent = JsonConvert.DeserializeObject<IDomainEvent>(message.Content, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
             if (domainEvent is null)
             {
                 continue;
             }
-            await _mediator.Publish(message, context.CancellationToken);
+            await _mediator.Publish(domainEvent, context.CancellationToken);
 
             message.ProccessedOnUtc = DateTime.UtcNow;
         }

@@ -1,11 +1,10 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IUnitOfWork, IDomainEvent
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IUnitOfWork
 {
     public DbSet<Category> Categories { get; set; }
     public DbSet<Order> Orders { get; set; }

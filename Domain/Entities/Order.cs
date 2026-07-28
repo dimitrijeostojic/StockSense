@@ -59,7 +59,7 @@ public class Order : AggregateRoot
         Notes = notes;
         return this;
     }
-    public TResult<Order> WithOrderStatus(OrderStatus orderStatus)
+    public TResult<Order> WithOrderStatus(OrderStatus orderStatus, Guid TenantPublicId)
     {
         if (OrderStatus == OrderStatus.Pending && orderStatus == OrderStatus.Confirmed
             || OrderStatus == OrderStatus.Pending && orderStatus == OrderStatus.Cancelled)
@@ -74,7 +74,11 @@ public class Order : AggregateRoot
             OrderStatus = orderStatus;
             if (OrderStatus == OrderStatus.Received)
             {
-                RaiseDomainEvent(new OrderReceivedDomainEvent(PublicId, OrderItems));
+                RaiseDomainEvent(new OrderReceivedDomainEvent(
+                PublicId,
+                TenantPublicId,
+                OrderItems.Select(oi => new OrderReceivedItem(oi.ProductId, oi.Quantity)).ToList()
+            ));
             }
             return TResult<Order>.Success(this);
         }

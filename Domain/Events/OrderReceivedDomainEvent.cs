@@ -1,6 +1,5 @@
-﻿using Domain.Entities;
-using Domain.Primitives;
+﻿using Domain.Primitives;
 
 namespace Domain.Events;
 
-public sealed record OrderReceivedDomainEvent(Guid OrderPublicId, IReadOnlyCollection<OrderItem> OrderItems) : IDomainEvent;
+public sealed record OrderReceivedDomainEvent(Guid OrderPublicId, Guid TenantPublicId, IReadOnlyCollection<OrderReceivedItem> OrderItems) : IDomainEvent;

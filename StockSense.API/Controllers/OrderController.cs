@@ -22,7 +22,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllOrdersAsync([FromQuery] string? searchTerm, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string? sortBy, [FromQuery] bool isAscending, CancellationToken cancellationToken)
     {
-        var request = new GetAllOrdersRequest(searchTerm, sortBy, isAscending, pageSize, pageNumber);
+        var request = new GetAllOrdersRequest(searchTerm, sortBy, isAscending, pageNumber, pageSize);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }
