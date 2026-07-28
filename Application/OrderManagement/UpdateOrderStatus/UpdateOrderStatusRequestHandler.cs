@@ -10,14 +10,12 @@ namespace Application.OrderManagement.UpdateOrderStatus;
 internal sealed class UpdateOrderStatusRequestHandler(
     IOrderRepository orderRepository,
     ICurrentUserAccessor currentUserAccessor,
-    IUnitOfWork unitOfWork,
-    IMediator mediator)
+    IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateOrderStatusRequest, TResult<UpdateOrderStatusResponse>>
 {
     private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-    private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     public async Task<TResult<UpdateOrderStatusResponse>> Handle(UpdateOrderStatusRequest request, CancellationToken cancellationToken)
     {

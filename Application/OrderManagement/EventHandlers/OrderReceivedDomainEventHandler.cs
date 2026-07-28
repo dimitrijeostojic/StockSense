@@ -9,13 +9,11 @@ namespace Application.OrderManagement.EventHandlers;
 internal sealed class OrderReceivedDomainEventHandler(
     ICurrentUserAccessor currentUserAccessor,
     IProductRepository productRepository,
-    IUnitOfWork unitOfWork,
-    IMediator mediator) : INotificationHandler<OrderReceivedDomainEvent>
+    IUnitOfWork unitOfWork) : INotificationHandler<OrderReceivedDomainEvent>
 {
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-    private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     public async Task Handle(OrderReceivedDomainEvent notification, CancellationToken cancellationToken)
     {

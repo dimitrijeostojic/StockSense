@@ -10,14 +10,12 @@ namespace Application.ProductManagement.CreateStockEntry;
 internal sealed class CreateStockEntryRequestHandler(
     IProductRepository productRepository,
     IUnitOfWork unitOfWork,
-    ICurrentUserAccessor currentUserAccessor,
-    IMediator mediator)
+    ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<CreateStockEntryRequest, TResult<CreateStockEntryResponse>>
 {
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
-    private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     public async Task<TResult<CreateStockEntryResponse>> Handle(CreateStockEntryRequest request, CancellationToken cancellationToken)
     {
