@@ -32,13 +32,5 @@ internal sealed class OrderReceivedDomainEventHandler(
             product.AddStockEntry(orderItem.Quantity, Domain.Enums.StockEntryType.In, null);
         }
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        foreach (var product in products)
-        {
-            foreach (var domainEvent in product.DomainEvents)
-            {
-                await _mediator.Publish(domainEvent, cancellationToken);
-            }
-            product.ClearDomainEvents();
-        }
     }
 }

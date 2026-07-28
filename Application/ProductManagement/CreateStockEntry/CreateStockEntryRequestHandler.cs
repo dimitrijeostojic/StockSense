@@ -30,12 +30,6 @@ internal sealed class CreateStockEntryRequestHandler(
         var entry = product.AddStockEntry(request.Quantity, request.StockEntryType, request.Notes);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        foreach (var domainEvent in product.DomainEvents)
-        {
-            await _mediator.Publish(domainEvent, cancellationToken);
-        }
-
-        product.ClearDomainEvents();
 
         return TResult<CreateStockEntryResponse>.Success(new CreateStockEntryResponse(entry.PublicId, entry.Quantity, entry.EntryDate, entry.Notes, entry.StockEntryType, product.PublicId, product.Name));
     }

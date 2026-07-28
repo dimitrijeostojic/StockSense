@@ -35,13 +35,6 @@ internal sealed class UpdateOrderStatusRequestHandler(
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        foreach (var domainEvent in order.DomainEvents)
-        {
-            await _mediator.Publish(domainEvent, cancellationToken);
-        }
-
-        order.ClearDomainEvents();
-
         return TResult<UpdateOrderStatusResponse>.Success(new UpdateOrderStatusResponse(order.PublicId, order.OrderStatus));
     }
 }
