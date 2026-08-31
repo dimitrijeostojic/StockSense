@@ -14,7 +14,7 @@ internal sealed class OrderItemEntityConfiguration : IEntityTypeConfiguration<Or
         builder.Property(oi => oi.ProductId).IsRequired();
         builder.Property(oi => oi.OrderId).IsRequired();
         builder.Property(oi => oi.Quantity).IsRequired();
-        builder.Property(oi => oi.UnitPrice).IsRequired();
+        builder.Property(oi => oi.UnitPrice).IsRequired().HasPrecision(18, 2);
 
         builder.HasOne(oi => oi.Product)
             .WithMany(p => p.OrderItems)

@@ -19,27 +19,6 @@ services:
       retries: 10
       start_period: 30s
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    hostname: stocksense-queue
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - stocksense-network
-    healthcheck:
-      test: ["CMD-SHELL", "rabbitmq-diagnostics check_port_connectivity"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 30s
-
   redis:
     image: redis:7-alpine
     container_name: stocksense-redis
@@ -81,7 +60,6 @@ services:
 
 volumes:
   sqlserver_data:
-  rabbitmq_data:
   redis_data:
 
 networks:

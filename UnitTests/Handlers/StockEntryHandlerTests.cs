@@ -28,7 +28,7 @@ public sealed class CreateStockEntryRequestHandlerTests
     {
         _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
         _sut = new CreateStockEntryRequestHandler(
-            _productRepository, _unitOfWork, _currentUserAccessor, _mediator);
+            _productRepository, _unitOfWork, _currentUserAccessor);
     }
 
     [Fact]

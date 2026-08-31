@@ -91,7 +91,7 @@ public sealed class OrderEntityTests
     {
         var order = BuildPendingOrder();
 
-        var result = order.WithOrderStatus(OrderStatus.Confirmed);
+        var result = order.WithOrderStatus(OrderStatus.Confirmed, TenantId);
 
         result.IsSuccess.Should().BeTrue();
         order.OrderStatus.Should().Be(OrderStatus.Confirmed);
@@ -102,7 +102,7 @@ public sealed class OrderEntityTests
     {
         var order = BuildPendingOrder();
 
-        var result = order.WithOrderStatus(OrderStatus.Cancelled);
+        var result = order.WithOrderStatus(OrderStatus.Cancelled, TenantId);
 
         result.IsSuccess.Should().BeTrue();
         order.OrderStatus.Should().Be(OrderStatus.Cancelled);
@@ -112,9 +112,9 @@ public sealed class OrderEntityTests
     public void WithOrderStatus_ConfirmedToReceived_Succeeds()
     {
         var order = BuildPendingOrder();
-        order.WithOrderStatus(OrderStatus.Confirmed);
+        order.WithOrderStatus(OrderStatus.Confirmed, TenantId);
 
-        var result = order.WithOrderStatus(OrderStatus.Received);
+        var result = order.WithOrderStatus(OrderStatus.Received, TenantId);
 
         result.IsSuccess.Should().BeTrue();
         order.OrderStatus.Should().Be(OrderStatus.Received);
@@ -124,9 +124,9 @@ public sealed class OrderEntityTests
     public void WithOrderStatus_ConfirmedToCancelled_Succeeds()
     {
         var order = BuildPendingOrder();
-        order.WithOrderStatus(OrderStatus.Confirmed);
+        order.WithOrderStatus(OrderStatus.Confirmed, TenantId);
 
-        var result = order.WithOrderStatus(OrderStatus.Cancelled);
+        var result = order.WithOrderStatus(OrderStatus.Cancelled, TenantId);
 
         result.IsSuccess.Should().BeTrue();
         order.OrderStatus.Should().Be(OrderStatus.Cancelled);
@@ -137,7 +137,7 @@ public sealed class OrderEntityTests
     {
         var order = BuildPendingOrder();
 
-        var result = order.WithOrderStatus(OrderStatus.Received);
+        var result = order.WithOrderStatus(OrderStatus.Received, TenantId);
 
         result.IsSuccess.Should().BeFalse();
         result.Error!.Code.Should().Be("Order");
@@ -147,9 +147,9 @@ public sealed class OrderEntityTests
     public void WithOrderStatus_CancelledToConfirmed_ReturnsFailure()
     {
         var order = BuildPendingOrder();
-        order.WithOrderStatus(OrderStatus.Cancelled);
+        order.WithOrderStatus(OrderStatus.Cancelled, TenantId);
 
-        var result = order.WithOrderStatus(OrderStatus.Confirmed);
+        var result = order.WithOrderStatus(OrderStatus.Confirmed, TenantId);
 
         result.IsSuccess.Should().BeFalse();
     }
@@ -158,10 +158,10 @@ public sealed class OrderEntityTests
     public void WithOrderStatus_ReceivedToAnything_ReturnsFailure()
     {
         var order = BuildPendingOrder();
-        order.WithOrderStatus(OrderStatus.Confirmed);
-        order.WithOrderStatus(OrderStatus.Received);
+        order.WithOrderStatus(OrderStatus.Confirmed, TenantId);
+        order.WithOrderStatus(OrderStatus.Received, TenantId);
 
-        var result = order.WithOrderStatus(OrderStatus.Cancelled);
+        var result = order.WithOrderStatus(OrderStatus.Cancelled, TenantId);
 
         result.IsSuccess.Should().BeFalse();
     }
@@ -170,9 +170,9 @@ public sealed class OrderEntityTests
     public void WithOrderStatus_ConfirmedToReceived_RaisesDomainEvent()
     {
         var order = BuildPendingOrder();
-        order.WithOrderStatus(OrderStatus.Confirmed);
+        order.WithOrderStatus(OrderStatus.Confirmed, TenantId);
 
-        order.WithOrderStatus(OrderStatus.Received);
+        order.WithOrderStatus(OrderStatus.Received, TenantId);
 
         order.DomainEvents.Should().HaveCount(1);
     }
