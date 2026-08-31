@@ -10,12 +10,10 @@ using Infrastructure.Options;
 using Infrastructure.RepositoryImplementations;
 using Infrastructure.RepositoryImplementations.Cached;
 using Infrastructure.Services;
-using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace Infrastructure;
@@ -49,21 +47,6 @@ public static class DependencyInjection
             options.UseSqlServer(
                 configuration.GetConnectionString("AuthConnection"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-        });
-
-        services.AddMassTransit(x =>
-        {
-            x.SetKebabCaseEndpointNameFormatter();
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
-                cfg.Host(options.Host, h =>
-                {
-                    h.Username(options.Username);
-                    h.Password(options.Password);
-                });
-                cfg.ConfigureEndpoints(context);
-            });
         });
 
         services.AddIdentityCore<ApplicationUser>() //konfiguracija identity servisa

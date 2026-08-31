@@ -30,7 +30,6 @@ builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 builder.Services.AddProblemDetails();
 builder.Services.AddAuthorization();
 
-builder.Services.ConfigureOptions<RabbitMqOptionsSetup>();
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
