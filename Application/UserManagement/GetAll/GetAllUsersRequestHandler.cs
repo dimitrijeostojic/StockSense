@@ -19,10 +19,11 @@ internal sealed class GetAllUsersRequestHandler(
     public async Task<TResult<GetAllUsersResponse>> Handle(GetAllUsersRequest request, CancellationToken cancellationToken)
     {
         var users = await _userRepository.GetAllUsersAsync(_currentUserAccessor.TenantPublicId, cancellationToken);
-        var usersDtoTasks = users.Select(async user =>
+        var usersDto = new List<GetAllUsersDto>();
+        foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            return new GetAllUsersDto
+            usersDto.Add(new GetAllUsersDto
             {
                 Roles = [.. roles],
                 UserPublicId = Guid.Parse(user.Id),
@@ -30,9 +31,8 @@ internal sealed class GetAllUsersRequestHandler(
                 Email = user.Email ?? string.Empty,
                 LastName = user.LastName ?? string.Empty,
                 Username = user.UserName ?? string.Empty
-            };
-        });
-        var usersDto = await Task.WhenAll(usersDtoTasks);
+            });
+        }
         var response = new GetAllUsersResponse(usersDto);
         return TResult<GetAllUsersResponse>.Success(response);
     }
