@@ -25,7 +25,14 @@ public class ProductController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllProductsAsync([FromQuery] string? searchTerm, [FromQuery] string? sortBy, [FromQuery] bool isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000, CancellationToken cancellationToken = default)
     {
-        var request = new GetAllProductsRequest(searchTerm, sortBy, isAscending, pageNumber, pageSize);
+        var request = new GetAllProductsRequest
+        {
+            SearchTerm = searchTerm,
+            SortBy = sortBy,
+            IsAscending = isAscending,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

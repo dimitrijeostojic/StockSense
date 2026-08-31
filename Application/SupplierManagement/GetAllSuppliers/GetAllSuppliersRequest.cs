@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.SupplierManagement.GetAllSuppliers;
 
-public sealed record GetAllSuppliersRequest(string? SearchTerm, string? SortBy, bool IsAscending, int PageNumber, int PageSize)
-    : PagedRequest(PageNumber, PageSize), IRequest<TResult<GetAllSuppliersResponse>>;
+public sealed class GetAllSuppliersRequest
+    : PagedRequest, IRequest<TResult<GetAllSuppliersResponse>>;
