@@ -3,6 +3,7 @@
 public sealed class GetAllUsersDto
 {
     public Guid UserPublicId { get; set; }
+    public ICollection<string> Roles { get; set; } = [];
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public required string Username { get; set; }
