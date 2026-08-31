@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.RepositoryInterfaces;
+using Infrastructure.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -31,8 +32,23 @@ public sealed class CachedSupplierRepository(
         return await _decorated.GetAllAsync(searchTerm, sortBy, isAscending, pageNumber, pageSize, tenantPublicId, cancellationToken);
     }
 
-    public Task<Supplier?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public async Task<Supplier?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        return _decorated.GetByPublicIdAsync(publicId, tenantPublicId, cancellationToken);
+        string key = $"supplier-{publicId}-{tenantPublicId}";
+        string? cached = await _distributedCache.GetStringAsync(key, cancellationToken);
+        if (!string.IsNullOrEmpty(cached))
+        {
+            return JsonConvert.DeserializeObject<Supplier>(cached, new JsonSerializerSettings
+            {
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                ContractResolver = new PrivateResolver()
+            });
+        }
+        var supplier = await _decorated.GetByPublicIdAsync(publicId, tenantPublicId, cancellationToken);
+        if (supplier != null)
+        {
+            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(supplier), CacheDefaults.DefaultOptions, cancellationToken);
+        }
+        return supplier;
     }
 }
