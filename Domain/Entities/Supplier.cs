@@ -8,9 +8,9 @@ public class Supplier : AggregateRoot
     public string? ContactName { get; private set; }
     public string? ContactEmail { get; private set; }
     public string? ContactPhone { get; private set; }
-    public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
+    public IReadOnlyCollection<Order> Orders => _orders;
     private readonly List<Order> _orders = [];
-    public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
+    public IReadOnlyCollection<Product> Products => _products;
     private readonly List<Product> _products = [];
     public Guid TenantPublicId { get; private set; }
 

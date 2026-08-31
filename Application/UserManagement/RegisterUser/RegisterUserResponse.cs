@@ -1,3 +1,3 @@
-﻿namespace Application.AuthManagement.RegisterManager;
+﻿namespace Application.UserManagement.RegisterUser;
 
 public sealed record RegisterUserResponse(string Message);

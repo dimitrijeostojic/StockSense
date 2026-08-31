@@ -15,9 +15,9 @@ public class Product : AggregateRoot
     public Category? Category { get; private set; }
     public Supplier? Supplier { get; private set; }
     private readonly List<StockEntry> _stockEntries = [];
-    public IReadOnlyCollection<StockEntry> StockEntries => _stockEntries.AsReadOnly();
+    public IReadOnlyCollection<StockEntry> StockEntries => _stockEntries;
     private readonly List<OrderItem> _orderItems = [];
-    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
+    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
     public Guid TenantPublicId { get; private set; }
 
     private Product()

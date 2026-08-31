@@ -1,5 +1,4 @@
-﻿using Application.AuthManagement.RegisterManager;
-using Application.Common.Errors;
+﻿using Application.Common.Errors;
 using Application.Common.Interfaces;
 using Application.Constants;
 using Domain.Core;
@@ -8,7 +7,7 @@ using Domain.RepositoryInterfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Application.AuthManagement.RegisterUser;
+namespace Application.UserManagement.RegisterUser;
 
 internal sealed class RegisterUserRequestHandler(
     ICurrentUserAccessor currentUserAccessor,

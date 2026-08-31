@@ -12,7 +12,7 @@ public class Order : AggregateRoot
     public string? Notes { get; private set; }
     public OrderStatus OrderStatus { get; private set; }
     public Supplier? Supplier { get; private set; }
-    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
+    public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
 
     private readonly List<OrderItem> _orderItems = [];
     public Guid TenantPublicId { get; private set; }

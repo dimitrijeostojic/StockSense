@@ -1,8 +1,7 @@
-﻿using Application.AuthManagement.RegisterManager;
-using Domain.Core;
+﻿using Domain.Core;
 using MediatR;
 
-namespace Application.AuthManagement.RegisterUser;
+namespace Application.UserManagement.RegisterUser;
 
 public sealed record RegisterUserRequest(
     string FirstName,

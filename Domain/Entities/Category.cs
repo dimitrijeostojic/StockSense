@@ -6,7 +6,7 @@ public class Category : AggregateRoot
 {
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
-    public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
+    public IReadOnlyCollection<Product> Products => _products;
     private readonly List<Product> _products = [];
     public Guid TenantPublicId { get; private set; }
 
