@@ -1,7 +1,9 @@
 ﻿using Application.AuthManagement.Login;
+using Application.AuthManagement.Logout;
 using Application.AuthManagement.RefreshToken;
 using Application.AuthManagement.Register;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockSense.API.Extensions;
 
@@ -29,6 +31,14 @@ public class AuthController(IMediator mediator) : ControllerBase
 
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout(LogoutRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();

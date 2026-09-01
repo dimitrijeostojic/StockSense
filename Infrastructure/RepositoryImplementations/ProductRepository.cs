@@ -101,10 +101,15 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .Include(p => p.Category)
             .Include(p => p.Supplier)
             .Where(p => p.TenantPublicId == tenantPublicId)
-            .Select(p => new ValueTuple<Product, int>(p, p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity)))
-               .Where(x => x.Item2 < x.Item1.MinimumStockQuantity)
-               .OrderBy(x => x.Item2)
-               .Take(5)
-               .ToListAsync(cancellationToken);
+            .Select(p => new
+            {
+                Product = p,
+                CurrentStock = p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity)
+            })
+            .Where(x => x.CurrentStock < x.Product.MinimumStockQuantity)
+            .OrderBy(x => x.CurrentStock)
+            .Take(5)
+            .Select(x => new ValueTuple<Product, int>(x.Product, x.CurrentStock))
+            .ToListAsync(cancellationToken);
     }
 }

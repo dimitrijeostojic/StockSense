@@ -17,4 +17,5 @@ public static class ApplicationErrors
     public static readonly Error InvalidOrderStatusTransition = new("ApplicationErrors.InvalidOrderStatusTransition", "The requested order status transition is invalid.");
     public static readonly Error UserLockedOut = new("ApplicationErrors.UserLockedOut", "This account has been locked out.");
     internal static readonly Error CannotDeleteAdminUser = new("ApplicationErrors.CannotDeleteAdminUser", "Cannot delete an admin user.");
+    internal static readonly Error InvalidStatus = new("ApplicationErrors.InvalidStatus", "Only pending orders can be edited.");
 }

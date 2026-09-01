@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Domain.Abstractions;
 using Domain.Core;
+using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using MediatR;
 
@@ -28,6 +29,10 @@ internal sealed class UpdateOrderRequestHandler(
         if (order is null || supplier is null)
         {
             return TResult<UpdateOrderResponse>.Failure(ApplicationErrors.NotFound);
+        }
+        if (order.OrderStatus != OrderStatus.Pending)
+        {
+            return TResult<UpdateOrderResponse>.Failure(ApplicationErrors.InvalidStatus);
         }
 
 
