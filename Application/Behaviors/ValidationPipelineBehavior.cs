@@ -22,14 +22,16 @@ public sealed class ValidationPipelineBehavior<TRequest, TResponse>(
 
         var context = new ValidationContext<TRequest>(request);
 
-        var failures = validators
+        var errors = validators
             .Select(validator => validator.Validate(request))
+            .Where(validationResult => !validationResult.IsValid)
             .SelectMany(validationResult => validationResult.Errors)
-            .Where(validationFailure => validationFailure != null)
             .ToList();
 
-        if (failures.Count != 0)
-            throw new ValidationException(failures);
+        if (errors.Count != 0)
+        {
+            throw new ValidationException(errors);
+        }
 
         return await next();
     }
