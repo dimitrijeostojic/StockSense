@@ -39,14 +39,21 @@ public static class DependencyInjection
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                       .EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null))
+                .EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorNumbersToAdd: null))
                 .AddInterceptors(interceptor, interceptor2);
         });
         services.AddDbContext<AuthDbContext>((sp, options) =>
         {
             options.UseSqlServer(
                 configuration.GetConnectionString("AuthConnection"),
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                .EnableRetryOnFailure(
+                   maxRetryCount: 5,
+                   maxRetryDelay: TimeSpan.FromSeconds(10),
+                   errorNumbersToAdd: null));
         });
 
         services.AddIdentityCore<ApplicationUser>() //konfiguracija identity servisa
