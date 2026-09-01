@@ -73,13 +73,26 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
 });
 
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(setup =>
 {
-    setup.AddPolicy("AllowAll", policy =>
+    setup.AddPolicy("Default", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
     });
 });
 
@@ -131,7 +144,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/openapi/v1.json", "StockSense API V1");
     });
 }
-app.UseCors("AllowAll");
+app.UseCors("Default");
 app.UseHttpsRedirection();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
