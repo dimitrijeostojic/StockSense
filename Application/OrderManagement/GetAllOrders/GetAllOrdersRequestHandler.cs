@@ -15,7 +15,7 @@ internal sealed class GetAllOrdersRequestHandler(
 
     public async Task<TResult<GetAllOrdersResponse>> Handle(GetAllOrdersRequest request, CancellationToken cancellationToken)
     {
-        var (orders, totalCount) = await _orderRepository.GetAllAsync(request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, _currentUserAccessor.TenantPublicId, cancellationToken);
+        var (orders, totalCount) = await _orderRepository.GetAllAsync(_currentUserAccessor.TenantPublicId, request.SearchTerm, request.SortBy, request.IsAscending, request.FilterOn, request.FilterQuery, request.PageNumber, request.PageSize, cancellationToken);
         var orderDtos = orders.Select(order => new GetAllOrdersDto(
             order.PublicId,
             order.OrderDate,

@@ -15,7 +15,7 @@ internal sealed class GetAllSuppliersRequestHandler(
 
     public async Task<TResult<GetAllSuppliersResponse>> Handle(GetAllSuppliersRequest request, CancellationToken cancellationToken)
     {
-        var (items, totalCount) = await _supplierRepository.GetAllAsync(request.SearchTerm, request.SortBy, request.IsAscending, request.PageNumber, request.PageSize, _currentUserAccessor.TenantPublicId, cancellationToken);
+        var (items, totalCount) = await _supplierRepository.GetAllAsync(_currentUserAccessor.TenantPublicId, request.SearchTerm, request.SortBy, request.IsAscending, request.FilterOn, request.FilterQuery, request.PageNumber, request.PageSize, cancellationToken);
 
         var dtos = items.Select(p => new GetAllSuppliersDto(
             p.PublicId,

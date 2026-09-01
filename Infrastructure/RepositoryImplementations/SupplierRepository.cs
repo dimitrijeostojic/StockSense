@@ -20,14 +20,14 @@ public sealed class SupplierRepository(ApplicationDbContext dbContext) : ISuppli
         return Task.CompletedTask;
     }
 
-    public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(Guid tenantPublicId, string? searchTerm = null, string? sortBy = null, bool isAscending = false, string? filterOn = null, string? filterQuery = null, int pageNumber = 1, int pageSize = 1000, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Suppliers.Where(o => o.TenantPublicId == tenantPublicId).AsQueryable();
 
         //search
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(p => p.Name.Contains(searchTerm));
+            query = query.Where(p => p.Name.Contains(searchTerm) || (p.ContactEmail != null && p.ContactEmail.Contains(searchTerm)) || (p.ContactName != null && p.ContactName.Contains(searchTerm)));
         }
 
         //sort

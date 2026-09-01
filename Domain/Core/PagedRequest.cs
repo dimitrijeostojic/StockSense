@@ -6,5 +6,7 @@ public abstract class PagedRequest
     public int PageSize { get; set; }
     public string? SearchTerm { get; set; }
     public string? SortBy { get; set; }
+    public string? FilterOn { get; set; }
+    public string? FilterQuery { get; set; }
     public bool IsAscending { get; set; }
 }

@@ -19,12 +19,27 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
         _dbContext.Remove(order);
     }
 
-    public async Task<(IEnumerable<Order> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Order> Items, int TotalCount)> GetAllAsync(Guid tenantPublicId, string? searchTerm = null, string? sortBy = null, bool isAscending = false, string? filterOn = null, string? filterQuery = null, int pageNumber = 1, int pageSize = 1000, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Orders
             .Include(o => o.Supplier)
             .Where(o => o.TenantPublicId == tenantPublicId)
             .AsQueryable();
+
+        //search
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(p => p.Supplier != null && p.Supplier.Name.Contains(searchTerm));
+        }
+
+        //filter
+        if (!string.IsNullOrWhiteSpace(filterOn) && !string.IsNullOrWhiteSpace(filterQuery))
+        {
+            if (filterOn.Equals("OrderStatus", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(x => x.OrderStatus.ToString().Contains(filterQuery));
+            }
+        }
 
         //sort
         if (!string.IsNullOrEmpty(sortBy))

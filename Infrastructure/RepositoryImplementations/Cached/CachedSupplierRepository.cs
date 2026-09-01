@@ -27,9 +27,9 @@ public sealed class CachedSupplierRepository(
         await _decorated.DeleteAsync(supplier, cancellationToken);
     }
 
-    public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(string? searchTerm, string? sortBy, bool isAscending, int pageNumber, int pageSize, Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Supplier> Items, int TotalCount)> GetAllAsync(Guid tenantPublicId, string? searchTerm = null, string? sortBy = null, bool isAscending = false, string? filterOn = null, string? filterQuery = null, int pageNumber = 1, int pageSize = 1000, CancellationToken cancellationToken = default)
     {
-        return await _decorated.GetAllAsync(searchTerm, sortBy, isAscending, pageNumber, pageSize, tenantPublicId, cancellationToken);
+        return await _decorated.GetAllAsync(tenantPublicId, searchTerm, sortBy, isAscending, filterOn, filterQuery, pageNumber, pageSize, cancellationToken);
     }
 
     public async Task<Supplier?> GetByPublicIdAsync(Guid publicId, Guid tenantPublicId, CancellationToken cancellationToken = default)
