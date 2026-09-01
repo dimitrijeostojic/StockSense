@@ -39,32 +39,41 @@ internal sealed class RegisterRequestHandler
         }
 
         using var transaction = _authUnitOfWork.BeginTransaction();
-
-        var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address);
-        await _tenantRepository.AddAsync(tenant, cancellationToken);
-        await _authUnitOfWork.SaveChangesAsync(cancellationToken);
-
-        user = ApplicationUser.Create(request.Username, request.Email, request.FirstName, request.LastName, tenant.Id);
-
-        var result = await _userManager.CreateAsync(user, request.Password);
-        if (!result.Succeeded)
+        try
         {
-            return TResult<RegisterResponse>.Failure(ApplicationErrors.RegistrationFailed);
-        }
 
-        var roleResult = await _userManager.AddToRoleAsync(user, Roles.Admin);
-        if (!roleResult.Succeeded)
+            var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address);
+            await _tenantRepository.AddAsync(tenant, cancellationToken);
+            await _authUnitOfWork.SaveChangesAsync(cancellationToken);
+
+            user = ApplicationUser.Create(request.Username, request.Email, request.FirstName, request.LastName, tenant.Id);
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                return TResult<RegisterResponse>.Failure(ApplicationErrors.RegistrationFailed);
+            }
+
+            var roleResult = await _userManager.AddToRoleAsync(user, Roles.Admin);
+            if (!roleResult.Succeeded)
+            {
+                return TResult<RegisterResponse>.Failure(ApplicationErrors.RegistrationFailed);
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var accessToken = _jwtTokenService.GenerateToken(user, tenant.PublicId, tenant.Name, roles);
+            var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
+            await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
+            await _authUnitOfWork.SaveChangesAsync(cancellationToken);
+
+            transaction.Commit();
+            return TResult<RegisterResponse>.Success(new RegisterResponse(accessToken, refreshToken.Token));
+
+        }
+        catch (Exception)
         {
-            return TResult<RegisterResponse>.Failure(ApplicationErrors.RegistrationFailed);
+            transaction.Rollback();
+            throw;
         }
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _jwtTokenService.GenerateToken(user, tenant.PublicId, tenant.Name, roles);
-        var refreshToken = Domain.Entities.RefreshToken.Create(user.Id);
-        await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
-        await _authUnitOfWork.SaveChangesAsync(cancellationToken);
-
-        transaction.Commit();
-        return TResult<RegisterResponse>.Success(new RegisterResponse(accessToken, refreshToken.Token));
     }
 }

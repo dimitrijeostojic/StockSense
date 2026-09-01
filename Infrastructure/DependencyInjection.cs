@@ -49,11 +49,7 @@ public static class DependencyInjection
         {
             options.UseSqlServer(
                 configuration.GetConnectionString("AuthConnection"),
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                .EnableRetryOnFailure(
-                   maxRetryCount: 5,
-                   maxRetryDelay: TimeSpan.FromSeconds(10),
-                   errorNumbersToAdd: null));
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
 
         services.AddIdentityCore<ApplicationUser>() //konfiguracija identity servisa
