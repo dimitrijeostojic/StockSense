@@ -23,13 +23,15 @@ public class ProductController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProductsAsync([FromQuery] string? searchTerm, [FromQuery] string? sortBy, [FromQuery] bool isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAllProductsAsync([FromQuery] string? searchTerm, [FromQuery] string? sortBy, [FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] bool isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000, CancellationToken cancellationToken = default)
     {
         var request = new GetAllProductsRequest
         {
             SearchTerm = searchTerm,
             SortBy = sortBy,
             IsAscending = isAscending,
+            FilterOn = filterOn,
+            FilterQuery = filterQuery,
             PageNumber = pageNumber,
             PageSize = pageSize
         };

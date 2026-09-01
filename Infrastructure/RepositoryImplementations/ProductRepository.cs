@@ -57,7 +57,9 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             {
                 "name" => isAscending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name),
                 "price" => isAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price),
-                "createdat" => isAscending ? query.OrderBy(p => p.CreatedAt) : query.OrderByDescending(p => p.CreatedAt),
+                "actualstockquantity" => isAscending
+                    ? query.OrderBy(p => p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity))
+                    : query.OrderByDescending(p => p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity)),
                 _ => query
             };
         }

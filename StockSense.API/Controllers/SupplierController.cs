@@ -19,13 +19,15 @@ public class SupplierController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     [HttpGet]
-    public async Task<IActionResult> GetAllSuppliersAsync([FromQuery] string? searchTerm, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string? sortBy, [FromQuery] bool isAscending, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllSuppliersAsync([FromQuery] string? searchTerm, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string? sortBy, [FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] bool isAscending, CancellationToken cancellationToken)
     {
         var request = new GetAllSuppliersRequest
         {
             SearchTerm = searchTerm,
             SortBy = sortBy,
             IsAscending = isAscending,
+            FilterOn = filterOn,
+            FilterQuery = filterQuery,
             PageNumber = pageNumber,
             PageSize = pageSize
         };
