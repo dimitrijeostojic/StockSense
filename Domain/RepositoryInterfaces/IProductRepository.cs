@@ -12,5 +12,5 @@ public interface IProductRepository
     Task<List<Product>> GetByIdsAsync(List<int> productIds, Guid tenantPublicId, CancellationToken cancellationToken = default);
     Task<int> CountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default);
     Task<int> NumberOfProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken);
-    Task<ICollection<Product>> Top5ProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken);
+    Task<ICollection<(Product Product, int CurrentStock)>> Top5ProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken);
 }

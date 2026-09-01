@@ -6,4 +6,5 @@ public sealed record DashboardProductDto(
     decimal Price,
     int MinimumStockQuantity,
     string CategoryName,
-    string SupplierName);
+    string SupplierName,
+    int ActualStockQuantity);

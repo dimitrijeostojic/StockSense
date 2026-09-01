@@ -26,8 +26,10 @@ internal sealed class GetDashboardRequestHandler(
         var top5ProductWithLowStock = await _productRepository.Top5ProductsWithLowStock(tenantPublicId, cancellationToken);
 
         var latestOrdersDtos = latestOrders.Select(lo => new DashboardOrderDto(lo.PublicId, lo.Supplier!.Name, lo.OrderDate, lo.OrderStatus)).ToList();
-        var top5ProductWithLowStockDtos = top5ProductWithLowStock.Select(p => new DashboardProductDto(p.PublicId, p.Name, p.Price, p.MinimumStockQuantity, p.Category!.Name, p.Supplier!.Name)).ToList();
+
+        var top5ProductWithLowStockDtos = top5ProductWithLowStock.Select(p => new DashboardProductDto(p.Product.PublicId, p.Product.Name, p.Product.Price, p.Product.MinimumStockQuantity, p.Product.Category!.Name, p.Product.Supplier!.Name, p.CurrentStock)).ToList();
         var response = new GetDashboardResponse(numberOfProducts, numberOfProductsWithLowStock, numberOfActiveOrders, latestOrdersDtos, top5ProductWithLowStockDtos);
+
         return TResult<GetDashboardResponse>.Success(response);
     }
 }
