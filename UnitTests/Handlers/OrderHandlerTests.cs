@@ -151,6 +151,20 @@ public sealed class GetOrderByIdRequestHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(ApplicationErrors.NotFound);
     }
+
+    [Fact]
+    public async Task Handle_WhenOrderFound_ReturnsSuccessWithOrderData()
+    {
+        var publicId = Guid.NewGuid();
+        var order = EntityFactory.CreateOrderWithNavigation();
+        _orderRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(order);
+
+        var result = await _sut.Handle(new GetOrderByIdRequest(publicId), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.OrderStatus.Should().Be(OrderStatus.Pending);
+    }
 }
 
 public sealed class GetAllOrdersRequestHandlerTests
@@ -170,11 +184,12 @@ public sealed class GetAllOrdersRequestHandlerTests
     public async Task Handle_WhenRepositoryReturnsEmpty_ReturnsSuccessWithEmptyItems()
     {
         _orderRepository.GetAllAsync(
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<bool>(),
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            Arg.Any<Guid>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<bool>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((Items: Enumerable.Empty<Order>(), TotalCount: 0));
 
-        var request = new GetAllOrdersRequest(null, null, true, 1, 10);
+        var request = new GetAllOrdersRequest { SearchTerm = null, SortBy = null, IsAscending = true, PageNumber = 1, PageSize = 10 };
         var result = await _sut.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -186,15 +201,24 @@ public sealed class GetAllOrdersRequestHandlerTests
     public async Task Handle_PassesPaginationParametersToRepository()
     {
         _orderRepository.GetAllAsync(
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<bool>(),
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            Arg.Any<Guid>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<bool>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((Items: Enumerable.Empty<Order>(), TotalCount: 0));
 
-        var request = new GetAllOrdersRequest("term", "date", false, 2, 15);
+        var request = new GetAllOrdersRequest { SearchTerm = "term", SortBy = "date", IsAscending = false, PageNumber = 2, PageSize = 15 };
         await _sut.Handle(request, CancellationToken.None);
 
         await _orderRepository.Received(1).GetAllAsync(
-            "term", "date", false, 2, 15, Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+            Arg.Any<Guid>(),
+            Arg.Is<string?>("term"),
+            Arg.Is<string?>("date"),
+            Arg.Is<bool>(false),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Is<int>(2),
+            Arg.Is<int>(15),
+            Arg.Any<CancellationToken>());
     }
 }
 

@@ -7,7 +7,6 @@ using Domain.Abstractions;
 using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
-using MediatR;
 using NSubstitute;
 using UnitTests.Helpers;
 using Xunit;
@@ -20,7 +19,6 @@ public sealed class CreateStockEntryRequestHandlerTests
     private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
-    private readonly IMediator _mediator = Substitute.For<IMediator>();
 
     private readonly CreateStockEntryRequestHandler _sut;
 
@@ -90,10 +88,10 @@ public sealed class CreateStockEntryRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenLowStockDomainEventRaised_PublishesEventViaMediator()
+    public async Task Handle_WhenStockBelowMinimum_RaisesDomainEventOnProduct()
     {
         var productPublicId = Guid.NewGuid();
-        // minStock = 100, adding only 1 → triggers LowStockDomainEvent
+        // minimumStock = 100, adding only 1 → stock (1) < minimum (100) → event raised
         var product = EntityFactory.CreateProduct(minimumStock: 100);
         _productRepository.GetByPublicIdAsync(productPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(product);
@@ -102,34 +100,20 @@ public sealed class CreateStockEntryRequestHandlerTests
             new CreateStockEntryRequest(productPublicId, 1, null, StockEntryType.In),
             CancellationToken.None);
 
-        await _mediator.Received(1).Publish(Arg.Any<INotification>(), Arg.Any<CancellationToken>());
+        product.DomainEvents.Should().HaveCount(1);
     }
 
     [Fact]
-    public async Task Handle_WhenNoLowStockEvent_DoesNotPublish()
+    public async Task Handle_WhenStockAboveMinimum_NoDomainEventRaised()
     {
         var productPublicId = Guid.NewGuid();
+        // minimumStock = 0, adding 50 → stock (50) >= minimum (0) → no event
         var product = EntityFactory.CreateProduct(minimumStock: 0);
         _productRepository.GetByPublicIdAsync(productPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(product);
 
         await _sut.Handle(
             new CreateStockEntryRequest(productPublicId, 50, null, StockEntryType.In),
-            CancellationToken.None);
-
-        await _mediator.DidNotReceive().Publish(Arg.Any<INotification>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_AfterPublishingEvents_ClearsDomainEvents()
-    {
-        var productPublicId = Guid.NewGuid();
-        var product = EntityFactory.CreateProduct(minimumStock: 100);
-        _productRepository.GetByPublicIdAsync(productPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(product);
-
-        await _sut.Handle(
-            new CreateStockEntryRequest(productPublicId, 1, null, StockEntryType.In),
             CancellationToken.None);
 
         product.DomainEvents.Should().BeEmpty();

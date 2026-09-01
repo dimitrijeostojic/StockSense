@@ -122,7 +122,10 @@ public sealed class ProductEntityTests
     public void ClearDomainEvents_RemovesAllEvents()
     {
         var product = BuildProduct(minStock: 100);
-        product.AddStockEntry(1, StockEntryType.In, null);
+        product.AddStockEntry(1, StockEntryType.In, null); // raises LowStockDomainEvent
+        product.DomainEvents.Should().HaveCount(1);
+
+        product.ClearDomainEvents();
 
         product.DomainEvents.Should().BeEmpty();
     }

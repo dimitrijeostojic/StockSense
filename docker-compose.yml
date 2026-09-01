@@ -19,21 +19,21 @@ services:
       retries: 10
       start_period: 30s
 
-  redis:
-    image: redis:7-alpine
-    container_name: stocksense-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - stocksense-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: stocksense-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - stocksense-network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
 
   # stocksense-api:
   #   build:

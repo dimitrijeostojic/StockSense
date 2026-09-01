@@ -143,6 +143,21 @@ public sealed class GetProductByIdRequestHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(ApplicationErrors.NotFound);
     }
+
+    [Fact]
+    public async Task Handle_WhenProductFound_ReturnsSuccessWithData()
+    {
+        var publicId = Guid.NewGuid();
+        var product = EntityFactory.CreateProductWithNavigation("Widget", 9.99m);
+        _productRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(product);
+
+        var result = await _sut.Handle(new GetProductByIdRequest(publicId), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Name.Should().Be("Widget");
+        result.Value.Price.Should().Be(9.99m);
+    }
 }
 
 public sealed class GetAllProductsRequestHandlerTests
@@ -163,10 +178,11 @@ public sealed class GetAllProductsRequestHandlerTests
     {
         _productRepository.GetAllAsync(
             Arg.Any<Guid>(), Arg.Any<string?>(), Arg.Any<string?>(),
-            Arg.Any<bool>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            Arg.Any<bool>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((Items: Enumerable.Empty<DomainProduct>(), TotalCount: 0));
 
-        var request = new GetAllProductsRequest(null, null, true, 1, 10);
+        var request = new GetAllProductsRequest { SearchTerm = null, SortBy = null, IsAscending = true, PageNumber = 1, PageSize = 10 };
         var result = await _sut.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -179,14 +195,23 @@ public sealed class GetAllProductsRequestHandlerTests
     {
         _productRepository.GetAllAsync(
             Arg.Any<Guid>(), Arg.Any<string?>(), Arg.Any<string?>(),
-            Arg.Any<bool>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            Arg.Any<bool>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((Items: Enumerable.Empty<DomainProduct>(), TotalCount: 0));
 
-        var request = new GetAllProductsRequest("search", "name", false, 2, 25);
+        var request = new GetAllProductsRequest { SearchTerm = "search", SortBy = "name", IsAscending = false, PageNumber = 2, PageSize = 25 };
         await _sut.Handle(request, CancellationToken.None);
 
         await _productRepository.Received(1).GetAllAsync(
-            Arg.Any<Guid>(), "search", "name", false, 2, 25, Arg.Any<CancellationToken>());
+            Arg.Any<Guid>(),
+            Arg.Is<string?>("search"),
+            Arg.Is<string?>("name"),
+            Arg.Is<bool>(false),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Is<int>(2),
+            Arg.Is<int>(25),
+            Arg.Any<CancellationToken>());
     }
 }
 

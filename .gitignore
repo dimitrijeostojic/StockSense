@@ -29,6 +29,7 @@
 **/appsettings.Development.json
 **/.env
 *.env
+**/Properties/PublishProfiles/
 
 # OS
 .DS_Store

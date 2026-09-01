@@ -124,11 +124,12 @@ public sealed class GetAllSuppliersRequestHandlerTests
     public async Task Handle_WhenRepositoryReturnsEmpty_ReturnsSuccessWithEmptyCollection()
     {
         _supplierRepository.GetAllAsync(
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<bool>(),
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            Arg.Any<Guid>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<bool>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((Items: Enumerable.Empty<DomainSupplier>(), TotalCount: 0));
 
-        var request = new GetAllSuppliersRequest(null, null, true, 1, 10);
+        var request = new GetAllSuppliersRequest { SearchTerm = null, SortBy = null, IsAscending = true, PageNumber = 1, PageSize = 10 };
         var result = await _sut.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -140,15 +141,24 @@ public sealed class GetAllSuppliersRequestHandlerTests
     public async Task Handle_PassesPaginationParametersToRepository()
     {
         _supplierRepository.GetAllAsync(
-            Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<bool>(),
-            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            Arg.Any<Guid>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<bool>(), Arg.Any<string?>(), Arg.Any<string?>(),
+            Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((Items: Enumerable.Empty<DomainSupplier>(), TotalCount: 0));
 
-        var request = new GetAllSuppliersRequest("search", "name", false, 3, 20);
+        var request = new GetAllSuppliersRequest { SearchTerm = "search", SortBy = "name", IsAscending = false, PageNumber = 3, PageSize = 20 };
         await _sut.Handle(request, CancellationToken.None);
 
         await _supplierRepository.Received(1).GetAllAsync(
-            "search", "name", false, 3, 20, Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+            Arg.Any<Guid>(),
+            Arg.Is<string?>("search"),
+            Arg.Is<string?>("name"),
+            Arg.Is<bool>(false),
+            Arg.Any<string?>(),
+            Arg.Any<string?>(),
+            Arg.Is<int>(3),
+            Arg.Is<int>(20),
+            Arg.Any<CancellationToken>());
     }
 }
 
