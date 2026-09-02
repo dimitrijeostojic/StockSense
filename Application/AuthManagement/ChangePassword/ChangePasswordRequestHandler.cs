@@ -29,7 +29,8 @@ internal sealed class ChangePasswordRequestHandler(
         var identityResult = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
         if (!identityResult.Succeeded)
         {
-            return Result.Failure(ApplicationErrors.ChangePasswordInvalidation);
+            var errorMessage = string.Join(" ", identityResult.Errors.Select(e => e.Description));
+            return Result.Failure(new Error("ChangePassword.Failed", errorMessage));
         }
         return Result.Success();
     }
