@@ -1,4 +1,5 @@
-﻿using Application.AuthManagement.Login;
+﻿using Application.AuthManagement.ChangePassword;
+using Application.AuthManagement.Login;
 using Application.AuthManagement.Logout;
 using Application.AuthManagement.RefreshToken;
 using Application.AuthManagement.Register;
@@ -39,6 +40,14 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("logout")]
     [Authorize]
     public async Task<IActionResult> Logout(LogoutRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPut("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
