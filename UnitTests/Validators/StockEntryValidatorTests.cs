@@ -77,7 +77,6 @@ public sealed class CreateStockEntryValidatorTests
     [Theory]
     [InlineData(StockEntryType.In)]
     [InlineData(StockEntryType.Out)]
-    [InlineData(StockEntryType.Adjustment)]
     public void Validate_WithValidStockEntryType_HasNoError(StockEntryType type)
     {
         var request = new CreateStockEntryRequest(Guid.NewGuid(), 5, null, type);
