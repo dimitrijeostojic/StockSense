@@ -1,5 +1,5 @@
+using Application.Abstractions.Services;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Application.UserManagement.Delete;
 using Application.UserManagement.GetAll;
 using Application.UserManagement.RegisterUser;

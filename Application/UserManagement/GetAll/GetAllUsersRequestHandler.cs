@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Abstractions.Services;
 using Domain.Core;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;

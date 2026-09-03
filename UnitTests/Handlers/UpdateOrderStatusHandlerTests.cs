@@ -1,5 +1,5 @@
+using Application.Abstractions.Services;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Application.OrderManagement.UpdateOrderStatus;
 using Domain.Abstractions;
 using Domain.Entities;

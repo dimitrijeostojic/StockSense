@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Abstractions.Services;
 using System.Security.Claims;
 
 namespace StockSense.API.Accessors;

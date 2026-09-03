@@ -1,10 +1,10 @@
+using Application.Abstractions.Services;
 using Application.CategoryManagement.CreateCategory;
 using Application.CategoryManagement.DeleteCategory;
 using Application.CategoryManagement.GetAllCategories;
 using Application.CategoryManagement.GetCategoryById;
 using Application.CategoryManagement.UpdateCategory;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Domain.Abstractions;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;

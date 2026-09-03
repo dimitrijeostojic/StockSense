@@ -1,4 +1,4 @@
-﻿using Application.Constants;
+﻿using Application.Common.Constants;
 using Application.ProductManagement.CreateProduct;
 using Application.ProductManagement.CreateStockEntry;
 using Application.ProductManagement.DeleteProduct;

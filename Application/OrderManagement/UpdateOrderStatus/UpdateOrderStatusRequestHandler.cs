@@ -1,5 +1,5 @@
-﻿using Application.Common.Errors;
-using Application.Common.Interfaces;
+﻿using Application.Abstractions.Services;
+using Application.Common.Errors;
 using Domain.Abstractions;
 using Domain.Core;
 using Domain.RepositoryInterfaces;

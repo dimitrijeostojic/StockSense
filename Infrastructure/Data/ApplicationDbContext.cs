@@ -12,6 +12,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<StockEntry> StockEntries { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
+    public DbSet<OutboxEmailMessage> OutboxEmailMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

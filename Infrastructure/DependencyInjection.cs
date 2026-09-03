@@ -1,11 +1,13 @@
 using Application.Abstractions.Services;
 using Domain.Abstractions;
+using Domain.Dtos;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Interceptors;
+using Infrastructure.InternalServiceInterfaces;
 using Infrastructure.Options;
 using Infrastructure.RepositoryImplementations;
 using Infrastructure.RepositoryImplementations.Cached;
@@ -87,6 +89,8 @@ public static class DependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<INotificationSender<EmailMessageDto>, EmailSender>();
         return services;
     }
 
@@ -102,6 +106,8 @@ public static class DependencyInjection
         });
 
         services.AddQuartzHostedService();
+
+        services.AddHostedService<ProcessOutboxEmailMessagesBackgroundService>();
         return services;
     }
 }

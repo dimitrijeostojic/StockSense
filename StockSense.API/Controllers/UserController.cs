@@ -1,4 +1,4 @@
-﻿using Application.Constants;
+﻿using Application.Common.Constants;
 using Application.UserManagement.Delete;
 using Application.UserManagement.GetAll;
 using Application.UserManagement.RegisterUser;

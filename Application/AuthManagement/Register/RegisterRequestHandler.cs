@@ -1,28 +1,36 @@
 ﻿using Application.Abstractions.Services;
+using Application.Common.Constants;
 using Application.Common.Errors;
-using Application.Constants;
+using Application.Emails;
 using Domain.Abstractions;
 using Domain.Core;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Application.AuthManagement.Register;
 
 internal sealed class RegisterRequestHandler
     (UserManager<ApplicationUser> userManager,
+    ILogger<RegisterRequestHandler> logger,
     ITenantRepository tenantRepository,
     IAuthUnitOfWork authUnitOfWork,
+    IUnitOfWork unitOfWork,
     IJwtTokenService jwtTokenService,
-    IRefreshTokenRepository refreshTokenRepository)
+    IRefreshTokenRepository refreshTokenRepository,
+    IEmailService emailService)
         : IRequestHandler<RegisterRequest, TResult<RegisterResponse>>
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+    private readonly ILogger<RegisterRequestHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly ITenantRepository _tenantRepository = tenantRepository ?? throw new ArgumentNullException(nameof(tenantRepository));
     private readonly IAuthUnitOfWork _authUnitOfWork = authUnitOfWork ?? throw new ArgumentNullException(nameof(authUnitOfWork));
+    private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     private readonly IJwtTokenService _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
     private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
+    private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
 
     public async Task<TResult<RegisterResponse>> Handle(RegisterRequest request, CancellationToken cancellationToken)
     {
@@ -67,6 +75,18 @@ internal sealed class RegisterRequestHandler
             await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 
             transaction.Commit();
+
+            try
+            {
+                var message = EmailTemplates.Welcome(request.Email, request.FirstName, request.CompanyName);
+                await _emailService.SendAsync(message, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to queue welcome email for {Email}", request.Email);
+            }
+
             return TResult<RegisterResponse>.Success(new RegisterResponse(accessToken, refreshToken.Token));
 
         }

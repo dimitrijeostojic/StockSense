@@ -1,5 +1,5 @@
 using Application;
-using Application.Common.Interfaces;
+using Application.Abstractions.Services;
 using Infrastructure;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,6 +32,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<SmtpOptionsSetup>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

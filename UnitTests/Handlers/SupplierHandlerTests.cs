@@ -1,5 +1,5 @@
+using Application.Abstractions.Services;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Application.SupplierManagement.CreateSupplier;
 using Application.SupplierManagement.DeleteSupplier;
 using Application.SupplierManagement.GetAllSuppliers;

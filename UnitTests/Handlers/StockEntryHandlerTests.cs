@@ -1,5 +1,5 @@
+using Application.Abstractions.Services;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Application.ProductManagement.CreateStockEntry;
 using Application.ProductManagement.GetAllStockEntries;
 using Application.ProductManagement.GetStockEntryByProductId;

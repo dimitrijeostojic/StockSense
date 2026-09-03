@@ -1,5 +1,5 @@
+using Application.Abstractions.Services;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Application.ProductManagement.CreateProduct;
 using Application.ProductManagement.DeleteProduct;
 using Application.ProductManagement.GetAllProducts;

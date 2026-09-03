@@ -1,5 +1,5 @@
+using Application.Abstractions.Services;
 using Application.Common.Errors;
-using Application.Common.Interfaces;
 using Application.ProductManagement.GetCurrentStock;
 using Domain.Enums;
 using Domain.RepositoryInterfaces;

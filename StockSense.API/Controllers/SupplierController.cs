@@ -1,4 +1,4 @@
-﻿using Application.Constants;
+﻿using Application.Common.Constants;
 using Application.SupplierManagement.CreateSupplier;
 using Application.SupplierManagement.DeleteSupplier;
 using Application.SupplierManagement.GetAllSuppliers;

@@ -1,6 +1,6 @@
-﻿using Application.Common.Errors;
-using Application.Common.Interfaces;
-using Application.Constants;
+﻿using Application.Abstractions.Services;
+using Application.Common.Constants;
+using Application.Common.Errors;
 using Domain.Abstractions;
 using Domain.Core;
 using Domain.Entities;
