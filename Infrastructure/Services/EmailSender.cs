@@ -14,17 +14,19 @@ internal sealed class EmailSender(IOptions<SmtpOptions> options) : INotification
 
     public async Task SendAsync(EmailMessageDto messageDto, CancellationToken cancellationToken)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(messageDto.To);
+        ArgumentException.ThrowIfNullOrWhiteSpace(messageDto.Subject);
         try
         {
             var message = new MimeMessage();
             var from = new MailboxAddress(_options.SenderName, _options.SenderEmail);
             message.From.Add(from);
             var to = new MailboxAddress(null, messageDto.To);
-            message.To.Add(from);
+            message.To.Add(to);
             message.Subject = messageDto.Subject;
             message.Body = new TextPart(TextFormat.Plain)
             {
-                Text = messageDto.Body
+                Text = messageDto.Body ?? string.Empty
             };
 
             using var smtp = new SmtpClient();
@@ -35,7 +37,7 @@ internal sealed class EmailSender(IOptions<SmtpOptions> options) : INotification
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException(ex.Message);
+            throw new InvalidOperationException(ex.Message, ex);
         }
 
     }
