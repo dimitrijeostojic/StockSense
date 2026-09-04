@@ -57,7 +57,6 @@ internal sealed class RegisterUserRequestHandler(
         {
             var message = EmailTemplates.UserInvited(request.Email, request.FirstName, tenant.Name);
             await _emailService.SendAsync(message, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {

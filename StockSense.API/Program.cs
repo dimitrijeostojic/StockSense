@@ -33,6 +33,7 @@ builder.Services.AddAuthorization();
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<SmtpOptionsSetup>();
+builder.Services.ConfigureOptions<AppOptionsSetup>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

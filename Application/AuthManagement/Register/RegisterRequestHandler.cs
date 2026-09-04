@@ -80,7 +80,6 @@ internal sealed class RegisterRequestHandler
             {
                 var message = EmailTemplates.Welcome(request.Email, request.FirstName, request.CompanyName);
                 await _emailService.SendAsync(message, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
             catch (Exception ex)
             {

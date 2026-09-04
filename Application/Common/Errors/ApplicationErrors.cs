@@ -18,5 +18,4 @@ public static class ApplicationErrors
     public static readonly Error UserLockedOut = new("ApplicationErrors.UserLockedOut", "This account has been locked out.");
     public static readonly Error CannotDeleteAdminUser = new("ApplicationErrors.CannotDeleteAdminUser", "Cannot delete an admin user.");
     public static readonly Error InvalidStatus = new("ApplicationErrors.InvalidStatus", "Only pending orders can be edited.");
-    public static readonly Error PasswordIsNotConfirmed = new("ApplicationErrors.PasswordIsNotConfirmed", "The new password and confirmation password do not match.");
 }

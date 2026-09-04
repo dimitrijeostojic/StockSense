@@ -22,10 +22,6 @@ internal sealed class ChangePasswordRequestHandler(
         {
             return Result.Failure(ApplicationErrors.NotFound);
         }
-        if (request.NewPassword != request.ConfirmNewPassword)
-        {
-            return Result.Failure(ApplicationErrors.PasswordIsNotConfirmed);
-        }
         var identityResult = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
         if (!identityResult.Succeeded)
         {

@@ -1,8 +1,10 @@
 ﻿using Application.AuthManagement.ChangePassword;
+using Application.AuthManagement.ForgotPassword;
 using Application.AuthManagement.Login;
 using Application.AuthManagement.Logout;
 using Application.AuthManagement.RefreshToken;
 using Application.AuthManagement.Register;
+using Application.AuthManagement.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +50,20 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPut("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
