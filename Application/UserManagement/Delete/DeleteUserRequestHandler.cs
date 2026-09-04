@@ -12,12 +12,12 @@ namespace Application.UserManagement.Delete;
 
 internal sealed class DeleteUserRequestHandler(
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork,
+    IAuthUnitOfWork authUnitOfWork,
     ICurrentUserAccessor currentUserAccessor,
     UserManager<ApplicationUser> userManager) : IRequestHandler<DeleteUserRequest, Result>
 {
     private readonly IUserRepository _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-    private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+    private readonly IAuthUnitOfWork _authUnitOfWork = authUnitOfWork ?? throw new ArgumentNullException(nameof(authUnitOfWork));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     public async Task<Result> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ internal sealed class DeleteUserRequestHandler(
             return Result.Failure(ApplicationErrors.CannotDeleteAdminUser);
         }
         _userRepository.Delete(user);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _authUnitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 }
