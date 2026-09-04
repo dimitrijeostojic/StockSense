@@ -38,7 +38,7 @@ public sealed class ProcessOutboxEmailMessagesBackgroundService(
             AsyncRetryPolicy retryPolicy = Policy
            .Handle<Exception>()
            .WaitAndRetryAsync(
-               retryCount: 10,
+               retryCount: 3,
                sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
                onRetry: (exception, timespan, attempt, _) =>
                {
