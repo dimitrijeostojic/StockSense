@@ -8,6 +8,7 @@ using Application.AuthManagement.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using StockSense.API.Extensions;
 
 namespace StockSense.API.Controllers;
@@ -19,6 +20,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
     [HttpPost("register")]
+    [EnableRateLimiting("Auth")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
@@ -26,6 +28,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("Auth")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
@@ -33,6 +36,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("refresh")]
+    [EnableRateLimiting("Auth")]
     public async Task<IActionResult> Refresh(RefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
@@ -56,6 +60,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("Auth")]
     public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
@@ -63,6 +68,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("reset-password")]
+    [EnableRateLimiting("Auth")]
     public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);

@@ -4,6 +4,7 @@ using Infrastructure;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using StockSense.API.Accessors;
@@ -34,6 +35,15 @@ builder.Services.ConfigureOptions<RedisOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<SmtpOptionsSetup>();
 builder.Services.ConfigureOptions<AppOptionsSetup>();
+
+builder.Services.AddRateLimiter(options =>
+options.AddFixedWindowLimiter("Auth",
+    options =>
+    {
+        options.PermitLimit = 10;
+        options.Window = TimeSpan.FromSeconds(60);
+        options.QueueLimit = 0;
+    }));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -73,6 +83,11 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.User.RequireUniqueEmail = false;
+});
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromMinutes(30);
 });
 
 var allowedOrigins = builder.Configuration
@@ -151,6 +166,7 @@ app.UseHttpsRedirection();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 await app.ApplyMigrationAsync();
 app.MapHealthChecks("/health");
