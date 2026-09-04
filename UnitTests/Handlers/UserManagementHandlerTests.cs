@@ -8,6 +8,8 @@ using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using UnitTests.Helpers;
 using Xunit;
@@ -17,7 +19,7 @@ namespace UnitTests.Handlers;
 public sealed class DeleteUserRequestHandlerTests
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IAuthUnitOfWork _unitOfWork = Substitute.For<IAuthUnitOfWork>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
     private readonly UserManager<ApplicationUser> _userManager;
 
@@ -139,6 +141,9 @@ public sealed class RegisterUserRequestHandlerTests
 {
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
     private readonly ITenantRepository _tenantRepository = Substitute.For<ITenantRepository>();
+    private readonly IEmailService _emailService = Substitute.For<IEmailService>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly ILogger<RegisterUserRequestHandler> _logger = NullLogger<RegisterUserRequestHandler>.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
 
     private readonly RegisterUserRequestHandler _sut;
@@ -149,7 +154,7 @@ public sealed class RegisterUserRequestHandlerTests
         var store = Substitute.For<IUserStore<ApplicationUser>>();
         _userManager = Substitute.For<UserManager<ApplicationUser>>(
             store, null, null, null, null, null, null, null, null);
-        _sut = new RegisterUserRequestHandler(_currentUserAccessor, _tenantRepository, _userManager);
+        _sut = new RegisterUserRequestHandler(_currentUserAccessor, _tenantRepository, _userManager, _emailService, _unitOfWork, _logger);
     }
 
     private static RegisterUserRequest ValidRequest() => new(
