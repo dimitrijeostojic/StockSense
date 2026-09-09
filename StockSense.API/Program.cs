@@ -24,18 +24,25 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpLoggingInterceptor<ErrorHttpLoggingInterceptor>();
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
+
 builder.Services.AddProblemDetails();
 builder.Services.AddAuthorization();
 
+builder.Services.AddHealthChecks();
+
+#region ConfigureOptions
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<SmtpOptionsSetup>();
 builder.Services.ConfigureOptions<AppOptionsSetup>();
+#endregion
 
+#region RateLimiting
 builder.Services.AddRateLimiter(options =>
 options.AddFixedWindowLimiter("Auth",
     options =>
@@ -44,7 +51,9 @@ options.AddFixedWindowLimiter("Auth",
         options.Window = TimeSpan.FromSeconds(60);
         options.QueueLimit = 0;
     }));
+#endregion
 
+#region Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -70,7 +79,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
+#endregion
 
+#region ConfigureToken
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false;
@@ -84,12 +95,14 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.User.RequireUniqueEmail = false;
 });
+#endregion
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromMinutes(30);
 });
 
+#region CORS
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
@@ -112,7 +125,9 @@ builder.Services.AddCors(setup =>
         }
     });
 });
+#endregion
 
+#region Swagger
 builder.Services.AddOpenApi(options =>
 {
     options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
@@ -147,8 +162,8 @@ builder.Services.AddOpenApi(options =>
         return Task.CompletedTask;
     });
 });
+#endregion
 
-builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -168,7 +183,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 
-await app.ApplyMigrationAsync();
+if (app.Environment.IsDevelopment())
+{
+    await app.ApplyMigrationAsync();
+}
+
 app.MapHealthChecks("/health");
 
 app.MapControllers();

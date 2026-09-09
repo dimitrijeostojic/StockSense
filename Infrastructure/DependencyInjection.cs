@@ -99,13 +99,16 @@ public static class DependencyInjection
 
         services.AddQuartz(configure =>
         {
-            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+            var jobKey = JobKey.Create(nameof(ProcessOutboxMessagesJob));
             configure.AddJob<ProcessOutboxMessagesJob>(jobKey)
-                .AddTrigger(trigger => trigger.ForJob(jobKey)
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever()));
+                        .AddTrigger(trigger => trigger.ForJob(jobKey)
+                            .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever()));
         });
 
-        services.AddQuartzHostedService();
+        services.AddQuartzHostedService(options =>
+        {
+            options.WaitForJobsToComplete = true;
+        });
 
         services.AddHostedService<ProcessOutboxEmailMessagesBackgroundService>();
         return services;

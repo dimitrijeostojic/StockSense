@@ -17,6 +17,6 @@ public sealed class EmailService(
     {
         var message = OutboxEmailMessage.Create(emailMessageDto.To, emailMessageDto.Subject, emailMessageDto.Body);
         await _applicationDbContext.OutboxEmailMessages.AddAsync(message, cancellationToken);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
