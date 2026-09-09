@@ -37,7 +37,7 @@ internal sealed class ExportPDFRequestHandler(
         var pdfData = new OrderPdfData(
             order.PublicId.ToString(),
             order.OrderDate,
-            tenant.Name,          // proveri da li Order.Tenant navigation property postoji/Include-ovan
+            tenant.Name,
             tenant.PIB,
             tenant.Address,
             order.Supplier!.Name,
