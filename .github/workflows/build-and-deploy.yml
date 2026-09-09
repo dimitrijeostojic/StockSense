@@ -75,11 +75,25 @@ jobs:
 
       - name: Apply migrations
         uses: azure/sql-action@v2
+        continue-on-error: true
+        with:
+          connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
+          path: ./sql/app.sql
+
+      - name: Apply migrations (retry)
+        uses: azure/sql-action@v2
         with:
           connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
           path: ./sql/app.sql
 
       - name: Apply auth migrations
+        uses: azure/sql-action@v2
+        continue-on-error: true
+        with:
+          connection-string: ${{ secrets.AUTH_CONNECTION_STRING }}
+          path: ./sql/auth.sql
+
+      - name: Apply auth migrations (retry)
         uses: azure/sql-action@v2
         with:
           connection-string: ${{ secrets.AUTH_CONNECTION_STRING }}
