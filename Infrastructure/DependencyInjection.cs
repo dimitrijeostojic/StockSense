@@ -9,6 +9,7 @@ using Infrastructure.Data.Interceptors;
 using Infrastructure.Interceptors;
 using Infrastructure.InternalServiceInterfaces;
 using Infrastructure.Options;
+using Infrastructure.Pdf;
 using Infrastructure.RepositoryImplementations;
 using Infrastructure.RepositoryImplementations.Cached;
 using Infrastructure.Services;
@@ -17,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
+using QuestPDF.Infrastructure;
 
 namespace Infrastructure;
 
@@ -55,6 +57,8 @@ public static class DependencyInjection
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
 
+        QuestPDF.Settings.License = LicenseType.Community;
+
         services.AddIdentityCore<ApplicationUser>() //konfiguracija identity servisa
           .AddRoles<IdentityRole>() //dodavanje podrske za role
                                     //.AddTokenProvider<DataProtectorTokenProvider<User>>("") //dodavanje token provajdera
@@ -92,6 +96,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<INotificationSender<EmailMessageDto>, EmailSender>();
+        services.AddScoped<IOrderPdfGenerator, OrderPdfGenerator>();
         return services;
     }
 
