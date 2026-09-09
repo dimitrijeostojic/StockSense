@@ -35,6 +35,8 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddHealthChecks();
 
+builder.Services.AddApplicationInsightsTelemetry();
+
 #region ConfigureOptions
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();

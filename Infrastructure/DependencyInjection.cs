@@ -30,6 +30,7 @@ public static class DependencyInjection
 
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
         services.AddScoped<ConvertDomainEventToOutboxMessagesInterceptor>();
+
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IAuthUnitOfWork>(sp => sp.GetRequiredService<AuthDbContext>());
 
@@ -96,7 +97,6 @@ public static class DependencyInjection
 
     public static IServiceCollection ConfigureBackgroundJobs(this IServiceCollection services)
     {
-
         services.AddQuartz(configure =>
         {
             var jobKey = JobKey.Create(nameof(ProcessOutboxMessagesJob));
