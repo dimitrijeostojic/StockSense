@@ -73,27 +73,30 @@ jobs:
           name: sql
           path: sql
 
-      - name: Apply migrations
-        uses: azure/sql-action@v2
+      - name: Wake up database
         continue-on-error: true
+        uses: azure/sql-action@v2
         with:
           connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
           path: ./sql/app.sql
 
-      - name: Apply migrations (retry)
+      - name: Wake up auth database
+        continue-on-error: true
+        uses: azure/sql-action@v2
+        with:
+          connection-string: ${{ secrets.AUTH_CONNECTION_STRING }}
+          path: ./sql/auth.sql
+
+      - name: Wait for databases to wake up
+        run: sleep 90
+
+      - name: Apply migrations
         uses: azure/sql-action@v2
         with:
           connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
           path: ./sql/app.sql
 
       - name: Apply auth migrations
-        uses: azure/sql-action@v2
-        continue-on-error: true
-        with:
-          connection-string: ${{ secrets.AUTH_CONNECTION_STRING }}
-          path: ./sql/auth.sql
-
-      - name: Apply auth migrations (retry)
         uses: azure/sql-action@v2
         with:
           connection-string: ${{ secrets.AUTH_CONNECTION_STRING }}
