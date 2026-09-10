@@ -14,8 +14,9 @@ internal static class EntityFactory
 
     public static Supplier CreateSupplier(
         string name = "Test Supplier",
+        string contactEmail = "contact@test.com",
         Guid? tenantId = null)
-        => Supplier.CreateSupplier(name, "Contact", "contact@test.com", "000", tenantId ?? Guid.NewGuid());
+        => Supplier.CreateSupplier(name, "Contact", contactEmail, "000", tenantId ?? Guid.NewGuid());
 
     public static Product CreateProduct(
         string name = "Test Product",

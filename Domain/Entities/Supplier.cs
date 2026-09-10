@@ -36,7 +36,7 @@ public class Supplier : AggregateRoot
         ContactName = contactName;
         return this;
     }
-    public Supplier WithContactEmail(string? contactEmail)
+    public Supplier WithContactEmail(string contactEmail)
     {
         ContactEmail = contactEmail;
         return this;

@@ -58,7 +58,7 @@ internal sealed class BulkImportProductRequestHandler(
 
                 if (!supplierCache.TryGetValue(record.SupplierName, out var supplier))
                 {
-                    supplier = Supplier.CreateSupplier(record.SupplierName, null, null, null, tenantPublicId);
+                    supplier = Supplier.CreateSupplier(record.SupplierName, record.ContactName, record.ContactEmail, null, tenantPublicId);
                     await _supplierRepository.AddAsync(supplier, cancellationToken);
                     supplierCache[record.SupplierName] = supplier;
                 }

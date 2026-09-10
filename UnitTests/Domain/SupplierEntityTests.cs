@@ -23,17 +23,16 @@ public sealed class SupplierEntityTests
     [Fact]
     public void CreateSupplier_WithNullOptionalFields_StoresNulls()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, null, null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
 
         supplier.ContactName.Should().BeNull();
-        supplier.ContactEmail.Should().BeNull();
         supplier.ContactPhone.Should().BeNull();
     }
 
     [Fact]
     public void CreateSupplier_AssignsNewPublicId()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, null, null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
 
         supplier.PublicId.Should().NotBe(Guid.Empty);
     }
@@ -41,7 +40,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void CreateSupplier_HasEmptyOrdersAndProducts()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, null, null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
 
         supplier.Orders.Should().BeEmpty();
         supplier.Products.Should().BeEmpty();
@@ -50,7 +49,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithName_UpdatesName()
     {
-        var supplier = Supplier.CreateSupplier("Old", null, null, null, TenantId);
+        var supplier = Supplier.CreateSupplier("Old", null, "test@test.com", null, TenantId);
 
         supplier.WithName("New");
 
@@ -60,7 +59,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithContactName_UpdatesContactName()
     {
-        var supplier = Supplier.CreateSupplier("Acme", "Jane", null, null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "Jane", "test@test.com", null, TenantId);
 
         supplier.WithContactName("Alice");
 
@@ -80,7 +79,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithContactPhone_UpdatesContactPhone()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, null, "000", TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", "000", TenantId);
 
         supplier.WithContactPhone("999");
 
@@ -90,7 +89,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithName_ReturnsSameInstance()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, null, null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
 
         var returned = supplier.WithName("Other");
 

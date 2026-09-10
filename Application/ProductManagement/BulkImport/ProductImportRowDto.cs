@@ -8,4 +8,6 @@ public sealed class ProductImportRowDto
     public int MinimumStockQuantity { get; set; }
     public string CategoryName { get; set; } = string.Empty;
     public string SupplierName { get; set; } = string.Empty;
+    public string ContactEmail { get; set; } = string.Empty;
+    public string ContactName { get; set; } = string.Empty;
 }
