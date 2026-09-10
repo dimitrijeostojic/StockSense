@@ -17,6 +17,7 @@ internal sealed class LowStockDomainEventHandler(
     IProductRepository productRepository
     ) : INotificationHandler<LowStockDomainEvent>
 {
+    private const string _message = "Low stock triggered for Product {ProductId} in Tenant {TenantId}, current stock: {CurrentStock}";
     private readonly ILogger<LowStockDomainEvent> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -25,13 +26,11 @@ internal sealed class LowStockDomainEventHandler(
 
     public async Task Handle(LowStockDomainEvent notification, CancellationToken cancellationToken)
     {
-        string message = $"{notification.TenantPublicId} - {notification.ProductPublicId} - {notification.CurrentStock}";
-        _logger.LogInformation(message: message);
+        _logger.LogInformation(_message, notification.ProductPublicId, notification.TenantPublicId, notification.CurrentStock);
 
         var tenant = await _tenantRepository.GetByPublicIdAsync(notification.TenantPublicId, cancellationToken);
         if (tenant is null || tenant.ApplicationUsers.Count == 0)
         {
-            _logger.LogError("Tenant is null");
             return;
         }
         var product = await _productRepository.GetByPublicIdAsync(notification.ProductPublicId, notification.TenantPublicId, cancellationToken);
