@@ -1,4 +1,5 @@
 ﻿using Application.Common.Constants;
+using Application.ProductManagement.BulkImport;
 using Application.ProductManagement.CreateProduct;
 using Application.ProductManagement.CreateStockEntry;
 using Application.ProductManagement.DeleteProduct;
@@ -99,6 +100,16 @@ public class ProductController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetCurrentStockAsync([FromRoute] Guid publicId, CancellationToken cancellationToken)
     {
         var request = new GetCurrentStockRequest(publicId);
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("bulk-import")]
+    public async Task<IActionResult> BulkImportProductsAsync(IFormFile file, CancellationToken cancellationToken)
+    {
+        using var memoryStream = new MemoryStream();
+        await file.CopyToAsync(memoryStream, cancellationToken);
+        var request = new BulkImportProductRequest(memoryStream.ToArray());
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }
