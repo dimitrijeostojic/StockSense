@@ -2,4 +2,4 @@
 
 namespace Domain.Events;
 
-public sealed record LowStockDomainEvent(Guid ProductPublicId, int Quantity) : IDomainEvent;
+public sealed record LowStockDomainEvent(Guid ProductPublicId, Guid TenantPublicId, int CurrentStock) : IDomainEvent;

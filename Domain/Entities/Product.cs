@@ -47,7 +47,7 @@ public class Product : AggregateRoot
         var currentStock = StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity);
         if (currentStock < MinimumStockQuantity)
         {
-            RaiseDomainEvent(new LowStockDomainEvent(PublicId, currentStock));
+            RaiseDomainEvent(new LowStockDomainEvent(PublicId, TenantPublicId, currentStock));
         }
         return entry;
     }

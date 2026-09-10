@@ -175,6 +175,7 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/openapi/v1.json", "StockSense API V1");
     });
+    await app.ApplyMigrationAsync();
 }
 app.UseCors("Default");
 app.UseHttpsRedirection();
@@ -182,11 +183,6 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
-
-if (app.Environment.IsDevelopment())
-{
-    await app.ApplyMigrationAsync();
-}
 
 app.MapHealthChecks("/health");
 

@@ -4,6 +4,29 @@ namespace Application.Emails;
 
 internal static class EmailTemplates
 {
+
+    public static EmailMessageDto LowStockAlert(string to, string firstName, string productName, int currentStock, int minimumStockQuantity, string supplierName)
+    {
+        var subject = $"Low stock alert: {productName}";
+        var body = $"""
+        Hi {firstName},
+
+        This is a heads-up that one of your products has dropped below its minimum stock level.
+
+        Product:          {productName}
+        Current stock:    {currentStock}
+        Minimum required: {minimumStockQuantity}
+        Supplier:         {supplierName}
+
+        It might be a good time to place a new order with {supplierName} before you run out completely. You can create a new order directly from your StockSense dashboard.
+
+        We'll keep monitoring your stock levels and let you know if anything else needs your attention.
+
+        — The StockSense Team
+        """;
+
+        return new EmailMessageDto(to, subject, body);
+    }
     public static EmailMessageDto Welcome(string to, string firstName, string companyName)
     {
         var subject = $"Welcome to StockSense, {firstName}!";
