@@ -38,7 +38,7 @@ public class SupplierController(IMediator mediator) : ControllerBase
     [HttpPut("{publicId:Guid}")]
     public async Task<IActionResult> UpdateSupplierAsync([FromRoute] Guid publicId, [FromBody] UpdateSupplierRequestBody requestBody, CancellationToken cancellationToken)
     {
-        var request = new UpdateSupplierRequest(publicId, requestBody.Name, requestBody.ContactName, requestBody.ContactEmail, requestBody.ContactPhone);
+        var request = new UpdateSupplierRequest(publicId, requestBody.Name, requestBody.ContactName, requestBody.ContactEmail, requestBody.SupplierCode, requestBody.ContactPhone, requestBody.Address, requestBody.City, requestBody.Country);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

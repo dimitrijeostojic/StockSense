@@ -16,7 +16,7 @@ internal static class EntityFactory
         string name = "Test Supplier",
         string contactEmail = "contact@test.com",
         Guid? tenantId = null)
-        => Supplier.CreateSupplier(name, "Contact", contactEmail, "000", tenantId ?? Guid.NewGuid());
+        => Supplier.CreateSupplier(name, "Contact", contactEmail, "SUP-001", null, null, null, null, tenantId ?? Guid.NewGuid());
 
     public static Product CreateProduct(
         string name = "Test Product",
@@ -25,7 +25,7 @@ internal static class EntityFactory
         int categoryId = 1,
         int supplierId = 1,
         Guid? tenantId = null)
-        => Product.CreateProduct(name, null, price, minimumStock, categoryId, supplierId, tenantId ?? Guid.NewGuid());
+        => Product.CreateProduct(name, "SKU-001", null, price, minimumStock, UnitOfMeasurement.Piece, categoryId, supplierId, tenantId ?? Guid.NewGuid());
 
     public static Product CreateProductWithNavigation(
         string name = "Test Product",

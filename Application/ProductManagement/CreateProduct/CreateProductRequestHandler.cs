@@ -34,9 +34,11 @@ internal sealed class CreateProductRequestHandler(
 
         var product = Domain.Entities.Product.CreateProduct(
             request.Name,
+            request.Sku,
             request.Description,
             request.Price,
             request.MinimumStockQuantity,
+            request.UnitOfMeasurement,
             category.Id,
             supplier.Id,
             _currentUserAccessor.TenantPublicId);

@@ -38,7 +38,7 @@ internal sealed class ExportPDFRequestHandler(
             order.PublicId.ToString(),
             order.OrderDate,
             tenant.Name,
-            tenant.PIB,
+            tenant.Pib,
             tenant.Address,
             order.Supplier!.Name,
             order.Supplier.ContactEmail,

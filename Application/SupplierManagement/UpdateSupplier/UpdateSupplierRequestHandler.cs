@@ -28,7 +28,11 @@ internal sealed class UpdateSupplierRequestHandler(
         supplier = supplier.WithName(request.Name)
             .WithContactName(request.ContactName)
             .WithContactEmail(request.ContactEmail)
-            .WithContactPhone(request.ContactPhone);
+            .WithSupplierCode(request.SupplierCode)
+            .WithContactPhone(request.ContactPhone)
+            .WithAddress(request.Address)
+            .WithCity(request.City)
+            .WithCountry(request.Country);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         var response = new UpdateSupplierResponse(

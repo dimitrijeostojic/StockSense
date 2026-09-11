@@ -7,5 +7,9 @@ public sealed record CreateSupplierRequest(
     string Name,
     string ContactName,
     string ContactEmail,
-    string? ContactPhone)
+    string SupplierCode,
+    string? ContactPhone,
+    string? Address,
+    string? City,
+    string? Country)
     : IRequest<TResult<CreateSupplierResponse>>;

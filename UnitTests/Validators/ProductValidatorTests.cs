@@ -1,5 +1,6 @@
 using Application.ProductManagement.CreateProduct;
 using Application.ProductManagement.UpdateProduct;
+using Domain.Enums;
 using FluentValidation.TestHelper;
 using Xunit;
 
@@ -13,8 +14,8 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithAllValidFields_HasNoErrors()
     {
         var request = new CreateProductRequest(
-            "Widget", "A widget", 9.99m, 5,
-            Guid.NewGuid(), Guid.NewGuid());
+            "Widget", "SKU-001", "A widget", 9.99m, 5,
+            UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -27,7 +28,7 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithEmptyName_HasErrorForName(string? name)
     {
         var request = new CreateProductRequest(
-            name!, null, 1m, 0, Guid.NewGuid(), Guid.NewGuid());
+            name!, "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -39,11 +40,24 @@ public sealed class CreateProductValidatorTests
     {
         var longName = new string('X', 101);
         var request = new CreateProductRequest(
-            longName, null, 1m, 0, Guid.NewGuid(), Guid.NewGuid());
+            longName, "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
         result.ShouldHaveValidationErrorFor(x => x.Name);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void Validate_WithEmptySku_HasErrorForSku(string? sku)
+    {
+        var request = new CreateProductRequest(
+            "Widget", sku!, null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
+
+        var result = _sut.TestValidate(request);
+
+        result.ShouldHaveValidationErrorFor(x => x.Sku);
     }
 
     [Theory]
@@ -53,7 +67,7 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithPriceZeroOrNegative_HasErrorForPrice(decimal price)
     {
         var request = new CreateProductRequest(
-            "Widget", null, price, 0, Guid.NewGuid(), Guid.NewGuid());
+            "Widget", "SKU-001", null, price, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -65,7 +79,7 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithNegativeMinimumStockQuantity_HasErrorForMinimumStockQuantity()
     {
         var request = new CreateProductRequest(
-            "Widget", null, 1m, -1, Guid.NewGuid(), Guid.NewGuid());
+            "Widget", "SKU-001", null, 1m, -1, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -76,7 +90,7 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithZeroMinimumStockQuantity_HasNoErrorForMinimumStockQuantity()
     {
         var request = new CreateProductRequest(
-            "Widget", null, 1m, 0, Guid.NewGuid(), Guid.NewGuid());
+            "Widget", "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -87,7 +101,7 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithEmptyCategoryPublicId_HasErrorForCategoryPublicId()
     {
         var request = new CreateProductRequest(
-            "Widget", null, 1m, 0, Guid.Empty, Guid.NewGuid());
+            "Widget", "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.Empty, Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -98,7 +112,7 @@ public sealed class CreateProductValidatorTests
     public void Validate_WithEmptySupplierPublicId_HasErrorForSupplierPublicId()
     {
         var request = new CreateProductRequest(
-            "Widget", null, 1m, 0, Guid.NewGuid(), Guid.Empty);
+            "Widget", "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.Empty);
 
         var result = _sut.TestValidate(request);
 
@@ -110,7 +124,7 @@ public sealed class CreateProductValidatorTests
     {
         var longDesc = new string('D', 256);
         var request = new CreateProductRequest(
-            "Widget", longDesc, 1m, 0, Guid.NewGuid(), Guid.NewGuid());
+            "Widget", "SKU-001", longDesc, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -126,8 +140,8 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithAllValidFields_HasNoErrors()
     {
         var request = new UpdateProductRequest(
-            Guid.NewGuid(), "Widget", "desc", 9.99m, 5,
-            Guid.NewGuid(), Guid.NewGuid());
+            Guid.NewGuid(), "Widget", "SKU-001", "desc", 9.99m, 5,
+            UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -138,7 +152,7 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithEmptyProductPublicId_HasError()
     {
         var request = new UpdateProductRequest(
-            Guid.Empty, "Widget", null, 1m, 0, Guid.NewGuid(), Guid.NewGuid());
+            Guid.Empty, "Widget", "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -151,7 +165,7 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithEmptyName_HasError(string? name)
     {
         var request = new UpdateProductRequest(
-            Guid.NewGuid(), name!, null, 1m, 0, Guid.NewGuid(), Guid.NewGuid());
+            Guid.NewGuid(), name!, "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -164,7 +178,7 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithPriceNotGreaterThanZero_HasError(decimal price)
     {
         var request = new UpdateProductRequest(
-            Guid.NewGuid(), "Widget", null, price, 0, Guid.NewGuid(), Guid.NewGuid());
+            Guid.NewGuid(), "Widget", "SKU-001", null, price, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -175,7 +189,7 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithNegativeMinimumStockQuantity_HasError()
     {
         var request = new UpdateProductRequest(
-            Guid.NewGuid(), "Widget", null, 1m, -1, Guid.NewGuid(), Guid.NewGuid());
+            Guid.NewGuid(), "Widget", "SKU-001", null, 1m, -1, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -186,7 +200,7 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithEmptyCategoryId_HasError()
     {
         var request = new UpdateProductRequest(
-            Guid.NewGuid(), "Widget", null, 1m, 0, Guid.Empty, Guid.NewGuid());
+            Guid.NewGuid(), "Widget", "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.Empty, Guid.NewGuid());
 
         var result = _sut.TestValidate(request);
 
@@ -197,7 +211,7 @@ public sealed class UpdateProductValidatorTests
     public void Validate_WithEmptySupplierId_HasError()
     {
         var request = new UpdateProductRequest(
-            Guid.NewGuid(), "Widget", null, 1m, 0, Guid.NewGuid(), Guid.Empty);
+            Guid.NewGuid(), "Widget", "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.Empty);
 
         var result = _sut.TestValidate(request);
 

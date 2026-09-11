@@ -45,6 +45,7 @@ internal sealed class BulkImportProductRequestHandler(
         csv.ReadHeader();
         while (csv.Read())
         {
+            rowNumber++;
             try
             {
                 var record = csv.GetRecord<ProductImportRowDto>();
@@ -58,21 +59,32 @@ internal sealed class BulkImportProductRequestHandler(
 
                 if (!supplierCache.TryGetValue(record.SupplierName, out var supplier))
                 {
-                    supplier = Supplier.CreateSupplier(record.SupplierName, record.ContactName, record.ContactEmail, null, tenantPublicId);
+                    supplier = Supplier.CreateSupplier(record.SupplierName, record.ContactName, record.ContactEmail, record.SupplierCode, null, null, null, null, tenantPublicId);
                     await _supplierRepository.AddAsync(supplier, cancellationToken);
                     supplierCache[record.SupplierName] = supplier;
                 }
 
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                if (!UnitOfMeasurementParser.TryParse(record.UnitOfMeasurement, out var unitOfMeasure))
+                {
+                    errors.Add(new ImportRowError(
+                        rowNumber,
+                        $"Unknown unit of measurement '{record.UnitOfMeasurement}'. Allowed: {UnitOfMeasurementParser.AllowedValues}"));
+                    continue;
+                }
 
                 var product = Product.CreateProduct(
                     record.Name,
+                    record.Sku,
                     record.Description,
                     record.Price,
                     record.MinimumStockQuantity,
+                    unitOfMeasure,
                     category.Id,
                     supplier.Id,
                     tenantPublicId);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 await _productRepository.AddAsync(product, cancellationToken);
                 successCount++;

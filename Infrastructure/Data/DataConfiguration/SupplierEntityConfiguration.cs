@@ -14,7 +14,11 @@ internal sealed class SupplierEntityConfiguration : IEntityTypeConfiguration<Sup
         builder.Property(s => s.Name).HasMaxLength(100).IsRequired();
         builder.Property(s => s.ContactName).HasMaxLength(100).IsRequired();
         builder.Property(s => s.ContactEmail).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.SupplierCode).HasMaxLength(20).IsRequired();
         builder.Property(s => s.ContactPhone).HasMaxLength(100);
+        builder.Property(s => s.Address).HasMaxLength(100);
+        builder.Property(s => s.City).HasMaxLength(100);
+        builder.Property(s => s.Country).HasMaxLength(100);
         builder.Property(c => c.CreatedBy).IsRequired().HasMaxLength(255);
         builder.Property(c => c.ModifiedBy).HasMaxLength(255);
 

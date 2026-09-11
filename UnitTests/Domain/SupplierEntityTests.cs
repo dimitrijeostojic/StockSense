@@ -11,11 +11,12 @@ public sealed class SupplierEntityTests
     [Fact]
     public void CreateSupplier_WithValidInputs_ReturnsSupplierWithExpectedValues()
     {
-        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "123456", TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "SUP-001", "123456", null, null, null, TenantId);
 
         supplier.Name.Should().Be("Acme");
         supplier.ContactName.Should().Be("John");
         supplier.ContactEmail.Should().Be("john@acme.com");
+        supplier.SupplierCode.Should().Be("SUP-001");
         supplier.ContactPhone.Should().Be("123456");
         supplier.TenantPublicId.Should().Be(TenantId);
     }
@@ -23,16 +24,18 @@ public sealed class SupplierEntityTests
     [Fact]
     public void CreateSupplier_WithNullOptionalFields_StoresNulls()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "SUP-001", null, null, null, null, TenantId);
 
-        supplier.ContactName.Should().BeNull();
         supplier.ContactPhone.Should().BeNull();
+        supplier.Address.Should().BeNull();
+        supplier.City.Should().BeNull();
+        supplier.Country.Should().BeNull();
     }
 
     [Fact]
     public void CreateSupplier_AssignsNewPublicId()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "SUP-001", null, null, null, null, TenantId);
 
         supplier.PublicId.Should().NotBe(Guid.Empty);
     }
@@ -40,7 +43,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void CreateSupplier_HasEmptyOrdersAndProducts()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "SUP-001", null, null, null, null, TenantId);
 
         supplier.Orders.Should().BeEmpty();
         supplier.Products.Should().BeEmpty();
@@ -49,7 +52,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithName_UpdatesName()
     {
-        var supplier = Supplier.CreateSupplier("Old", null, "test@test.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Old", "John", "john@acme.com", "SUP-001", null, null, null, null, TenantId);
 
         supplier.WithName("New");
 
@@ -59,7 +62,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithContactName_UpdatesContactName()
     {
-        var supplier = Supplier.CreateSupplier("Acme", "Jane", "test@test.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "Jane", "jane@acme.com", "SUP-001", null, null, null, null, TenantId);
 
         supplier.WithContactName("Alice");
 
@@ -69,7 +72,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithContactEmail_UpdatesContactEmail()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, "old@mail.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "old@mail.com", "SUP-001", null, null, null, null, TenantId);
 
         supplier.WithContactEmail("new@mail.com");
 
@@ -79,7 +82,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithContactPhone_UpdatesContactPhone()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", "000", TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "SUP-001", "000", null, null, null, TenantId);
 
         supplier.WithContactPhone("999");
 
@@ -89,7 +92,7 @@ public sealed class SupplierEntityTests
     [Fact]
     public void WithName_ReturnsSameInstance()
     {
-        var supplier = Supplier.CreateSupplier("Acme", null, "test@test.com", null, TenantId);
+        var supplier = Supplier.CreateSupplier("Acme", "John", "john@acme.com", "SUP-001", null, null, null, null, TenantId);
 
         var returned = supplier.WithName("Other");
 

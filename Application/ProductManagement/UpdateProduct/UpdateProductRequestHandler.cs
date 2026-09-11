@@ -32,9 +32,11 @@ internal sealed class UpdateProductRequestHandler(
             return TResult<UpdateProductResponse>.Failure(ApplicationErrors.NotFound);
         }
         product = product.WithName(request.Name)
+            .WithSku(request.Sku)
             .WithDescription(request.Description)
             .WithPrice(request.Price)
             .WithMinimumStockQuantity(request.MinimumStockQuantity)
+            .WithUnitOfMeasurement(request.UnitOfMeasurement)
             .WithCategoryId(category.Id)
             .WithSupplierId(supplier.Id);
 
@@ -42,9 +44,11 @@ internal sealed class UpdateProductRequestHandler(
         var response = new UpdateProductResponse(
             product.PublicId,
             product.Name,
+            product.Sku,
             product.Description,
             product.Price,
             product.MinimumStockQuantity,
+            product.UnitOfMeasure,
             category.PublicId,
             category.Name,
             supplier.PublicId,

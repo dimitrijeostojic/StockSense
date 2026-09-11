@@ -40,7 +40,7 @@ internal sealed class RegisterRequestHandler
             return TResult<RegisterResponse>.Failure(ApplicationErrors.EmailAlreadyExists);
         }
 
-        var existingTenant = await _tenantRepository.GetByPIBAsync(request.PIB, cancellationToken);
+        var existingTenant = await _tenantRepository.GetByPibAsync(request.PIB, cancellationToken);
         if (existingTenant != null)
         {
             return TResult<RegisterResponse>.Failure(ApplicationErrors.PIBAlreadyExists);
@@ -50,7 +50,7 @@ internal sealed class RegisterRequestHandler
         try
         {
 
-            var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address);
+            var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address, request.LogoUrl);
             await _tenantRepository.AddAsync(tenant, cancellationToken);
             await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 

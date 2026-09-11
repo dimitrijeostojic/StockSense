@@ -15,11 +15,14 @@ public sealed class UpdateSupplierValidator
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
 
         RuleFor(x => x.ContactName)
-           .MaximumLength(255)
-           .WithMessage("Supplier contact name must not exceed 255 characters.");
+            .NotEmpty().WithMessage("Contact name is required.")
+            .MaximumLength(255).WithMessage("Supplier contact name must not exceed 255 characters.");
         RuleFor(x => x.ContactEmail)
-            .MaximumLength(255)
-            .WithMessage("Supplier contact email must not exceed 255 characters.");
+            .NotEmpty().WithMessage("Contact email is required.")
+            .MaximumLength(255).WithMessage("Supplier contact email must not exceed 255 characters.");
+        RuleFor(x => x.SupplierCode)
+            .NotEmpty().WithMessage("Supplier code is required.")
+            .MaximumLength(20).WithMessage("Supplier code must not exceed 20 characters.");
         RuleFor(x => x.ContactPhone)
             .MaximumLength(20)
             .WithMessage("Supplier contact phone must not exceed 20 characters.");

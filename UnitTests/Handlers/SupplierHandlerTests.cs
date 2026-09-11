@@ -32,7 +32,7 @@ public sealed class CreateSupplierRequestHandlerTests
     [Fact]
     public async Task Handle_WithValidRequest_ReturnsSuccess()
     {
-        var request = new CreateSupplierRequest("Acme", "John", "j@j.com", "000");
+        var request = new CreateSupplierRequest("Acme", "John", "j@j.com", "SUP-001", "000", null, null, null);
 
         var result = await _sut.Handle(request, CancellationToken.None);
 
@@ -44,7 +44,7 @@ public sealed class CreateSupplierRequestHandlerTests
     [Fact]
     public async Task Handle_WithValidRequest_AddsSupplierAndSaves()
     {
-        var request = new CreateSupplierRequest("Acme", "John", null, "000");
+        var request = new CreateSupplierRequest("Acme", "John", "john@acme.com", "SUP-001", null, null, null, null);
 
         await _sut.Handle(request, CancellationToken.None);
 
@@ -56,14 +56,12 @@ public sealed class CreateSupplierRequestHandlerTests
     [Fact]
     public async Task Handle_WithNullOptionalFields_ReturnsSuccessWithNullFields()
     {
-        var request = new CreateSupplierRequest("Acme", null!, null, null!);
+        var request = new CreateSupplierRequest("Acme", "John", "john@acme.com", "SUP-001", null, null, null, null);
 
         var result = await _sut.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value!.ContactName.Should().BeNull();
-        result.Value.ContactEmail.Should().BeNull();
-        result.Value.ContactPhone.Should().BeNull();
+        result.Value!.ContactPhone.Should().BeNull();
     }
 }
 
@@ -183,7 +181,7 @@ public sealed class UpdateSupplierRequestHandlerTests
         _supplierRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateSupplier("Old Name"));
 
-        var request = new UpdateSupplierRequest(publicId, "New Name", "Alice", "a@a.com", "111");
+        var request = new UpdateSupplierRequest(publicId, "New Name", "Alice", "a@a.com", "SUP-002", "111", null, null, null);
         var result = await _sut.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -198,7 +196,7 @@ public sealed class UpdateSupplierRequestHandlerTests
         _supplierRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateSupplier());
 
-        await _sut.Handle(new UpdateSupplierRequest(publicId, "Name", null, null, null), CancellationToken.None);
+        await _sut.Handle(new UpdateSupplierRequest(publicId, "Name", "Contact", "contact@test.com", "SUP-001", null, null, null, null), CancellationToken.None);
 
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -210,7 +208,7 @@ public sealed class UpdateSupplierRequestHandlerTests
             .Returns((DomainSupplier?)null);
 
         var result = await _sut.Handle(
-            new UpdateSupplierRequest(Guid.NewGuid(), "Name", null, null, null), CancellationToken.None);
+            new UpdateSupplierRequest(Guid.NewGuid(), "Name", "Contact", "contact@test.com", "SUP-001", null, null, null, null), CancellationToken.None);
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(ApplicationErrors.NotFound);
@@ -223,7 +221,7 @@ public sealed class UpdateSupplierRequestHandlerTests
             .Returns((DomainSupplier?)null);
 
         await _sut.Handle(
-            new UpdateSupplierRequest(Guid.NewGuid(), "Name", null, null, null), CancellationToken.None);
+            new UpdateSupplierRequest(Guid.NewGuid(), "Name", "Contact", "contact@test.com", "SUP-001", null, null, null, null), CancellationToken.None);
 
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }

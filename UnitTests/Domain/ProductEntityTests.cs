@@ -15,7 +15,7 @@ public sealed class ProductEntityTests
         int minStock = 5,
         int categoryId = 1,
         int supplierId = 1)
-        => Product.CreateProduct(name, null, price, minStock, categoryId, supplierId, TenantId);
+        => Product.CreateProduct(name, "SKU-001", null, price, minStock, UnitOfMeasurement.Piece, categoryId, supplierId, TenantId);
 
     [Fact]
     public void CreateProduct_WithValidInputs_ReturnsProductWithExpectedValues()
@@ -41,7 +41,7 @@ public sealed class ProductEntityTests
     [Fact]
     public void CreateProduct_WithNullName_ThrowsArgumentException()
     {
-        var act = () => Product.CreateProduct(null!, null, 1m, 0, 1, 1, TenantId);
+        var act = () => Product.CreateProduct(null!, "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, 1, 1, TenantId);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -49,7 +49,7 @@ public sealed class ProductEntityTests
     [Fact]
     public void CreateProduct_WithEmptyName_ThrowsArgumentException()
     {
-        var act = () => Product.CreateProduct(string.Empty, null, 1m, 0, 1, 1, TenantId);
+        var act = () => Product.CreateProduct(string.Empty, "SKU-001", null, 1m, 0, UnitOfMeasurement.Piece, 1, 1, TenantId);
 
         act.Should().Throw<ArgumentException>();
     }

@@ -14,6 +14,13 @@ public sealed class UpdateProductValidator
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
 
+        RuleFor(x => x.Sku)
+            .NotEmpty().WithMessage("SKU is required.")
+            .MaximumLength(20).WithMessage("SKU must not exceed 20 characters.");
+
+        RuleFor(x => x.UnitOfMeasurement)
+            .IsInEnum().WithMessage("Invalid unit of measurement.");
+
         RuleFor(x => x.Description)
             .MaximumLength(255).WithMessage("Description must not exceed 255 characters.");
 

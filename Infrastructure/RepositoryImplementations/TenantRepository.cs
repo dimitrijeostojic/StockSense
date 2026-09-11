@@ -29,9 +29,9 @@ public sealed class TenantRepository(AuthDbContext authDbContext) : ITenantRepos
         return await _authDbContext.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId, cancellationToken);
     }
 
-    public async Task<Tenant?> GetByPIBAsync(string PIB, CancellationToken cancellationToken = default)
+    public async Task<Tenant?> GetByPibAsync(string pib, CancellationToken cancellationToken = default)
     {
-        return await _authDbContext.Tenants.FirstOrDefaultAsync(t => t.PIB == PIB, cancellationToken);
+        return await _authDbContext.Tenants.FirstOrDefaultAsync(t => t.Pib == pib, cancellationToken);
     }
 
     public async Task<Tenant?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default)

@@ -6,6 +6,7 @@ using Application.ProductManagement.GetAllProducts;
 using Application.ProductManagement.GetProductById;
 using Application.ProductManagement.UpdateProduct;
 using Domain.Abstractions;
+using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
 using NSubstitute;
@@ -36,7 +37,7 @@ public sealed class CreateProductRequestHandlerTests
     }
 
     private static CreateProductRequest ValidRequest() => new(
-        "Widget", "A widget", 9.99m, 5, Guid.NewGuid(), Guid.NewGuid());
+        "Widget", "SKU-001", "A widget", 9.99m, 5, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
     [Fact]
     public async Task Handle_WhenCategoryAndSupplierExist_ReturnsSuccess()
@@ -234,8 +235,8 @@ public sealed class UpdateProductRequestHandlerTests
     }
 
     private static UpdateProductRequest ValidRequest() => new(
-        Guid.NewGuid(), "Updated Widget", "desc", 19.99m, 10,
-        Guid.NewGuid(), Guid.NewGuid());
+        Guid.NewGuid(), "Updated Widget", "SKU-002", "desc", 19.99m, 10,
+        UnitOfMeasurement.Kilogram, Guid.NewGuid(), Guid.NewGuid());
 
     [Fact]
     public async Task Handle_WhenAllEntitiesFound_UpdatesAndReturnsSuccess()

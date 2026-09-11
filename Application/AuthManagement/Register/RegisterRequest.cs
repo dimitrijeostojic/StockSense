@@ -11,4 +11,5 @@ public sealed record RegisterRequest(
     string Password,
     string CompanyName,
     string PIB,
-    string Address) : IRequest<TResult<RegisterResponse>>;
+    string? Address,
+    string? LogoUrl) : IRequest<TResult<RegisterResponse>>;

@@ -1,4 +1,4 @@
-﻿using Domain.Core;
+using Domain.Core;
 using MediatR;
 
 namespace Application.SupplierManagement.UpdateSupplier;
@@ -6,7 +6,11 @@ namespace Application.SupplierManagement.UpdateSupplier;
 public sealed record UpdateSupplierRequest(
     Guid SupplierPublicId,
     string Name,
-    string? ContactName,
-    string? ContactEmail,
-    string? ContactPhone)
+    string ContactName,
+    string ContactEmail,
+    string SupplierCode,
+    string? ContactPhone,
+    string? Address,
+    string? City,
+    string? Country)
     : IRequest<TResult<UpdateSupplierResponse>>;

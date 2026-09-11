@@ -21,8 +21,9 @@ public sealed class AuthDbContext(DbContextOptions<AuthDbContext> options) : Ide
         builder.Entity<Tenant>().ToTable("Tenants");
         builder.Entity<Tenant>().HasKey(o => o.Id);
         builder.Entity<Tenant>().Property(o => o.Name).IsRequired().HasMaxLength(255);
-        builder.Entity<Tenant>().Property(o => o.PIB).IsRequired().HasMaxLength(255);
-        builder.Entity<Tenant>().Property(o => o.Address).IsRequired().HasMaxLength(255);
+        builder.Entity<Tenant>().Property(o => o.Pib).IsRequired().HasMaxLength(255);
+        builder.Entity<Tenant>().Property(o => o.Address).HasMaxLength(255);
+        builder.Entity<Tenant>().Property(o => o.LogoUrl).HasMaxLength(255);
         builder.Entity<Tenant>()
             .HasMany(t => t.ApplicationUsers)
             .WithOne(u => u.Tenant)

@@ -23,7 +23,11 @@ internal sealed class CreateSupplierRequestHandler(
             request.Name,
             request.ContactName,
             request.ContactEmail,
+            request.SupplierCode,
             request.ContactPhone,
+            request.Address,
+            request.City,
+            request.Country,
             _currentUserAccessor.TenantPublicId);
 
         await _supplierRepository.AddAsync(supplierEntity, cancellationToken);
