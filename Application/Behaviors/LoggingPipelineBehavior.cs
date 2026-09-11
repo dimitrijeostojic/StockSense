@@ -8,7 +8,7 @@ public sealed class LoggingPipelineBehavior<TRequest, TResponse>(
     ILogger<LoggingPipelineBehavior<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
-    where TResponse : TResult<TResponse>
+    where TResponse : Result
 {
     public async Task<TResponse> Handle(
         TRequest request,
