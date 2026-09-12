@@ -50,7 +50,7 @@ internal sealed class RegisterRequestHandler
         try
         {
 
-            var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address, request.LogoUrl);
+            var tenant = Tenant.Create(request.CompanyName, request.PIB, request.Address, request.Logo);
             await _tenantRepository.AddAsync(tenant, cancellationToken);
             await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 

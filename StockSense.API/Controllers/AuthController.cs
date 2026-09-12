@@ -21,8 +21,28 @@ public class AuthController(IMediator mediator) : ControllerBase
 
     [HttpPost("register")]
     [EnableRateLimiting("Auth")]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request, CancellationToken cancellationToken)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> RegisterAsync(
+        [FromForm] string firstName,
+        [FromForm] string lastName,
+        [FromForm] string username,
+        [FromForm] string email,
+        [FromForm] string password,
+        [FromForm] string companyName,
+        [FromForm] string pib,
+        [FromForm] string? address,
+        IFormFile? logo,
+        CancellationToken cancellationToken)
     {
+        byte[]? logoBytes = null;
+        if (logo is not null)
+        {
+            using var ms = new MemoryStream();
+            await logo.CopyToAsync(ms, cancellationToken);
+            logoBytes = ms.ToArray();
+        }
+
+        var request = new RegisterRequest(firstName, lastName, username, email, password, companyName, pib, address, logoBytes);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

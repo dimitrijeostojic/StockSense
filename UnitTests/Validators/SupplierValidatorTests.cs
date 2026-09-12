@@ -64,20 +64,20 @@ public sealed class CreateSupplierValidatorTests
     }
 
     [Fact]
-    public void Validate_WithContactPhoneExceeding20Characters_HasError()
+    public void Validate_WithContactPhoneExceeding12Characters_HasError()
     {
-        var request = new CreateSupplierRequest("Acme", "John", "john@acme.com", "SUP-001", new string('9', 21), null, null, null);
+        var request = new CreateSupplierRequest("Acme", "John", "john@acme.com", "SUP-001", new string('9', 13), null, null, null);
 
         var result = _sut.TestValidate(request);
 
         result.ShouldHaveValidationErrorFor(x => x.ContactPhone)
-              .WithErrorMessage("Supplier contact phone must not exceed 20 characters.");
+              .WithErrorMessage("Supplier contact phone must not exceed 12 characters.");
     }
 
     [Fact]
-    public void Validate_WithContactPhoneExactly20Characters_HasNoError()
+    public void Validate_WithContactPhoneExactly12Characters_HasNoError()
     {
-        var request = new CreateSupplierRequest("Acme", "John", "john@acme.com", "SUP-001", new string('9', 20), null, null, null);
+        var request = new CreateSupplierRequest("Acme", "John", "john@acme.com", "SUP-001", new string('9', 12), null, null, null);
 
         var result = _sut.TestValidate(request);
 

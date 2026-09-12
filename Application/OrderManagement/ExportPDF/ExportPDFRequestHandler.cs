@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.Services;
+using Application.Abstractions.Services;
 using Application.Common.Errors;
 using Application.Common.Pdf;
 using Domain.Core;
@@ -40,11 +40,17 @@ internal sealed class ExportPDFRequestHandler(
             tenant.Name,
             tenant.Pib,
             tenant.Address,
+            tenant.Logo,
             order.Supplier!.Name,
-            order.Supplier.ContactEmail,
-            order.Supplier.ContactPhone,
-            [.. order.OrderItems.Select(oi => new OrderPdfItem(
-                oi.Product!.Name,
+            order.Supplier.Address,
+            order.Supplier.City,
+            order.Supplier.Country,
+            order.Notes,
+            [..order.OrderItems.Select(oi => new OrderPdfItem(
+                oi.Product!.Sku,
+                oi.Product.Name,
+                order.Supplier.SupplierCode,
+                oi.Product.UnitOfMeasure.ToString(),
                 oi.Quantity,
                 oi.UnitPrice))]);
 

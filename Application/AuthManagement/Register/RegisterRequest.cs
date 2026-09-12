@@ -12,4 +12,4 @@ public sealed record RegisterRequest(
     string CompanyName,
     string PIB,
     string? Address,
-    string? LogoUrl) : IRequest<TResult<RegisterResponse>>;
+    byte[]? Logo) : IRequest<TResult<RegisterResponse>>;

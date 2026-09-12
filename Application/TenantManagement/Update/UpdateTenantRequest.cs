@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.TenantManagement.Update;
 
-public sealed record UpdateTenantRequest(string Name, string? Address, string? LogoUrl) : IRequest<TResult<UpdateTenantResponse>>;
+public sealed record UpdateTenantRequest(string Name, string? Address, byte[]? Logo) : IRequest<TResult<UpdateTenantResponse>>;

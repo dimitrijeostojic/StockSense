@@ -24,8 +24,22 @@ public class TenantController(IMediator mediator) : ControllerBase
 
     [HttpPut]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> UpdateTenantAsync([FromBody] UpdateTenantRequest request, CancellationToken cancellationToken)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UpdateTenantAsync(
+        [FromForm] string name,
+        [FromForm] string? address,
+        IFormFile? logo,
+        CancellationToken cancellationToken)
     {
+        byte[]? logoBytes = null;
+        if (logo is not null)
+        {
+            using var ms = new MemoryStream();
+            await logo.CopyToAsync(ms, cancellationToken);
+            logoBytes = ms.ToArray();
+        }
+
+        var request = new UpdateTenantRequest(name, address, logoBytes);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

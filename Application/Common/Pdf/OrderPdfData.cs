@@ -1,12 +1,15 @@
-﻿namespace Application.Common.Pdf;
+namespace Application.Common.Pdf;
 
 public sealed record OrderPdfData(
     string OrderPublicId,
     DateTime OrderDate,
     string TenantName,
     string TenantPib,
-    string TenantAddress,
+    string? TenantAddress,
+    byte[]? TenantLogo,
     string SupplierName,
-    string? SupplierContactEmail,
-    string? SupplierContactPhone,
+    string? SupplierAddress,
+    string? SupplierCity,
+    string? SupplierCountry,
+    string? Notes,
     IReadOnlyCollection<OrderPdfItem> Items);

@@ -1,6 +1,6 @@
-﻿namespace Application.Common.Pdf;
+namespace Application.Common.Pdf;
 
-public sealed record OrderPdfItem(string ProductName, int Quantity, decimal UnitPrice)
+public sealed record OrderPdfItem(string Sku, string ProductName, string SupplierCode, string UnitOfMeasure, int Quantity, decimal UnitPrice)
 {
     public decimal Total => Quantity * UnitPrice;
 }

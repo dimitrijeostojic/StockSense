@@ -11,7 +11,5 @@ public sealed class UpdateTenantRequestValidator : AbstractValidator<UpdateTenan
             .MaximumLength(255).WithMessage("Name must not exceed 255 characters.");
         RuleFor(x => x.Address)
             .MaximumLength(255).WithMessage("Address must not exceed 255 characters.");
-        RuleFor(x => x.LogoUrl)
-            .MaximumLength(255).WithMessage("LogoUrl must not exceed 255 characters.");
     }
 }

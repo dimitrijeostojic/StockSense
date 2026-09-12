@@ -23,7 +23,7 @@ public sealed class AuthDbContext(DbContextOptions<AuthDbContext> options) : Ide
         builder.Entity<Tenant>().Property(o => o.Name).IsRequired().HasMaxLength(255);
         builder.Entity<Tenant>().Property(o => o.Pib).IsRequired().HasMaxLength(255);
         builder.Entity<Tenant>().Property(o => o.Address).HasMaxLength(255);
-        builder.Entity<Tenant>().Property(o => o.LogoUrl).HasMaxLength(255);
+        builder.Entity<Tenant>().Property(o => o.Logo).HasColumnType("varbinary(max)");
         builder.Entity<Tenant>()
             .HasMany(t => t.ApplicationUsers)
             .WithOne(u => u.Tenant)

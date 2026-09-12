@@ -26,7 +26,7 @@ internal sealed class GetMyTenantRequestHandler(
             tenant.Name,
             tenant.Pib,
             tenant.Address,
-            tenant.LogoUrl);
+            tenant.Logo);
         return TResult<GetMyTenantResponse>.Success(response);
     }
 }

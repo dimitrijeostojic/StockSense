@@ -26,10 +26,10 @@ internal sealed class UpdateTenantRequestHandler(
         }
         tenant.WithName(request.Name)
             .WithAddress(request.Address)
-            .WithLogoUrl(request.LogoUrl);
+            .WithLogo(request.Logo);
 
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 
-        return TResult<UpdateTenantResponse>.Success(new UpdateTenantResponse(tenant.PublicId, tenant.Name, tenant.Pib, tenant.Address, tenant.LogoUrl));
+        return TResult<UpdateTenantResponse>.Success(new UpdateTenantResponse(tenant.PublicId, tenant.Name, tenant.Pib, tenant.Address, tenant.Logo));
     }
 }
