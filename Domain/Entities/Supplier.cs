@@ -18,6 +18,14 @@ public class Supplier : AggregateRoot
     private readonly List<Product> _products = [];
     public Guid TenantPublicId { get; private set; }
 
+    private Supplier()
+    {
+        Name = string.Empty;
+        ContactName = string.Empty;
+        ContactEmail = string.Empty;
+        SupplierCode = string.Empty;
+    }
+
     private Supplier(string name, string contactName, string contactEmail, string supplierCode, string? contactPhone, string? address, string? city, string? country, Guid tenantPublicId)
     {
         Name = name;

@@ -39,6 +39,10 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
             {
                 query = query.Where(x => x.OrderStatus.ToString().Contains(filterQuery));
             }
+            if (filterOn.Equals("SupplierPublicId", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(x => x.Supplier != null && x.Supplier.PublicId.ToString().Contains(filterQuery));
+            }
         }
 
         //sort

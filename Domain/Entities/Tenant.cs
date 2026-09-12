@@ -27,6 +27,13 @@ public sealed class Tenant : Entity
         return new Tenant(name, pib, address, logoUrl);
     }
 
+    public Tenant WithName(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Name = name;
+        return this;
+    }
+
     public Tenant WithAddress(string? address)
     {
         Address = address;

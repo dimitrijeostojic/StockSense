@@ -1,4 +1,6 @@
-﻿namespace Application.ProductManagement.GetProductById;
+﻿using Domain.Enums;
+
+namespace Application.ProductManagement.GetProductById;
 
 public sealed record GetProductByIdResponse(
     Guid PublicId,
@@ -9,4 +11,5 @@ public sealed record GetProductByIdResponse(
     Guid CategoryPublicId,
     string CategoryName,
     Guid SupplierPublicId,
-    string SupplierName);
+    string SupplierName,
+    UnitOfMeasurement UnitOfMeasurement);

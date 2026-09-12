@@ -26,9 +26,13 @@ internal sealed class GetSupplierByIdRequestHandler(
         var response = new GetSupplierByIdResponse(
             supplier.PublicId,
             supplier.Name,
+            supplier.SupplierCode,
             supplier.ContactName,
             supplier.ContactEmail,
-            supplier.ContactPhone
+            supplier.ContactPhone,
+            supplier.Address,
+            supplier.City,
+            supplier.Country
         );
 
         return TResult<GetSupplierByIdResponse>.Success(response);

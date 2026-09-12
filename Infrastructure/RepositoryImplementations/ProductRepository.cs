@@ -48,6 +48,10 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             {
                 query = query.Where(x => x.Category != null && x.Category.Name.Contains(filterQuery));
             }
+            if (filterOn.Equals("supplierPublicId", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(x => x.Supplier != null && x.Supplier.PublicId.ToString().Contains(filterQuery));
+            }
         }
 
         //sort

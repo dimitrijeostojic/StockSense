@@ -28,8 +28,8 @@ public sealed class CreateSupplierValidator
             .MaximumLength(20)
             .WithMessage("Supplier code must not exceed 20 characters.");
         RuleFor(x => x.ContactPhone)
-            .MaximumLength(20)
-            .WithMessage("Supplier contact phone must not exceed 20 characters.");
+            .MaximumLength(12)
+            .WithMessage("Supplier contact phone must not exceed 12 characters.");
     }
 }
 

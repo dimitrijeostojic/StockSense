@@ -24,7 +24,7 @@ public sealed class UpdateSupplierValidator
             .NotEmpty().WithMessage("Supplier code is required.")
             .MaximumLength(20).WithMessage("Supplier code must not exceed 20 characters.");
         RuleFor(x => x.ContactPhone)
-            .MaximumLength(20)
-            .WithMessage("Supplier contact phone must not exceed 20 characters.");
+            .MaximumLength(12)
+            .WithMessage("Supplier contact phone must not exceed 12 characters.");
     }
 }
