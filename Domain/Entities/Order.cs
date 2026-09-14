@@ -29,9 +29,9 @@ public class Order : AggregateRoot
         };
     }
 
-    public void AddItem(int productId, int quantity, decimal unitPrice)
+    public void AddItem(int productId, int quantity, decimal unitPrice, decimal vatRate)
     {
-        var item = OrderItem.Create(productId, quantity, unitPrice);
+        var item = OrderItem.Create(productId, quantity, unitPrice, vatRate);
         _orderItems.Add(item);
     }
     public void RemoveItem(Guid OrderItemPublicId)

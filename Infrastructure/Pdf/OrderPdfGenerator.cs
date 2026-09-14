@@ -94,12 +94,32 @@ public sealed class OrderPdfGenerator : IOrderPdfGenerator
                             table.Cell().PaddingVertical(4).AlignCenter().Text(item.UnitOfMeasure);
                             table.Cell().PaddingVertical(4).AlignRight().Text(item.Quantity.ToString());
                             table.Cell().PaddingVertical(4).AlignRight().Text($"{item.UnitPrice:N2}");
-                            table.Cell().PaddingVertical(4).AlignRight().Text($"{item.Total:N2}");
+                            table.Cell().PaddingVertical(4).AlignRight().Text($"{item.NetTotal:N2}");
                         }
                     });
 
-                    var grandTotal = data.Items.Sum(i => i.Total);
-                    column.Item().AlignRight().Text($"Ukupan iznos bez PDV-a: {grandTotal:N2}").FontSize(12).Bold();
+                    var grandTotal = data.Items.Sum(i => i.NetTotal);
+                    var totalVat = data.Items.Sum(i => i.VatAmount);
+                    var grandTotalWithVat = grandTotal + totalVat;
+
+                    var vatGroups = data.Items
+                        .GroupBy(i => i.VatRate)
+                        .OrderBy(g => g.Key);
+
+                    column.Item().AlignRight().Column(summary =>
+                    {
+                        summary.Item().PaddingTop(4).BorderTop(1).BorderColor(Colors.Grey.Lighten2);
+                        summary.Item().Text($"Ukupno bez PDV-a: {grandTotal:N2}");
+
+                        foreach (var group in vatGroups)
+                        {
+                            var groupVat = group.Sum(i => i.VatAmount);
+                            summary.Item().Text($"PDV ({group.Key:0.##}%): {groupVat:N2}");
+                        }
+
+                        summary.Item().PaddingTop(4).BorderTop(1).BorderColor(Colors.Grey.Lighten2);
+                        summary.Item().Text($"Ukupno sa PDV-om: {grandTotalWithVat:N2}").FontSize(12).Bold();
+                    });
 
                     if (!string.IsNullOrWhiteSpace(data.Notes))
                     {

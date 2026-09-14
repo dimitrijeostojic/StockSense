@@ -9,6 +9,7 @@ public sealed record CreateProductRequest(
     string Sku,
     string? Description,
     decimal Price,
+    decimal VatRate,
     int MinimumStockQuantity,
     UnitOfMeasurement UnitOfMeasurement,
     Guid CategoryPublicId,

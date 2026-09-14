@@ -37,7 +37,7 @@ public sealed class CreateProductRequestHandlerTests
     }
 
     private static CreateProductRequest ValidRequest() => new(
-        "Widget", "SKU-001", "A widget", 9.99m, 5, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
+        "Widget", "SKU-001", "A widget", 9.99m, 20m, 5, UnitOfMeasurement.Piece, Guid.NewGuid(), Guid.NewGuid());
 
     [Fact]
     public async Task Handle_WhenCategoryAndSupplierExist_ReturnsSuccess()
@@ -235,7 +235,7 @@ public sealed class UpdateProductRequestHandlerTests
     }
 
     private static UpdateProductRequest ValidRequest() => new(
-        Guid.NewGuid(), "Updated Widget", "SKU-002", "desc", 19.99m, 10,
+        Guid.NewGuid(), "Updated Widget", "SKU-002", "desc", 19.99m, 20m, 10,
         UnitOfMeasurement.Kilogram, Guid.NewGuid(), Guid.NewGuid());
 
     [Fact]
@@ -248,9 +248,9 @@ public sealed class UpdateProductRequestHandlerTests
 
         _productRepository.GetByPublicIdAsync(request.ProductPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(product);
-        _categoryRepository.GetByPublicIdAsync(request.CategoryId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(category);
-        _supplierRepository.GetByPublicIdAsync(request.SupplierId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(supplier);
 
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -266,9 +266,9 @@ public sealed class UpdateProductRequestHandlerTests
         var request = ValidRequest();
         _productRepository.GetByPublicIdAsync(request.ProductPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((DomainProduct?)null);
-        _categoryRepository.GetByPublicIdAsync(request.CategoryId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateCategory());
-        _supplierRepository.GetByPublicIdAsync(request.SupplierId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateSupplier());
 
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -283,9 +283,9 @@ public sealed class UpdateProductRequestHandlerTests
         var request = ValidRequest();
         _productRepository.GetByPublicIdAsync(request.ProductPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateProduct());
-        _categoryRepository.GetByPublicIdAsync(request.CategoryId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((DomainCategory?)null);
-        _supplierRepository.GetByPublicIdAsync(request.SupplierId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateSupplier());
 
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -300,9 +300,9 @@ public sealed class UpdateProductRequestHandlerTests
         var request = ValidRequest();
         _productRepository.GetByPublicIdAsync(request.ProductPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateProduct());
-        _categoryRepository.GetByPublicIdAsync(request.CategoryId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateCategory());
-        _supplierRepository.GetByPublicIdAsync(request.SupplierId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((DomainSupplier?)null);
 
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -317,9 +317,9 @@ public sealed class UpdateProductRequestHandlerTests
         var request = ValidRequest();
         _productRepository.GetByPublicIdAsync(request.ProductPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateProduct());
-        _categoryRepository.GetByPublicIdAsync(request.CategoryId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateCategory());
-        _supplierRepository.GetByPublicIdAsync(request.SupplierId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateSupplier());
 
         await _sut.Handle(request, CancellationToken.None);

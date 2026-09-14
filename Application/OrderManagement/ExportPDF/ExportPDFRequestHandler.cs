@@ -52,7 +52,8 @@ internal sealed class ExportPDFRequestHandler(
                 order.Supplier.SupplierCode,
                 oi.Product.UnitOfMeasure.ToString(),
                 oi.Quantity,
-                oi.UnitPrice))]);
+                oi.UnitPrice,
+                oi.VatRate))]);
 
         var fileContent = _pdfGenerator.Generate(pdfData);
         var fileName = $"Order-{order.PublicId.ToString()[..8]}.pdf";

@@ -26,6 +26,9 @@ public sealed class CreateProductValidator
         RuleFor(x => x.Price)
             .GreaterThan(0)
             .WithMessage("Price must be greater than zero.");
+        RuleFor(x => x.VatRate)
+            .Must(r => r == 0 || r == 10 || r == 20)
+            .WithMessage("VatRate must be 0, 10, or 20.");
         RuleFor(x => x.MinimumStockQuantity)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Minimum stock quantity must be zero or greater.");

@@ -44,7 +44,7 @@ public sealed class OrderEntityTests
     {
         var order = BuildPendingOrder();
 
-        order.AddItem(productId: 1, quantity: 3, unitPrice: 10m);
+        order.AddItem(productId: 1, quantity: 3, unitPrice: 10m, vatRate: 20m);
 
         order.OrderItems.Should().HaveCount(1);
         order.OrderItems.First().Quantity.Should().Be(3);
@@ -56,8 +56,8 @@ public sealed class OrderEntityTests
     {
         var order = BuildPendingOrder();
 
-        order.AddItem(1, 2, 5m);
-        order.AddItem(2, 4, 8m);
+        order.AddItem(1, 2, 5m, 20m);
+        order.AddItem(2, 4, 8m, 20m);
 
         order.OrderItems.Should().HaveCount(2);
     }
@@ -66,7 +66,7 @@ public sealed class OrderEntityTests
     public void RemoveItem_ExistingItem_RemovesIt()
     {
         var order = BuildPendingOrder();
-        order.AddItem(1, 3, 10m);
+        order.AddItem(1, 3, 10m, 20m);
         var item = order.OrderItems.First();
 
         order.RemoveItem(item.PublicId);

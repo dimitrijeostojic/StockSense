@@ -78,6 +78,7 @@ internal sealed class BulkImportProductRequestHandler(
                     record.Sku,
                     record.Description,
                     record.Price,
+                    record.VatRate,
                     record.MinimumStockQuantity,
                     unitOfMeasure,
                     category.Id,

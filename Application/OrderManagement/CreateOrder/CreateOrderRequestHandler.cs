@@ -40,7 +40,7 @@ internal sealed class CreateOrderRequestHandler(
             {
                 return TResult<CreateOrderResponse>.Failure(ApplicationErrors.NotFound);
             }
-            order.AddItem(product.Id, item.Quantity, product.Price);
+            order.AddItem(product.Id, item.Quantity, product.Price, product.VatRate);
         }
         await _orderRepository.AddAsync(order, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

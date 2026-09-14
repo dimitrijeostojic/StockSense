@@ -30,10 +30,10 @@ public sealed class UpdateProductValidator
         RuleFor(x => x.MinimumStockQuantity)
                         .GreaterThanOrEqualTo(0).WithMessage("MinimumStockQuantity must be greater than or equal to 0.");
 
-        RuleFor(x => x.CategoryId)
+        RuleFor(x => x.CategoryPublicId)
                         .NotEmpty().WithMessage("CategoryId is required.");
 
-        RuleFor(x => x.SupplierId)
+        RuleFor(x => x.SupplierPublicId)
                         .NotEmpty().WithMessage("SupplierId is required.");
     }
 }

@@ -7,6 +7,7 @@ public sealed record UpdateProductRequestBody(
     string Sku,
     string? Description,
     decimal Price,
+    decimal VatRate,
     int MinimumStockQuantity,
     UnitOfMeasurement UnitOfMeasurement,
     Guid CategoryId,

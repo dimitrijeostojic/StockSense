@@ -10,6 +10,7 @@ public class Product : AggregateRoot
     public string Sku { get; private set; }
     public string? Description { get; private set; }
     public decimal Price { get; private set; }
+    public decimal VatRate { get; private set; }
     public UnitOfMeasurement UnitOfMeasure { get; private set; }
     public int MinimumStockQuantity { get; private set; }
     public int CategoryId { get; private set; }
@@ -22,12 +23,13 @@ public class Product : AggregateRoot
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
     public Guid TenantPublicId { get; private set; }
 
-    private Product(string name, string sku, string? description, decimal price, int minimumStockQuantity, UnitOfMeasurement unitOfMeasure, int categoryId, int supplierId, Guid tenantPublicId)
+    private Product(string name, string sku, string? description, decimal price, decimal vatRate, int minimumStockQuantity, UnitOfMeasurement unitOfMeasure, int categoryId, int supplierId, Guid tenantPublicId)
     {
         Name = name;
         Sku = sku;
         Description = description;
         Price = price;
+        VatRate = vatRate;
         MinimumStockQuantity = minimumStockQuantity;
         UnitOfMeasure = unitOfMeasure;
         CategoryId = categoryId;
@@ -35,11 +37,11 @@ public class Product : AggregateRoot
         TenantPublicId = tenantPublicId;
     }
 
-    public static Product CreateProduct(string name, string sku, string? description, decimal price, int minimumStockQuantity, UnitOfMeasurement unitOfMeasure, int categoryId, int supplierId, Guid tenantPublicId)
+    public static Product CreateProduct(string name, string sku, string? description, decimal price, decimal vatRate, int minimumStockQuantity, UnitOfMeasurement unitOfMeasure, int categoryId, int supplierId, Guid tenantPublicId)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentException.ThrowIfNullOrEmpty(sku);
-        return new Product(name, sku, description, price, minimumStockQuantity, unitOfMeasure, categoryId, supplierId, tenantPublicId);
+        return new Product(name, sku, description, price, vatRate, minimumStockQuantity, unitOfMeasure, categoryId, supplierId, tenantPublicId);
     }
 
     public StockEntry AddStockEntry(int quantity, StockEntryType type, string? notes)
@@ -74,6 +76,11 @@ public class Product : AggregateRoot
     public Product WithPrice(decimal price)
     {
         Price = price;
+        return this;
+    }
+    public Product WithVatRate(decimal vatRate)
+    {
+        VatRate = vatRate;
         return this;
     }
     public Product WithMinimumStockQuantity(int minimumStockQuantity)

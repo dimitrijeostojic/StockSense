@@ -6,6 +6,7 @@ public sealed class ProductImportRowDto
     public string Sku { get; set; } = string.Empty;
     public string? Description { get; set; }
     public decimal Price { get; set; }
+    public decimal VatRate { get; set; }
     public int MinimumStockQuantity { get; set; }
     public string CategoryName { get; set; } = string.Empty;
     public string SupplierName { get; set; } = string.Empty;

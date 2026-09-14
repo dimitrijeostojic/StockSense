@@ -37,6 +37,7 @@ internal sealed class CreateProductRequestHandler(
             request.Sku,
             request.Description,
             request.Price,
+            request.VatRate,
             request.MinimumStockQuantity,
             request.UnitOfMeasurement,
             category.Id,

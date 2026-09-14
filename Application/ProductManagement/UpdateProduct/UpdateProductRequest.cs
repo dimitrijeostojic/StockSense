@@ -10,8 +10,9 @@ public sealed record UpdateProductRequest(
     string Sku,
     string? Description,
     decimal Price,
+    decimal VatRate,
     int MinimumStockQuantity,
     UnitOfMeasurement UnitOfMeasurement,
-    Guid CategoryId,
-    Guid SupplierId)
+    Guid CategoryPublicId,
+    Guid SupplierPublicId)
     : IRequest<TResult<UpdateProductResponse>>;

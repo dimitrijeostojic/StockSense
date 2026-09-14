@@ -21,11 +21,12 @@ internal static class EntityFactory
     public static Product CreateProduct(
         string name = "Test Product",
         decimal price = 10m,
+        decimal vatRate = 20m,
         int minimumStock = 0,
         int categoryId = 1,
         int supplierId = 1,
         Guid? tenantId = null)
-        => Product.CreateProduct(name, "SKU-001", null, price, minimumStock, UnitOfMeasurement.Piece, categoryId, supplierId, tenantId ?? Guid.NewGuid());
+        => Product.CreateProduct(name, "SKU-001", null, price, vatRate, minimumStock, UnitOfMeasurement.Piece, categoryId, supplierId, tenantId ?? Guid.NewGuid());
 
     public static Product CreateProductWithNavigation(
         string name = "Test Product",
