@@ -22,9 +22,6 @@
 # ASP.NET
 **/wwwroot/dist/
 
-# Docker
-.dockerignore
-
 # Environment / secrets
 **/appsettings.Development.json
 **/.env

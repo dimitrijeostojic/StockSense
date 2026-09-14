@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Serilog;
 using StockSense.API.Accessors;
 using StockSense.API.Extensions;
 using StockSense.API.Logging;
@@ -34,6 +35,11 @@ builder.Services.AddProblemDetails();
 builder.Services.AddAuthorization();
 
 builder.Services.AddHealthChecks();
+
+builder.Host.UseSerilog((ctx, cfg) =>
+{
+    cfg.ReadFrom.Configuration(ctx.Configuration);
+});
 
 #region ConfigureOptions
 builder.Services.ConfigureOptions<RedisOptionsSetup>();

@@ -47,6 +47,8 @@ services:
   #     ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=StockSenseDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
   #     ConnectionStrings__AuthConnection: "Server=sqlserver;Database=AuthDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
   #     Redis__ConnectionString: "stocksense-redis:6379"
+  #   volumes:
+  #     - logs_data:/app/Logs
   #   networks:
   #     - stocksense-network
   #   depends_on:
@@ -58,6 +60,7 @@ services:
 volumes:
   sqlserver_data:
   redis_data:
+  logs_data:
 
 networks:
   stocksense-network:
