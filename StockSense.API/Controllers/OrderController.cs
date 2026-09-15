@@ -63,8 +63,16 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrderAsync([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateOrderAsync([FromBody] CreateOrderRequestBody requestBody,
+        [FromHeader(Name = "X-Idempotency-Key")] string requestId, CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(requestId, out Guid parsedRequestId))
+        {
+            return BadRequest();
+        }
+
+        var request = new CreateOrderRequest(parsedRequestId, requestBody.SupplierPublicId, requestBody.OrderDate, requestBody.Notes, requestBody.OrderItemsDto);
+
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

@@ -11,6 +11,7 @@ public sealed class CreateOrderValidatorTests
 
     private static CreateOrderRequest ValidRequest() => new(
         Guid.NewGuid(),
+        Guid.NewGuid(),
         DateTime.UtcNow.AddDays(-1),
         null,
         [new OrderItemDto(Guid.NewGuid(), 2)]);

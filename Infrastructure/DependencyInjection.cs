@@ -1,3 +1,4 @@
+using Application.Abstractions.Idempotency;
 using Application.Abstractions.Services;
 using Domain.Abstractions;
 using Domain.Dtos;
@@ -97,6 +98,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<INotificationSender<EmailMessageDto>, EmailSender>();
         services.AddScoped<IOrderPdfGenerator, OrderPdfGenerator>();
+        services.AddScoped<IIdempotencyService, IdempotencyService>();
         return services;
     }
 

@@ -14,6 +14,10 @@ public static class ResultExtensions
             {
                 return new NotFoundObjectResult(result.Error);
             }
+            if (result.Error == ApplicationErrors.RequestAlreadyProccessed)
+            {
+                return new OkResult();
+            }
             return new BadRequestObjectResult(result.Error);
         }
         else

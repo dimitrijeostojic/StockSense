@@ -38,7 +38,7 @@ public sealed class CreateOrderRequestHandlerTests
     }
 
     private CreateOrderRequest ValidRequest(Guid supplierPublicId, List<CreateOrderItemDto> items) => new(
-        supplierPublicId, DateTime.UtcNow.AddDays(-1), null, items);
+        Guid.NewGuid(), supplierPublicId, DateTime.UtcNow.AddDays(-1), null, items);
 
     [Fact]
     public async Task Handle_WhenSupplierAndProductsExist_ReturnsSuccess()
