@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.Services;
+using Application.Abstractions.Services;
 using CsvHelper;
 using Domain.Abstractions;
 using Domain.Core;
@@ -28,16 +28,16 @@ internal sealed class BulkImportProductRequestHandler(
         var tenantPublicId = _currentUserAccessor.TenantPublicId;
 
         var existingCategories = await _categoryRepository.GetAllAsync(tenantPublicId, cancellationToken);
-
         var categoryCache = existingCategories.ToDictionary(c => c.Name, c => c, StringComparer.OrdinalIgnoreCase);
 
         var existingSuppliers = (await _supplierRepository.GetAllAsync(tenantPublicId, null, null, true, null, null, 1, int.MaxValue, cancellationToken)).Items;
-
         var supplierCache = existingSuppliers.ToDictionary(s => s.Name, s => s, StringComparer.OrdinalIgnoreCase);
+
+        var seenSkus = await _productRepository.GetAllSkusAsync(tenantPublicId, cancellationToken);
 
         var errors = new List<ImportRowError>();
         var successCount = 0;
-        var rowNumber = 1; // header is row 1
+        var rowNumber = 1;
 
         using var reader = new StreamReader(new MemoryStream(request.FileContent));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -54,6 +54,7 @@ internal sealed class BulkImportProductRequestHandler(
                 {
                     category = Category.Create(record.CategoryName, null, tenantPublicId);
                     await _categoryRepository.AddAsync(category, cancellationToken);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
                     categoryCache[record.CategoryName] = category;
                 }
 
@@ -61,15 +62,21 @@ internal sealed class BulkImportProductRequestHandler(
                 {
                     supplier = Supplier.CreateSupplier(record.SupplierName, record.ContactName, record.ContactEmail, record.SupplierCode, null, null, null, null, tenantPublicId);
                     await _supplierRepository.AddAsync(supplier, cancellationToken);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
                     supplierCache[record.SupplierName] = supplier;
                 }
-
 
                 if (!UnitOfMeasurementParser.TryParse(record.UnitOfMeasurement, out var unitOfMeasure))
                 {
                     errors.Add(new ImportRowError(
                         rowNumber,
                         $"Unknown unit of measurement '{record.UnitOfMeasurement}'. Allowed: {UnitOfMeasurementParser.AllowedValues}"));
+                    continue;
+                }
+
+                if (!seenSkus.Add(record.Sku))
+                {
+                    errors.Add(new ImportRowError(rowNumber, $"SKU '{record.Sku}' already exists."));
                     continue;
                 }
 
@@ -85,9 +92,8 @@ internal sealed class BulkImportProductRequestHandler(
                     supplier.Id,
                     tenantPublicId);
 
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
                 await _productRepository.AddAsync(product, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
                 successCount++;
             }
             catch (Exception ex)
@@ -95,9 +101,8 @@ internal sealed class BulkImportProductRequestHandler(
                 errors.Add(new ImportRowError(rowNumber, ex.Message));
             }
         }
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return TResult<BulkImportProductResponse>.Success(
-      new BulkImportProductResponse(successCount, errors.Count, errors));
+            new BulkImportProductResponse(successCount, errors.Count, errors));
     }
 }

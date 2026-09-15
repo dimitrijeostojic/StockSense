@@ -19,5 +19,8 @@ public static class ApplicationErrors
     public static readonly Error CannotDeleteAdminUser = new("ApplicationErrors.CannotDeleteAdminUser", "Cannot delete an admin user.");
     public static readonly Error InvalidStatus = new("ApplicationErrors.InvalidStatus", "Only pending orders can be edited.");
     public static readonly Error RequestAlreadyProccessed = new("ApplicationErrors.RequestAlreadyProccessed", "Request has already processed");
+    public static readonly Error DuplicateSku = new Error("Product.DuplicateSku", "Product with this SKU already exists.");
+
+
 
 }

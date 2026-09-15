@@ -1,13 +1,14 @@
-﻿using Domain.Core;
+﻿using Application.Abstractions.Idempotency;
+using Domain.Core;
 using Domain.Enums;
-using MediatR;
 
 namespace Application.ProductManagement.CreateStockEntry;
 
 public sealed record CreateStockEntryRequest(
+    Guid RequestId,
     Guid ProductPublicId,
     int Quantity,
     string? Notes,
     StockEntryType StockEntryType
    )
-    : IRequest<TResult<CreateStockEntryResponse>>;
+    : IdempotentRequest<TResult<CreateStockEntryResponse>>(RequestId);

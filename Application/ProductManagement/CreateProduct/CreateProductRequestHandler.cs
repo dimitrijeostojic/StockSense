@@ -27,9 +27,16 @@ internal sealed class CreateProductRequestHandler(
         var tenantPublicId = _currentUserAccessor.TenantPublicId;
         var category = await _categoryRepository.GetByPublicIdAsync(request.CategoryPublicId, tenantPublicId, cancellationToken);
         var supplier = await _supplierRepository.GetByPublicIdAsync(request.SupplierPublicId, tenantPublicId, cancellationToken);
+
         if (category == null || supplier == null)
         {
             return TResult<CreateProductResponse>.Failure(ApplicationErrors.NotFound);
+        }
+
+        var skuExists = await _productRepository.ExistsBySkuAsync(tenantPublicId, request.Sku, cancellationToken);
+        if (skuExists)
+        {
+            return TResult<CreateProductResponse>.Failure(ApplicationErrors.DuplicateSku);
         }
 
         var product = Domain.Entities.Product.CreateProduct(

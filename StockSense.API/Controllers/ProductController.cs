@@ -89,9 +89,13 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("{publicId:Guid}/stockentry")]
-    public async Task<IActionResult> CreateStockEntryAsync([FromRoute] Guid publicId, [FromBody] CreateStockEntryRequestBody requestBody, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateStockEntryAsync([FromRoute] Guid publicId, [FromBody] CreateStockEntryRequestBody requestBody, [FromHeader(Name = "X-Idempotency-Key")] string requestId, CancellationToken cancellationToken)
     {
-        var request = new CreateStockEntryRequest(publicId, requestBody.Quantity, requestBody.Notes, requestBody.StockEntryType);
+        if (!Guid.TryParse(requestId, out Guid parsedRequestId))
+        {
+            return BadRequest();
+        }
+        var request = new CreateStockEntryRequest(parsedRequestId, publicId, requestBody.Quantity, requestBody.Notes, requestBody.StockEntryType);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }
@@ -105,11 +109,15 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("bulk-import")]
-    public async Task<IActionResult> BulkImportProductsAsync(IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> BulkImportProductsAsync(IFormFile file, [FromHeader(Name = "X-Idempotency-Key")] string requestId, CancellationToken cancellationToken)
     {
+        if (!Guid.TryParse(requestId, out Guid parsedRequestId))
+        {
+            return BadRequest();
+        }
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream, cancellationToken);
-        var request = new BulkImportProductRequest(memoryStream.ToArray());
+        var request = new BulkImportProductRequest(memoryStream.ToArray(), parsedRequestId);
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
     }

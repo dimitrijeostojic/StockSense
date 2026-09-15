@@ -25,6 +25,20 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         _dbContext.Products.Remove(product);
     }
 
+    public async Task<bool> ExistsBySkuAsync(Guid tenantPublicId, string sku, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products.AnyAsync(p => p.TenantPublicId == tenantPublicId && p.Sku == sku, cancellationToken);
+    }
+
+    public async Task<HashSet<string>> GetAllSkusAsync(Guid tenantPublicId, CancellationToken cancellationToken)
+    {
+        var skus = await _dbContext.Products
+            .Where(p => p.TenantPublicId == tenantPublicId)
+            .Select(p => p.Sku)
+            .ToListAsync(cancellationToken);
+        return new HashSet<string>(skus, StringComparer.OrdinalIgnoreCase);
+    }
+
     public async Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(Guid tenantPublicId, string? searchTerm = null, string? sortBy = null, bool isAscending = false, string? filterOn = null, string? filterQuery = null, int pageNumber = 1, int pageSize = 1000, CancellationToken cancellationToken = default)
     {
 
