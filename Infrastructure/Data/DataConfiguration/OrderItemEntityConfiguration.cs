@@ -26,5 +26,8 @@ internal sealed class OrderItemEntityConfiguration : IEntityTypeConfiguration<Or
             .WithMany(o => o.OrderItems)
             .HasForeignKey(oi => oi.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(oi => oi.OrderId);
+        builder.HasIndex(oi => oi.ProductId);
     }
 }

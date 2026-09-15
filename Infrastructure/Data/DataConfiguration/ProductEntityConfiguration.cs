@@ -32,5 +32,8 @@ internal sealed class ProductEntityConfiguration : IEntityTypeConfiguration<Prod
             .WithMany(s => s.Products)
             .HasForeignKey(p => p.SupplierId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(p => p.PublicId);
+        builder.HasIndex(p => new { p.TenantPublicId, p.Sku }).IsUnique();
     }
 }

@@ -22,5 +22,6 @@ internal sealed class SupplierEntityConfiguration : IEntityTypeConfiguration<Sup
         builder.Property(c => c.CreatedBy).IsRequired().HasMaxLength(255);
         builder.Property(c => c.ModifiedBy).HasMaxLength(255);
 
+        builder.HasIndex(s => s.TenantPublicId);
     }
 }

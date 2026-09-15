@@ -15,5 +15,8 @@ internal sealed class CategoryEntityConfiguration : IEntityTypeConfiguration<Cat
         builder.Property(c => c.Description).HasMaxLength(255);
         builder.Property(c => c.CreatedBy).IsRequired().HasMaxLength(255);
         builder.Property(c => c.ModifiedBy).HasMaxLength(255);
+
+        builder.HasIndex(c => c.TenantPublicId);
+        builder.HasIndex(c => c.PublicId);
     }
 }

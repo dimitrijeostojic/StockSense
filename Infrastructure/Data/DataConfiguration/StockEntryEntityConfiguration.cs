@@ -21,5 +21,7 @@ internal sealed class StockEntryEntityConfiguration : IEntityTypeConfiguration<S
             .WithMany(p => p.StockEntries)
             .HasForeignKey(se => se.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(se => se.ProductId);
     }
 }

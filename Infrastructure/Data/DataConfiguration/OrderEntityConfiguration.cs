@@ -23,5 +23,6 @@ internal sealed class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(o => o.SupplierId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasIndex(o => o.TenantPublicId);
     }
 }

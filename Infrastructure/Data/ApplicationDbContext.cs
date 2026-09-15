@@ -16,7 +16,8 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly, t => t.Namespace == "Infrastructure.Data.DataConfiguration");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
