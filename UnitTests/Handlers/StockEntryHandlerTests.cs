@@ -37,7 +37,7 @@ public sealed class CreateStockEntryRequestHandlerTests
         _productRepository.GetByPublicIdAsync(productPublicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(product);
 
-        var request = new CreateStockEntryRequest(productPublicId, 10, "initial stock", StockEntryType.In);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), productPublicId, 10, "initial stock", StockEntryType.In);
         var result = await _sut.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -54,7 +54,7 @@ public sealed class CreateStockEntryRequestHandlerTests
             .Returns(EntityFactory.CreateProduct(minimumStock: 0));
 
         await _sut.Handle(
-            new CreateStockEntryRequest(productPublicId, 5, null, StockEntryType.In),
+            new CreateStockEntryRequest(Guid.NewGuid(), productPublicId, 5, null, StockEntryType.In),
             CancellationToken.None);
 
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -67,7 +67,7 @@ public sealed class CreateStockEntryRequestHandlerTests
             .Returns((DomainProduct?)null);
 
         var result = await _sut.Handle(
-            new CreateStockEntryRequest(Guid.NewGuid(), 10, null, StockEntryType.In),
+            new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 10, null, StockEntryType.In),
             CancellationToken.None);
 
         result.IsSuccess.Should().BeFalse();
@@ -81,7 +81,7 @@ public sealed class CreateStockEntryRequestHandlerTests
             .Returns((DomainProduct?)null);
 
         await _sut.Handle(
-            new CreateStockEntryRequest(Guid.NewGuid(), 10, null, StockEntryType.In),
+            new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 10, null, StockEntryType.In),
             CancellationToken.None);
 
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -97,7 +97,7 @@ public sealed class CreateStockEntryRequestHandlerTests
             .Returns(product);
 
         await _sut.Handle(
-            new CreateStockEntryRequest(productPublicId, 1, null, StockEntryType.In),
+            new CreateStockEntryRequest(Guid.NewGuid(), productPublicId, 1, null, StockEntryType.In),
             CancellationToken.None);
 
         product.DomainEvents.Should().HaveCount(1);
@@ -113,7 +113,7 @@ public sealed class CreateStockEntryRequestHandlerTests
             .Returns(product);
 
         await _sut.Handle(
-            new CreateStockEntryRequest(productPublicId, 50, null, StockEntryType.In),
+            new CreateStockEntryRequest(Guid.NewGuid(), productPublicId, 50, null, StockEntryType.In),
             CancellationToken.None);
 
         product.DomainEvents.Should().BeEmpty();

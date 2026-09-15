@@ -12,7 +12,7 @@ public sealed class CreateStockEntryValidatorTests
     [Fact]
     public void Validate_WithValidRequest_HasNoErrors()
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), 10, "note", StockEntryType.In);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "note", StockEntryType.In);
 
         var result = _sut.TestValidate(request);
 
@@ -22,7 +22,7 @@ public sealed class CreateStockEntryValidatorTests
     [Fact]
     public void Validate_WithEmptyProductPublicId_HasError()
     {
-        var request = new CreateStockEntryRequest(Guid.Empty, 10, null, StockEntryType.In);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.Empty, 10, null, StockEntryType.In);
 
         var result = _sut.TestValidate(request);
 
@@ -35,7 +35,7 @@ public sealed class CreateStockEntryValidatorTests
     [InlineData(-1)]
     public void Validate_WithQuantityNotGreaterThanZero_HasError(int quantity)
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), quantity, null, StockEntryType.In);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, null, StockEntryType.In);
 
         var result = _sut.TestValidate(request);
 
@@ -46,7 +46,7 @@ public sealed class CreateStockEntryValidatorTests
     [Fact]
     public void Validate_WithQuantityOfOne_HasNoError()
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), 1, null, StockEntryType.Out);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 1, null, StockEntryType.Out);
 
         var result = _sut.TestValidate(request);
 
@@ -56,7 +56,7 @@ public sealed class CreateStockEntryValidatorTests
     [Fact]
     public void Validate_WithNotesExceeding255Characters_HasError()
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), 5, new string('N', 256), StockEntryType.In);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 5, new string('N', 256), StockEntryType.In);
 
         var result = _sut.TestValidate(request);
 
@@ -67,7 +67,7 @@ public sealed class CreateStockEntryValidatorTests
     [Fact]
     public void Validate_WithNotesExactly255Characters_HasNoError()
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), 5, new string('N', 255), StockEntryType.In);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 5, new string('N', 255), StockEntryType.In);
 
         var result = _sut.TestValidate(request);
 
@@ -79,7 +79,7 @@ public sealed class CreateStockEntryValidatorTests
     [InlineData(StockEntryType.Out)]
     public void Validate_WithValidStockEntryType_HasNoError(StockEntryType type)
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), 5, null, type);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 5, null, type);
 
         var result = _sut.TestValidate(request);
 
@@ -89,7 +89,7 @@ public sealed class CreateStockEntryValidatorTests
     [Fact]
     public void Validate_WithInvalidStockEntryType_HasError()
     {
-        var request = new CreateStockEntryRequest(Guid.NewGuid(), 5, null, (StockEntryType)99);
+        var request = new CreateStockEntryRequest(Guid.NewGuid(), Guid.NewGuid(), 5, null, (StockEntryType)99);
 
         var result = _sut.TestValidate(request);
 
