@@ -33,7 +33,8 @@ internal sealed class GetProductByIdRequestHandler(
             product.Category.Name,
             product.Supplier!.PublicId,
             product.Supplier.Name,
-            product.UnitOfMeasure);
+            product.UnitOfMeasure,
+            product.VatRate);
 
         return TResult<GetProductByIdResponse>.Success(response);
     }

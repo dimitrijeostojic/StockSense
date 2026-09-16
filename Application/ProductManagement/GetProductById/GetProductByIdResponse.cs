@@ -12,4 +12,5 @@ public sealed record GetProductByIdResponse(
     string CategoryName,
     Guid SupplierPublicId,
     string SupplierName,
-    UnitOfMeasurement UnitOfMeasurement);
+    UnitOfMeasurement UnitOfMeasurement,
+    decimal VatRate);
