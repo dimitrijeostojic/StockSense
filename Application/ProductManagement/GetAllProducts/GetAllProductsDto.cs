@@ -10,4 +10,5 @@ public sealed record GetAllProductsDto(
     Guid CategoryPublicId,
     string CategoryName,
     Guid SupplierPublicId,
-    string SupplierName);
+    string SupplierName,
+    string Sku);

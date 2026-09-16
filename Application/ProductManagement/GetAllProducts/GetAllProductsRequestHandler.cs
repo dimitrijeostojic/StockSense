@@ -28,7 +28,8 @@ internal sealed class GetAllProductsRequestHandler(
             p.Category!.PublicId,
             p.Category.Name,
             p.Supplier!.PublicId,
-            p.Supplier.Name)
+            p.Supplier.Name,
+            p.Sku)
             );
 
         var response = new GetAllProductsResponse(dtos, totalCount, request.PageNumber, request.PageSize);
