@@ -29,5 +29,6 @@ internal sealed class OrderItemEntityConfiguration : IEntityTypeConfiguration<Or
 
         builder.HasIndex(oi => oi.OrderId);
         builder.HasIndex(oi => oi.ProductId);
+        builder.HasIndex(oi => new { oi.OrderId, oi.ProductId }).IsUnique();
     }
 }

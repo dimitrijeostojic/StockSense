@@ -24,5 +24,6 @@ internal sealed class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(o => o.TenantPublicId);
+        builder.HasIndex(o => o.PublicId);
     }
 }

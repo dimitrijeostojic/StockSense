@@ -11,7 +11,7 @@ internal sealed class ProductEntityConfiguration : IEntityTypeConfiguration<Prod
         builder.ToTable("Products");
 
         builder.HasKey(p => p.Id);
-        builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
+        builder.Property(p => p.Name).HasMaxLength(255).IsRequired();
         builder.Property(p => p.Sku).HasMaxLength(20).IsRequired();
         builder.Property(p => p.Description).HasMaxLength(255);
         builder.Property(p => p.Price).HasColumnType("decimal(18,2)").IsRequired();
@@ -34,6 +34,7 @@ internal sealed class ProductEntityConfiguration : IEntityTypeConfiguration<Prod
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(p => p.PublicId);
+        builder.HasIndex(p => p.TenantPublicId);
         builder.HasIndex(p => new { p.TenantPublicId, p.Sku }).IsUnique();
     }
 }

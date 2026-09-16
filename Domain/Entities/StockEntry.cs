@@ -14,6 +14,7 @@ public class StockEntry : Entity
 
     internal static StockEntry Create(int quantity, DateTime entryDate, string? notes, StockEntryType stockEntryType)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
         return new StockEntry
         {
             Quantity = quantity,

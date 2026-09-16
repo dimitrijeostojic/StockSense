@@ -18,5 +18,6 @@ internal sealed class CategoryEntityConfiguration : IEntityTypeConfiguration<Cat
 
         builder.HasIndex(c => c.TenantPublicId);
         builder.HasIndex(c => c.PublicId);
+        builder.HasIndex(c => new { c.TenantPublicId, c.Name }).IsUnique();
     }
 }
