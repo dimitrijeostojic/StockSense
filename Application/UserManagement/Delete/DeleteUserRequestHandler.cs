@@ -32,7 +32,7 @@ internal sealed class DeleteUserRequestHandler(
         {
             return Result.Failure(ApplicationErrors.CannotDeleteAdminUser);
         }
-        _userRepository.Delete(user);
+        user.Deactivate();
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }

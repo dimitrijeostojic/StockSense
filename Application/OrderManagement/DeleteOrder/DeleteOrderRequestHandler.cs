@@ -2,6 +2,7 @@
 using Application.Common.Errors;
 using Domain.Abstractions;
 using Domain.Core;
+using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using MediatR;
 
@@ -22,6 +23,10 @@ internal sealed class DeleteOrderRequestHandler(
         if (order == null)
         {
             return Result.Failure(ApplicationErrors.NotFound);
+        }
+        if (order.OrderStatus != OrderStatus.Cancelled)
+        {
+            return Result.Failure(ApplicationErrors.CannotDeleteNonCancelledOrder);
         }
         _orderRepository.Delete(order);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -63,7 +63,7 @@ public sealed class DeleteUserRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenUserExists_DeletesAndSaves()
+    public async Task Handle_WhenUserExists_DeactivatesAndSaves()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
         _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
@@ -74,12 +74,12 @@ public sealed class DeleteUserRequestHandlerTests
             new DeleteUserRequest { UserPublicId = Guid.NewGuid() }, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
-        _userRepository.Received(1).Delete(user);
+        user.IsActive.Should().BeFalse();
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_WhenUserNotFound_DoesNotDeleteOrSave()
+    public async Task Handle_WhenUserNotFound_DoesNotSave()
     {
         _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((ApplicationUser?)null);
@@ -87,7 +87,6 @@ public sealed class DeleteUserRequestHandlerTests
         await _sut.Handle(
             new DeleteUserRequest { UserPublicId = Guid.NewGuid() }, CancellationToken.None);
 
-        _userRepository.DidNotReceive().Delete(Arg.Any<ApplicationUser>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

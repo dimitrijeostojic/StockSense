@@ -15,6 +15,7 @@ public class Product : AggregateRoot
     public int MinimumStockQuantity { get; private set; }
     public int CategoryId { get; private set; }
     public int SupplierId { get; private set; }
+    public bool IsActive { get; private set; }
     public Category? Category { get; private set; }
     public Supplier? Supplier { get; private set; }
     private readonly List<StockEntry> _stockEntries = [];
@@ -35,7 +36,10 @@ public class Product : AggregateRoot
         CategoryId = categoryId;
         SupplierId = supplierId;
         TenantPublicId = tenantPublicId;
+        IsActive = true;
     }
+
+
 
     public static Product CreateProduct(string name, string sku, string? description, decimal price, decimal vatRate, int minimumStockQuantity, UnitOfMeasurement unitOfMeasure, int categoryId, int supplierId, Guid tenantPublicId)
     {
@@ -54,6 +58,12 @@ public class Product : AggregateRoot
             RaiseDomainEvent(new LowStockDomainEvent(PublicId, TenantPublicId, currentStock));
         }
         return entry;
+    }
+
+    public Product Deactivate()
+    {
+        IsActive = false;
+        return this;
     }
 
     public Product WithName(string name)

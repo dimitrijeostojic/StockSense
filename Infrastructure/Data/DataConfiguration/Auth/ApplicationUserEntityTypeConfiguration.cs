@@ -10,5 +10,6 @@ internal sealed class ApplicationUserEntityTypeConfiguration : IEntityTypeConfig
     {
         builder.Property(u => u.FirstName).HasMaxLength(100);
         builder.Property(u => u.LastName).HasMaxLength(100);
+        builder.Property(u => u.IsActive).IsRequired().HasDefaultValue(true);
     }
 }

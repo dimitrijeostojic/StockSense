@@ -330,11 +330,11 @@ public sealed class DeleteOrderRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenOrderExists_ReturnsSuccess()
+    public async Task Handle_WhenCancelledOrderExists_ReturnsSuccess()
     {
         var publicId = Guid.NewGuid();
         _orderRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(EntityFactory.CreateOrder());
+            .Returns(EntityFactory.CreateCancelledOrder());
 
         var result = await _sut.Handle(new DeleteOrderRequest(publicId), CancellationToken.None);
 
@@ -342,10 +342,10 @@ public sealed class DeleteOrderRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenOrderExists_CallsDeleteAndSaves()
+    public async Task Handle_WhenCancelledOrderExists_CallsDeleteAndSaves()
     {
         var publicId = Guid.NewGuid();
-        var order = EntityFactory.CreateOrder();
+        var order = EntityFactory.CreateCancelledOrder();
         _orderRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(order);
 
@@ -353,6 +353,21 @@ public sealed class DeleteOrderRequestHandlerTests
 
         _orderRepository.Received(1).Delete(order);
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenOrderNotCancelled_ReturnsCannotDeleteNonCancelledOrderError()
+    {
+        var publicId = Guid.NewGuid();
+        _orderRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(EntityFactory.CreateOrder());
+
+        var result = await _sut.Handle(new DeleteOrderRequest(publicId), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.CannotDeleteNonCancelledOrder);
+        _orderRepository.DidNotReceive().Delete(Arg.Any<Order>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

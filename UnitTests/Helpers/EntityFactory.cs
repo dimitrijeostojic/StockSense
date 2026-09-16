@@ -45,6 +45,13 @@ internal static class EntityFactory
         Guid? tenantId = null)
         => Order.CreateOrder(supplierId, DateTime.UtcNow.AddDays(-1), null, tenantId ?? Guid.NewGuid());
 
+    public static Order CreateCancelledOrder(int supplierId = 1, Guid? tenantId = null)
+    {
+        var order = CreateOrder(supplierId, tenantId);
+        order.WithOrderStatus(Domain.Enums.OrderStatus.Cancelled, order.TenantPublicId);
+        return order;
+    }
+
     public static Order CreateOrderWithNavigation(Guid? tenantId = null)
     {
         var order = CreateOrder(tenantId: tenantId);

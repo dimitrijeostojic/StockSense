@@ -18,6 +18,7 @@ internal sealed class ProductEntityConfiguration : IEntityTypeConfiguration<Prod
         builder.Property(p => p.VatRate).HasColumnType("decimal(5,2)").HasDefaultValue(20m).IsRequired();
         builder.Property(p => p.MinimumStockQuantity).IsRequired();
         builder.Property(p => p.UnitOfMeasure).IsRequired();
+        builder.Property(p => p.IsActive).IsRequired().HasDefaultValue(true);
         builder.Property(p => p.CategoryId).IsRequired();
         builder.Property(p => p.SupplierId).IsRequired();
         builder.Property(c => c.CreatedBy).IsRequired().HasMaxLength(255);

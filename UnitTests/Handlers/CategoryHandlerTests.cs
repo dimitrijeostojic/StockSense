@@ -242,13 +242,15 @@ public sealed class DeleteCategoryRequestHandlerTests
     private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
+    private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
 
     private readonly DeleteCategoryRequestHandler _sut;
 
     public DeleteCategoryRequestHandlerTests()
     {
         _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
-        _sut = new DeleteCategoryRequestHandler(_categoryRepository, _unitOfWork, _currentUserAccessor);
+        _productRepository.AnyByCategoryIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(false);
+        _sut = new DeleteCategoryRequestHandler(_categoryRepository, _unitOfWork, _currentUserAccessor, _productRepository);
     }
 
     [Fact]
@@ -308,6 +310,22 @@ public sealed class DeleteCategoryRequestHandlerTests
 
         await _sut.Handle(new DeleteCategoryRequest(Guid.NewGuid()), CancellationToken.None);
 
+        await _categoryRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainCategory>(), Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenCategoryHasActiveProducts_ReturnsFailure()
+    {
+        var publicId = Guid.NewGuid();
+        _categoryRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(EntityFactory.CreateCategory());
+        _productRepository.AnyByCategoryIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        var result = await _sut.Handle(new DeleteCategoryRequest(publicId), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.CategoryHasProducts);
         await _categoryRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainCategory>(), Arg.Any<CancellationToken>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }

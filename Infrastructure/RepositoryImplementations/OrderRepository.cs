@@ -84,4 +84,9 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
     {
         return await _dbContext.Orders.Where(o => (o.TenantPublicId == tenantPublicId && (o.OrderStatus == Domain.Enums.OrderStatus.Pending || o.OrderStatus == Domain.Enums.OrderStatus.Confirmed))).CountAsync(cancellationToken);
     }
+
+    public async Task<bool> AnyBySupplierIdAsync(int supplierId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Orders.AnyAsync(o => o.SupplierId == supplierId, cancellationToken);
+    }
 }

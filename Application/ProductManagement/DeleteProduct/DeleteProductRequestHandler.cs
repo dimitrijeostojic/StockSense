@@ -23,7 +23,7 @@ internal sealed class DeleteProductRequestHandler(
         {
             return Result.Failure(ApplicationErrors.NotFound);
         }
-        _productRepository.Delete(product);
+        product.Deactivate();
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }

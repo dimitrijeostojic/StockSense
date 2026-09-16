@@ -17,23 +17,18 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
 
     public async Task<int> CountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Products.Where(p => p.TenantPublicId == tenantPublicId).CountAsync(cancellationToken);
-    }
-
-    public void Delete(Product product)
-    {
-        _dbContext.Products.Remove(product);
+        return await _dbContext.Products.Where(p => p.TenantPublicId == tenantPublicId && p.IsActive).CountAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsBySkuAsync(Guid tenantPublicId, string sku, CancellationToken cancellationToken)
     {
-        return await _dbContext.Products.AnyAsync(p => p.TenantPublicId == tenantPublicId && p.Sku == sku, cancellationToken);
+        return await _dbContext.Products.AnyAsync(p => p.TenantPublicId == tenantPublicId && p.Sku == sku && p.IsActive, cancellationToken);
     }
 
     public async Task<HashSet<string>> GetAllSkusAsync(Guid tenantPublicId, CancellationToken cancellationToken)
     {
         var skus = await _dbContext.Products
-            .Where(p => p.TenantPublicId == tenantPublicId)
+            .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive)
             .Select(p => p.Sku)
             .ToListAsync(cancellationToken);
         return new HashSet<string>(skus, StringComparer.OrdinalIgnoreCase);
@@ -46,7 +41,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .Include(p => p.Category)
             .Include(p => p.Supplier)
             .Include(p => p.StockEntries)
-            .Where(p => p.TenantPublicId == tenantPublicId)
+            .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive)
             .AsQueryable();
 
         //search
@@ -96,7 +91,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
     {
         return await _dbContext.Products
             .Include(p => p.StockEntries)
-            .Where(p => productIds.Contains(p.Id) && p.TenantPublicId == tenantPublicId)
+            .Where(p => productIds.Contains(p.Id) && p.TenantPublicId == tenantPublicId && p.IsActive)
             .ToListAsync(cancellationToken);
     }
 
@@ -106,13 +101,13 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .Include(p => p.Category)
             .Include(p => p.Supplier)
             .Include(p => p.StockEntries)
-            .FirstOrDefaultAsync(p => p.PublicId == publicId && p.TenantPublicId == tenantPublicId, cancellationToken);
+            .FirstOrDefaultAsync(p => p.PublicId == publicId && p.TenantPublicId == tenantPublicId && p.IsActive, cancellationToken);
     }
 
     public async Task<List<Product>> GetByPublicIdsAsync(IEnumerable<Guid> publicIds, Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
-            .Where(p => publicIds.Contains(p.PublicId) && p.TenantPublicId == tenantPublicId)
+            .Where(p => publicIds.Contains(p.PublicId) && p.TenantPublicId == tenantPublicId && p.IsActive)
             .ToListAsync(cancellationToken);
     }
 
@@ -120,7 +115,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
     {
         return await _dbContext.Products
             .Include(p => p.StockEntries)
-            .Where(p => p.TenantPublicId == tenantPublicId && p.StockEntries.Sum(se => se.StockEntryType == Domain.Enums.StockEntryType.In ? +se.Quantity : -se.Quantity) < p.MinimumStockQuantity)
+            .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive && p.StockEntries.Sum(se => se.StockEntryType == Domain.Enums.StockEntryType.In ? +se.Quantity : -se.Quantity) < p.MinimumStockQuantity)
             .CountAsync(cancellationToken);
     }
     public async Task<ICollection<(Product Product, int CurrentStock)>> Top5ProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken)
@@ -129,7 +124,7 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .Include(p => p.StockEntries)
             .Include(p => p.Category)
             .Include(p => p.Supplier)
-            .Where(p => p.TenantPublicId == tenantPublicId)
+            .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive)
             .Select(p => new
             {
                 Product = p,
@@ -140,5 +135,17 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .Take(5)
             .Select(x => new ValueTuple<Product, int>(x.Product, x.CurrentStock))
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> AnyByCategoryIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products
+            .AnyAsync(p => p.CategoryId == id && p.IsActive, cancellationToken);
+    }
+
+    public async Task<bool> AnyBySupplierIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products
+           .AnyAsync(p => p.SupplierId == id && p.IsActive, cancellationToken);
     }
 }

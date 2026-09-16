@@ -10,4 +10,5 @@ public interface IOrderRepository
     void Delete(Order order);
     Task<int> GetNumberOfActiveOrders(Guid tenantPublicId, CancellationToken cancellationToken = default);
     Task<ICollection<Order>> GetLatestOrders(Guid tenantPublicId, CancellationToken cancellationToken = default);
+    Task<bool> AnyBySupplierIdAsync(int supplierId, CancellationToken cancellationToken = default);
 }

@@ -355,20 +355,6 @@ public sealed class DeleteProductRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenProductExists_CallsDeleteAndSaves()
-    {
-        var publicId = Guid.NewGuid();
-        var product = EntityFactory.CreateProduct();
-        _productRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(product);
-
-        await _sut.Handle(new DeleteProductRequest(publicId), CancellationToken.None);
-
-        _productRepository.Received(1).Delete(product);
-        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
     public async Task Handle_WhenProductNotFound_ReturnsNotFoundFailure()
     {
         _productRepository.GetByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
@@ -378,17 +364,5 @@ public sealed class DeleteProductRequestHandlerTests
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(ApplicationErrors.NotFound);
-    }
-
-    [Fact]
-    public async Task Handle_WhenProductNotFound_DoesNotDeleteOrSave()
-    {
-        _productRepository.GetByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns((DomainProduct?)null);
-
-        await _sut.Handle(new DeleteProductRequest(Guid.NewGuid()), CancellationToken.None);
-
-        _productRepository.DidNotReceive().Delete(Arg.Any<DomainProduct>());
-        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

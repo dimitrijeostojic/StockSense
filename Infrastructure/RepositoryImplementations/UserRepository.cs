@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -9,17 +9,12 @@ public sealed class UserRepository(AuthDbContext authDbContext) : IUserRepositor
 {
     private readonly AuthDbContext _authDbContext = authDbContext ?? throw new ArgumentNullException(nameof(authDbContext));
 
-    public void Delete(ApplicationUser user)
-    {
-        _authDbContext.Users.Remove(user);
-    }
-
     public async Task<List<ApplicationUser>> GetAllUsersAsync(Guid tenantPublicId, CancellationToken cancellationToken)
     {
         var tenant = await _authDbContext.Tenants.FirstOrDefaultAsync(t => t.PublicId == tenantPublicId, cancellationToken: cancellationToken);
         return tenant == null
             ? []
-            : await _authDbContext.Users.Where(u => u.TenantId == tenant.Id).ToListAsync(cancellationToken);
+            : await _authDbContext.Users.Where(u => u.TenantId == tenant.Id && u.IsActive).ToListAsync(cancellationToken);
     }
 
     public async Task<ApplicationUser?> GetUserByPublicIdAsync(Guid userPublicId, Guid tenantPublicId, CancellationToken cancellationToken)
@@ -31,6 +26,6 @@ public sealed class UserRepository(AuthDbContext authDbContext) : IUserRepositor
         }
 
         return await _authDbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == userPublicId.ToString() && u.TenantId == tenant.Id, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userPublicId.ToString() && u.TenantId == tenant.Id && u.IsActive, cancellationToken);
     }
 }

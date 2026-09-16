@@ -6,6 +6,7 @@ using Application.SupplierManagement.GetAllSuppliers;
 using Application.SupplierManagement.GetSupplierById;
 using Application.SupplierManagement.UpdateSupplier;
 using Domain.Abstractions;
+using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
 using NSubstitute;
@@ -232,13 +233,17 @@ public sealed class DeleteSupplierRequestHandlerTests
     private readonly ISupplierRepository _supplierRepository = Substitute.For<ISupplierRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
+    private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
+    private readonly IOrderRepository _orderRepository = Substitute.For<IOrderRepository>();
 
     private readonly DeleteSupplierRequestHandler _sut;
 
     public DeleteSupplierRequestHandlerTests()
     {
         _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
-        _sut = new DeleteSupplierRequestHandler(_supplierRepository, _unitOfWork, _currentUserAccessor);
+        _productRepository.AnyBySupplierIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(false);
+        _orderRepository.AnyBySupplierIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(false);
+        _sut = new DeleteSupplierRequestHandler(_supplierRepository, _unitOfWork, _currentUserAccessor, _productRepository, _orderRepository);
     }
 
     [Fact]
@@ -287,6 +292,38 @@ public sealed class DeleteSupplierRequestHandlerTests
 
         await _sut.Handle(new DeleteSupplierRequest(Guid.NewGuid()), CancellationToken.None);
 
+        await _supplierRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainSupplier>(), Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenSupplierHasActiveProducts_ReturnsFailure()
+    {
+        var publicId = Guid.NewGuid();
+        _supplierRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(EntityFactory.CreateSupplier());
+        _productRepository.AnyBySupplierIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        var result = await _sut.Handle(new DeleteSupplierRequest(publicId), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.SupplierHasProducts);
+        await _supplierRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainSupplier>(), Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenSupplierHasOrders_ReturnsFailure()
+    {
+        var publicId = Guid.NewGuid();
+        _supplierRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(EntityFactory.CreateSupplier());
+        _orderRepository.AnyBySupplierIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        var result = await _sut.Handle(new DeleteSupplierRequest(publicId), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.SupplierHasOrders);
         await _supplierRepository.DidNotReceive().DeleteAsync(Arg.Any<DomainSupplier>(), Arg.Any<CancellationToken>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
