@@ -48,7 +48,7 @@ internal static class EntityFactory
     public static Order CreateCancelledOrder(int supplierId = 1, Guid? tenantId = null)
     {
         var order = CreateOrder(supplierId, tenantId);
-        order.WithOrderStatus(Domain.Enums.OrderStatus.Cancelled, order.TenantPublicId);
+        order.WithOrderStatus(OrderStatus.Cancelled, order.TenantPublicId);
         return order;
     }
 
