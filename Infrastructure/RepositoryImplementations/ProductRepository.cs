@@ -47,7 +47,12 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
         //search
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(p => p.Name.Contains(searchTerm) || (p.Description != null && p.Description.Contains(searchTerm)));
+            query = query.Where(p =>
+                p.Name.Contains(searchTerm) ||
+                (p.Description != null
+                    && p.Description.Contains(searchTerm)) ||
+                (p.Sku != null
+                    && p.Sku.Contains(searchTerm)));
         }
 
         //filter

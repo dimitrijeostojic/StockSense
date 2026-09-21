@@ -50,6 +50,7 @@ public sealed class OrderPdfGenerator : IOrderPdfGenerator
                         {
                             col.Item().AlignRight().Text("PORUDZBENICA").FontSize(16).Bold();
                             col.Item().AlignRight().Text(data.OrderDate.ToString("dd.MM.yyyy"));
+                            col.Item().AlignRight().Text($"Valuta: {data.CurrencyCode}").FontColor(Colors.Grey.Medium);
                         });
                     });
 
@@ -93,8 +94,8 @@ public sealed class OrderPdfGenerator : IOrderPdfGenerator
                             table.Cell().PaddingVertical(4).Text(item.SupplierCode);
                             table.Cell().PaddingVertical(4).AlignCenter().Text(item.UnitOfMeasure);
                             table.Cell().PaddingVertical(4).AlignRight().Text(item.Quantity.ToString());
-                            table.Cell().PaddingVertical(4).AlignRight().Text($"{item.UnitPrice:N2}");
-                            table.Cell().PaddingVertical(4).AlignRight().Text($"{item.NetTotal:N2}");
+                            table.Cell().PaddingVertical(4).AlignRight().Text(FormatAmount(item.UnitPrice, data.CurrencyCode));
+                            table.Cell().PaddingVertical(4).AlignRight().Text(FormatAmount(item.NetTotal, data.CurrencyCode));
                         }
                     });
 
@@ -109,16 +110,16 @@ public sealed class OrderPdfGenerator : IOrderPdfGenerator
                     column.Item().AlignRight().Column(summary =>
                     {
                         summary.Item().PaddingTop(4).BorderTop(1).BorderColor(Colors.Grey.Lighten2);
-                        summary.Item().Text($"Ukupno bez PDV-a: {grandTotal:N2}");
+                        summary.Item().Text($"Ukupno bez PDV-a: {FormatAmount(grandTotal, data.CurrencyCode)}");
 
                         foreach (var group in vatGroups)
                         {
                             var groupVat = group.Sum(i => i.VatAmount);
-                            summary.Item().Text($"PDV ({group.Key:0.##}%): {groupVat:N2}");
+                            summary.Item().Text($"PDV ({group.Key:0.##}%): {FormatAmount(groupVat, data.CurrencyCode)}");
                         }
 
                         summary.Item().PaddingTop(4).BorderTop(1).BorderColor(Colors.Grey.Lighten2);
-                        summary.Item().Text($"Ukupno sa PDV-om: {grandTotalWithVat:N2}").FontSize(12).Bold();
+                        summary.Item().Text($"Ukupno sa PDV-om: {FormatAmount(grandTotalWithVat, data.CurrencyCode)}").FontSize(12).Bold();
                     });
 
                     if (!string.IsNullOrWhiteSpace(data.Notes))
@@ -140,4 +141,11 @@ public sealed class OrderPdfGenerator : IOrderPdfGenerator
 
         return document.GeneratePdf();
     }
+
+    private static string FormatAmount(decimal amount, string currencyCode) => currencyCode switch
+    {
+        "EUR" => $"€{amount:N2}",
+        "USD" => $"${amount:N2}",
+        _ => $"{amount:N2} {currencyCode}"
+    };
 }

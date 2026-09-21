@@ -32,7 +32,8 @@ internal sealed class GetSupplierByIdRequestHandler(
             supplier.ContactPhone,
             supplier.Address,
             supplier.City,
-            supplier.Country
+            supplier.Country,
+            supplier.Currency
         );
 
         return TResult<GetSupplierByIdResponse>.Success(response);

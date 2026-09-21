@@ -11,7 +11,7 @@ public sealed class OrderEntityTests
     private static readonly DateTime ValidDate = DateTime.UtcNow.AddDays(-1);
 
     private static Order BuildPendingOrder()
-        => Order.CreateOrder(1, ValidDate, null, TenantId);
+        => Order.CreateOrder(1, ValidDate, Currency.EUR, null, TenantId);
 
     [Fact]
     public void CreateOrder_SetsStatusToPending()
@@ -24,7 +24,7 @@ public sealed class OrderEntityTests
     [Fact]
     public void CreateOrder_SetsCorrectSupplierId()
     {
-        var order = Order.CreateOrder(42, ValidDate, "note", TenantId);
+        var order = Order.CreateOrder(42, ValidDate, Currency.EUR, "note", TenantId);
 
         order.SupplierId.Should().Be(42);
         order.Notes.Should().Be("note");

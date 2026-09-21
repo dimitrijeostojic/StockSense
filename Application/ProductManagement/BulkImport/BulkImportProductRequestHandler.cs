@@ -49,6 +49,21 @@ internal sealed class BulkImportProductRequestHandler(
             try
             {
                 var record = csv.GetRecord<ProductImportRowDto>();
+                if (!CurrencyParser.TryParse(record.Currency, out var currency))
+                {
+                    errors.Add(new ImportRowError(
+                        rowNumber,
+                        $"Unknown currency '{record.Currency}'. Allowed: {CurrencyParser.AllowedValues}"));
+                    continue;
+                }
+
+                if (!UnitOfMeasurementParser.TryParse(record.UnitOfMeasurement, out var unitOfMeasure))
+                {
+                    errors.Add(new ImportRowError(
+                        rowNumber,
+                        $"Unknown unit of measurement '{record.UnitOfMeasurement}'. Allowed: {UnitOfMeasurementParser.AllowedValues}"));
+                    continue;
+                }
 
                 if (!categoryCache.TryGetValue(record.CategoryName, out var category))
                 {
@@ -60,18 +75,10 @@ internal sealed class BulkImportProductRequestHandler(
 
                 if (!supplierCache.TryGetValue(record.SupplierName, out var supplier))
                 {
-                    supplier = Supplier.CreateSupplier(record.SupplierName, record.ContactName, record.ContactEmail, record.SupplierCode, null, null, null, null, tenantPublicId);
+                    supplier = Supplier.CreateSupplier(record.SupplierName, record.ContactName, record.ContactEmail, record.SupplierCode, null, currency, null, null, null, tenantPublicId);
                     await _supplierRepository.AddAsync(supplier, cancellationToken);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                     supplierCache[record.SupplierName] = supplier;
-                }
-
-                if (!UnitOfMeasurementParser.TryParse(record.UnitOfMeasurement, out var unitOfMeasure))
-                {
-                    errors.Add(new ImportRowError(
-                        rowNumber,
-                        $"Unknown unit of measurement '{record.UnitOfMeasurement}'. Allowed: {UnitOfMeasurementParser.AllowedValues}"));
-                    continue;
                 }
 
                 if (!seenSkus.Add(record.Sku))

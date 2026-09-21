@@ -20,7 +20,9 @@ internal sealed class GetAllOrdersRequestHandler(
             order.PublicId,
             order.OrderDate,
             order.OrderStatus,
-            order.Supplier!.Name)).ToList();
+            order.Supplier!.Name,
+            order.Currency,
+            order.Supplier.PublicId)).ToList();
 
         var response = new GetAllOrdersResponse(orderDtos, totalCount, request.PageNumber, request.PageSize);
         return TResult<GetAllOrdersResponse>.Success(response);

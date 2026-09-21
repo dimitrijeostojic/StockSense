@@ -1,4 +1,5 @@
-﻿using Domain.Primitives;
+﻿using Domain.Enums;
+using Domain.Primitives;
 
 namespace Domain.Entities;
 
@@ -12,6 +13,7 @@ public class Supplier : AggregateRoot
     public string? Address { get; private set; }
     public string? City { get; private set; }
     public string? Country { get; private set; }
+    public Currency Currency { get; private set; }
     public IReadOnlyCollection<Order> Orders => _orders;
     private readonly List<Order> _orders = [];
     public IReadOnlyCollection<Product> Products => _products;
@@ -26,13 +28,14 @@ public class Supplier : AggregateRoot
         SupplierCode = string.Empty;
     }
 
-    private Supplier(string name, string contactName, string contactEmail, string supplierCode, string? contactPhone, string? address, string? city, string? country, Guid tenantPublicId)
+    private Supplier(string name, string contactName, string contactEmail, string supplierCode, string? contactPhone, Currency currency, string? address, string? city, string? country, Guid tenantPublicId)
     {
         Name = name;
         ContactName = contactName;
         ContactEmail = contactEmail;
         SupplierCode = supplierCode;
         ContactPhone = contactPhone;
+        Currency = currency;
         Address = address;
         City = city;
         Country = country;
@@ -40,13 +43,13 @@ public class Supplier : AggregateRoot
     }
 
 
-    public static Supplier CreateSupplier(string name, string contactName, string contactEmail, string supplierCode, string? contactPhone, string? address, string? city, string? country, Guid tenantPublicId)
+    public static Supplier CreateSupplier(string name, string contactName, string contactEmail, string supplierCode, string? contactPhone, Currency currency, string? address, string? city, string? country, Guid tenantPublicId)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNullOrEmpty(contactName);
         ArgumentNullException.ThrowIfNullOrEmpty(contactEmail);
         ArgumentNullException.ThrowIfNullOrEmpty(supplierCode);
-        return new Supplier(name, contactName, contactEmail, supplierCode, contactPhone, address, city, country, tenantPublicId);
+        return new Supplier(name, contactName, contactEmail, supplierCode, contactPhone, currency, address, city, country, tenantPublicId);
     }
 
     public Supplier WithName(string name)
@@ -87,6 +90,12 @@ public class Supplier : AggregateRoot
     public Supplier WithCountry(string? country)
     {
         Country = country;
+        return this;
+    }
+
+    public Supplier WithCurrency(Currency currency)
+    {
+        Currency = currency;
         return this;
     }
 }

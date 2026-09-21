@@ -25,6 +25,7 @@ internal sealed class CreateSupplierRequestHandler(
             request.ContactEmail,
             request.SupplierCode,
             request.ContactPhone,
+            request.Currency,
             request.Address,
             request.City,
             request.Country,

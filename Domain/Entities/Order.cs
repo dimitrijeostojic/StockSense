@@ -11,13 +11,14 @@ public class Order : AggregateRoot
     public DateTime OrderDate { get; private set; }
     public string? Notes { get; private set; }
     public OrderStatus OrderStatus { get; private set; }
+    public Currency Currency { get; private set; }
     public Supplier? Supplier { get; private set; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
 
     private readonly List<OrderItem> _orderItems = [];
     public Guid TenantPublicId { get; private set; }
 
-    public static Order CreateOrder(int supplierId, DateTime orderDate, string? notes, Guid tenantPublicId)
+    public static Order CreateOrder(int supplierId, DateTime orderDate, Currency currency, string? notes, Guid tenantPublicId)
     {
         return new Order
         {
@@ -25,7 +26,8 @@ public class Order : AggregateRoot
             OrderDate = orderDate,
             TenantPublicId = tenantPublicId,
             Notes = notes,
-            OrderStatus = OrderStatus.Pending
+            OrderStatus = OrderStatus.Pending,
+            Currency = currency
         };
     }
 
@@ -47,6 +49,11 @@ public class Order : AggregateRoot
     public Order WithSupplierId(int supplierId)
     {
         SupplierId = supplierId;
+        return this;
+    }
+    public Order WithCurrency(Currency currency)
+    {
+        Currency = currency;
         return this;
     }
     public Order WithOrderDate(DateTime orderDate)

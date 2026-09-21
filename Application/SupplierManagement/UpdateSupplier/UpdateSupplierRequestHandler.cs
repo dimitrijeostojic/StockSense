@@ -32,7 +32,8 @@ internal sealed class UpdateSupplierRequestHandler(
             .WithContactPhone(request.ContactPhone)
             .WithAddress(request.Address)
             .WithCity(request.City)
-            .WithCountry(request.Country);
+            .WithCountry(request.Country)
+            .WithCurrency(request.Currency);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         var response = new UpdateSupplierResponse(
@@ -40,7 +41,8 @@ internal sealed class UpdateSupplierRequestHandler(
             supplier.Name,
             supplier.ContactName,
             supplier.ContactEmail,
-            supplier.ContactPhone);
+            supplier.ContactPhone,
+            supplier.Currency);
 
         return TResult<UpdateSupplierResponse>.Success(response);
 

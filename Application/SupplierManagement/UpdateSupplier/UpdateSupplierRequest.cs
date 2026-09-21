@@ -1,4 +1,5 @@
 using Domain.Core;
+using Domain.Enums;
 using MediatR;
 
 namespace Application.SupplierManagement.UpdateSupplier;
@@ -12,5 +13,6 @@ public sealed record UpdateSupplierRequest(
     string? ContactPhone,
     string? Address,
     string? City,
-    string? Country)
+    string? Country,
+    Currency Currency)
     : IRequest<TResult<UpdateSupplierResponse>>;

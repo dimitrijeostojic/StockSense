@@ -16,7 +16,7 @@ internal static class EntityFactory
         string name = "Test Supplier",
         string contactEmail = "contact@test.com",
         Guid? tenantId = null)
-        => Supplier.CreateSupplier(name, "Contact", contactEmail, "SUP-001", null, null, null, null, tenantId ?? Guid.NewGuid());
+        => Supplier.CreateSupplier(name, "Contact", contactEmail, "SUP-001", null, Currency.EUR, null, null, null, tenantId ?? Guid.NewGuid());
 
     public static Product CreateProduct(
         string name = "Test Product",
@@ -43,7 +43,7 @@ internal static class EntityFactory
     public static Order CreateOrder(
         int supplierId = 1,
         Guid? tenantId = null)
-        => Order.CreateOrder(supplierId, DateTime.UtcNow.AddDays(-1), null, tenantId ?? Guid.NewGuid());
+        => Order.CreateOrder(supplierId, DateTime.UtcNow.AddDays(-1), Currency.EUR, null, tenantId ?? Guid.NewGuid());
 
     public static Order CreateCancelledOrder(int supplierId = 1, Guid? tenantId = null)
     {

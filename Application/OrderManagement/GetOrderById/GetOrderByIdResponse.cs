@@ -9,4 +9,5 @@ public sealed record GetOrderByIdResponse(
     string? Notes,
     Guid SupplierPublicId,
     string SupplierName,
+    Currency Currency,
     IEnumerable<OrderItemDto> OrderItems);

@@ -1,8 +1,11 @@
-﻿namespace Application.SupplierManagement.GetAllSuppliers;
+﻿using Domain.Enums;
+
+namespace Application.SupplierManagement.GetAllSuppliers;
 
 public sealed record GetAllSuppliersDto(
     Guid PublicId,
     string Name,
     string? ContactName,
     string? ContactEmail,
-    string? ContactPhone);
+    string? ContactPhone,
+    Currency Currency);

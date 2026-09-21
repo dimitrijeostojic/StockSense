@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Application.SupplierManagement.UpdateSupplier;
 
 public sealed record UpdateSupplierRequestBody(
@@ -8,4 +10,5 @@ public sealed record UpdateSupplierRequestBody(
     string? ContactPhone,
     string? Address,
     string? City,
-    string? Country);
+    string? Country,
+    Currency Currency);

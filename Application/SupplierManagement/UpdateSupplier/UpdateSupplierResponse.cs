@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Application.SupplierManagement.UpdateSupplier;
 
 public sealed record UpdateSupplierResponse(
@@ -5,4 +7,5 @@ public sealed record UpdateSupplierResponse(
     string Name,
     string ContactName,
     string ContactEmail,
-    string? ContactPhone);
+    string? ContactPhone,
+    Currency Currency);

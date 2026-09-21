@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,8 +16,9 @@ internal sealed class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.OrderDate).IsRequired();
         builder.Property(o => o.Notes).HasMaxLength(255);
         builder.Property(o => o.OrderStatus).IsRequired();
-        builder.Property(c => c.CreatedBy).IsRequired().HasMaxLength(255);
-        builder.Property(c => c.ModifiedBy).HasMaxLength(255);
+        builder.Property(o => o.Currency).IsRequired().HasDefaultValue(Currency.EUR);
+        builder.Property(o => o.CreatedBy).IsRequired().HasMaxLength(255);
+        builder.Property(o => o.ModifiedBy).HasMaxLength(255);
 
         builder.HasOne(o => o.Supplier)
             .WithMany(s => s.Orders)

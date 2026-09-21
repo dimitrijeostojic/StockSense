@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,6 +17,7 @@ internal sealed class SupplierEntityConfiguration : IEntityTypeConfiguration<Sup
         builder.Property(s => s.ContactEmail).HasMaxLength(100).IsRequired();
         builder.Property(s => s.SupplierCode).HasMaxLength(20).IsRequired();
         builder.Property(s => s.ContactPhone).HasMaxLength(100);
+        builder.Property(p => p.Currency).IsRequired().HasDefaultValue(Currency.EUR);
         builder.Property(s => s.Address).HasMaxLength(100);
         builder.Property(s => s.City).HasMaxLength(100);
         builder.Property(s => s.Country).HasMaxLength(100);

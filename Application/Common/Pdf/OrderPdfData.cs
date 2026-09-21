@@ -12,4 +12,5 @@ public sealed record OrderPdfData(
     string? SupplierCity,
     string? SupplierCountry,
     string? Notes,
+    string CurrencyCode,
     IReadOnlyCollection<OrderPdfItem> Items);

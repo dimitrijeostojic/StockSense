@@ -46,6 +46,7 @@ internal sealed class ExportPDFRequestHandler(
             order.Supplier.City,
             order.Supplier.Country,
             order.Notes,
+            order.Currency.ToString(),
             [..order.OrderItems.Select(oi => new OrderPdfItem(
                 oi.Product!.Sku,
                 oi.Product.Name,

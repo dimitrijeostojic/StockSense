@@ -17,12 +17,13 @@ internal sealed class GetAllSuppliersRequestHandler(
     {
         var (items, totalCount) = await _supplierRepository.GetAllAsync(_currentUserAccessor.TenantPublicId, request.SearchTerm, request.SortBy, request.IsAscending, request.FilterOn, request.FilterQuery, request.PageNumber, request.PageSize, cancellationToken);
 
-        var dtos = items.Select(p => new GetAllSuppliersDto(
-            p.PublicId,
-            p.Name,
-            p.ContactName,
-            p.ContactEmail,
-            p.ContactPhone));
+        var dtos = items.Select(s => new GetAllSuppliersDto(
+            s.PublicId,
+            s.Name,
+            s.ContactName,
+            s.ContactEmail,
+            s.ContactPhone,
+            s.Currency));
 
         var response = new GetAllSuppliersResponse(dtos, totalCount, request.PageNumber, request.PageSize);
 

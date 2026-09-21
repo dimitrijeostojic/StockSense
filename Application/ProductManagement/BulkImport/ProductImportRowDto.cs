@@ -11,6 +11,7 @@ public sealed class ProductImportRowDto
     public string CategoryName { get; set; } = string.Empty;
     public string SupplierName { get; set; } = string.Empty;
     public string UnitOfMeasurement { get; set; } = string.Empty;
+    public string Currency { get; set; } = string.Empty;
     public string ContactEmail { get; set; } = string.Empty;
     public string ContactName { get; set; } = string.Empty;
     public string SupplierCode { get; set; } = string.Empty;

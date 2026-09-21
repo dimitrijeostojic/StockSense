@@ -1,4 +1,6 @@
-﻿namespace Application.SupplierManagement.GetSupplierById;
+﻿using Domain.Enums;
+
+namespace Application.SupplierManagement.GetSupplierById;
 
 public sealed record GetSupplierByIdResponse(
    Guid PublicId,
@@ -9,4 +11,5 @@ public sealed record GetSupplierByIdResponse(
     string? ContactPhone,
     string? Address,
     string? City,
-    string? Country);
+    string? Country,
+    Currency Currency);
