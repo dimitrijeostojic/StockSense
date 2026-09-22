@@ -33,15 +33,13 @@ public static class DependencyInjection
 
         services.AddScoped<UpdateAuditableEntitiesInterceptor>();
         services.AddScoped<ConvertDomainEventToOutboxMessagesInterceptor>();
+        services.AddScoped<AuditLogInterceptor>();
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IAuthUnitOfWork>(sp => sp.GetRequiredService<AuthDbContext>());
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            var interceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
-            var interceptor2 = sp.GetRequiredService<ConvertDomainEventToOutboxMessagesInterceptor>();
-
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
@@ -49,7 +47,10 @@ public static class DependencyInjection
                     maxRetryCount: 5,
                     maxRetryDelay: TimeSpan.FromSeconds(10),
                     errorNumbersToAdd: null))
-                .AddInterceptors(interceptor, interceptor2);
+                .AddInterceptors(
+                  sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>(),
+                  sp.GetRequiredService<ConvertDomainEventToOutboxMessagesInterceptor>(),
+                  sp.GetRequiredService<AuditLogInterceptor>());
         });
         services.AddDbContext<AuthDbContext>((sp, options) =>
         {
