@@ -36,10 +36,22 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddHealthChecks();
 
+#region Logging
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddHttpLogging(options =>
+{
+    options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestPropertiesAndHeaders
+        | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestQuery
+        | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponsePropertiesAndHeaders
+        | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.Duration;
+    options.CombineLogs = true;
+});
+
 builder.Host.UseSerilog((ctx, cfg) =>
 {
     cfg.ReadFrom.Configuration(ctx.Configuration);
 });
+#endregion
 
 #region ConfigureOptions
 builder.Services.ConfigureOptions<RedisOptionsSetup>();
@@ -189,6 +201,7 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
+app.UseHttpLogging();
 
 app.MapHealthChecks("/health");
 
