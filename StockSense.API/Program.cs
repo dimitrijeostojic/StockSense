@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Serilog;
 using StockSense.API.Accessors;
 using StockSense.API.Extensions;
 using StockSense.API.Logging;
@@ -45,11 +44,6 @@ builder.Services.AddHttpLogging(options =>
         | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponsePropertiesAndHeaders
         | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.Duration;
     options.CombineLogs = true;
-});
-
-builder.Host.UseSerilog((ctx, cfg) =>
-{
-    cfg.ReadFrom.Configuration(ctx.Configuration);
 });
 #endregion
 
