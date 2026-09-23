@@ -100,6 +100,7 @@ public static class DependencyInjection
         services.AddScoped<INotificationSender<EmailMessageDto>, EmailSender>();
         services.AddScoped<IOrderPdfGenerator, OrderPdfGenerator>();
         services.AddScoped<IIdempotencyService, IdempotencyService>();
+        services.AddScoped<INotificationService, NotificationService>();
         return services;
     }
 

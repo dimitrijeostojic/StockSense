@@ -8,7 +8,6 @@ using Domain.Enums;
 using Domain.Events;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Reflection;
@@ -21,15 +20,14 @@ public sealed class LowStockDomainEventHandlerTests
 {
     private readonly ILogger<LowStockDomainEvent> _logger = Substitute.For<ILogger<LowStockDomainEvent>>();
     private readonly IEmailService _emailService = Substitute.For<IEmailService>();
-    private readonly UserManager<ApplicationUser> _userManager = Substitute.For<UserManager<ApplicationUser>>(
-        Substitute.For<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
     private readonly ITenantRepository _tenantRepository = Substitute.For<ITenantRepository>();
     private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
+    private readonly INotificationService _notificationService = Substitute.For<INotificationService>();
     private readonly LowStockDomainEventHandler _sut;
 
     public LowStockDomainEventHandlerTests()
     {
-        _sut = new LowStockDomainEventHandler(_logger, _emailService, _userManager, _tenantRepository, _productRepository);
+        _sut = new LowStockDomainEventHandler(_logger, _emailService, _tenantRepository, _productRepository, _notificationService);
     }
 
     [Fact]
@@ -162,6 +160,87 @@ public sealed class LowStockDomainEventHandlerTests
         await _emailService.Received(1).SendAsync(
             Arg.Is<EmailMessageDto>(m => m.To == "user1@test.com"),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenTenantNotFound_DoesNotSendNotification()
+    {
+        var notification = new LowStockDomainEvent(Guid.NewGuid(), Guid.NewGuid(), 3);
+        _tenantRepository.GetByPublicIdAsync(notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns((Tenant?)null);
+
+        await _sut.Handle(notification, CancellationToken.None);
+
+        await _notificationService.DidNotReceive()
+            .SendLowStockAlertAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenTenantHasNoUsers_DoesNotSendNotification()
+    {
+        var notification = new LowStockDomainEvent(Guid.NewGuid(), Guid.NewGuid(), 3);
+        var tenant = Tenant.Create("Test Tenant", "123456789", "Test Address");
+        _tenantRepository.GetByPublicIdAsync(notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns(tenant);
+
+        await _sut.Handle(notification, CancellationToken.None);
+
+        await _notificationService.DidNotReceive()
+            .SendLowStockAlertAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenProductNotFound_DoesNotSendNotification()
+    {
+        var notification = new LowStockDomainEvent(Guid.NewGuid(), Guid.NewGuid(), 3);
+        var user = ApplicationUser.Create("user1", "user1@test.com", "John", "Doe", 1);
+        var tenant = CreateTenantWithUsers(user);
+        _tenantRepository.GetByPublicIdAsync(notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns(tenant);
+        _productRepository.GetByPublicIdAsync(notification.ProductPublicId, notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns((Product?)null);
+
+        await _sut.Handle(notification, CancellationToken.None);
+
+        await _notificationService.DidNotReceive()
+            .SendLowStockAlertAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenProductFound_SendsNotificationWithCorrectData()
+    {
+        var notification = new LowStockDomainEvent(Guid.NewGuid(), Guid.NewGuid(), 3);
+        var user = ApplicationUser.Create("user1", "user1@test.com", "John", "Doe", 1);
+        var tenant = CreateTenantWithUsers(user);
+        var product = EntityFactory.CreateProductWithNavigation("Widget");
+        _tenantRepository.GetByPublicIdAsync(notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns(tenant);
+        _productRepository.GetByPublicIdAsync(notification.ProductPublicId, notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns(product);
+
+        await _sut.Handle(notification, CancellationToken.None);
+
+        await _notificationService.Received(1)
+            .SendLowStockAlertAsync(notification.TenantPublicId.ToString(), "Widget", 3, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenMultipleUsers_SendsNotificationOnce()
+    {
+        var notification = new LowStockDomainEvent(Guid.NewGuid(), Guid.NewGuid(), 3);
+        var user1 = ApplicationUser.Create("user1", "user1@test.com", "John", "Doe", 1);
+        var user2 = ApplicationUser.Create("user2", "user2@test.com", "Jane", "Doe", 1);
+        var tenant = CreateTenantWithUsers(user1, user2);
+        var product = EntityFactory.CreateProductWithNavigation();
+        _tenantRepository.GetByPublicIdAsync(notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns(tenant);
+        _productRepository.GetByPublicIdAsync(notification.ProductPublicId, notification.TenantPublicId, Arg.Any<CancellationToken>())
+            .Returns(product);
+
+        await _sut.Handle(notification, CancellationToken.None);
+
+        await _notificationService.Received(1)
+            .SendLowStockAlertAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     private static Tenant CreateTenantWithUsers(params ApplicationUser[] users)

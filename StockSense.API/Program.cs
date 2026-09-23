@@ -1,6 +1,7 @@
 using Application;
 using Application.Abstractions.Services;
 using Infrastructure;
+using Infrastructure.Hubs;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -36,7 +37,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks();
 
 #region Logging
-builder.Services.AddApplicationInsightsTelemetry();
+if (!string.IsNullOrEmpty(builder.Configuration["ApplicationInsights:ConnectionString"]))
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
+
 builder.Services.AddHttpLogging(options =>
 {
     options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestPropertiesAndHeaders
@@ -88,6 +93,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("JwtAuthentication");
                 logger.LogWarning(context.Exception, "JWT authentication failed");
                 return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/notifications")))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
             }
         };
     });
@@ -127,7 +143,8 @@ builder.Services.AddCors(setup =>
         {
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyMethod()
-                  .AllowAnyHeader();
+                  .AllowAnyHeader()
+                  .AllowCredentials();
         }
         else
         {
@@ -177,6 +194,10 @@ builder.Services.AddOpenApi(options =>
 #endregion
 
 
+#region SignalR
+builder.Services.AddSignalR();
+#endregion
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -198,6 +219,7 @@ app.UseAuthorization();
 app.UseRateLimiter();
 
 app.MapHealthChecks("/health");
+app.MapHub<NotificationHub>("notifications");
 
 app.MapControllers();
 
