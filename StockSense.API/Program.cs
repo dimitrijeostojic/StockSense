@@ -197,11 +197,11 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("Default");
 app.UseHttpsRedirection();
+app.UseHttpLogging();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
-app.UseHttpLogging();
 
 app.MapHealthChecks("/health");
 
