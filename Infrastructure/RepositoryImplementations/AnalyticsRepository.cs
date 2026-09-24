@@ -1,107 +1,13 @@
-using Domain.Entities;
 using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace Infrastructure.RepositoryImplementations;
 
-public sealed class AnalyticsRepository(
-    ApplicationDbContext dbContext,
-    AuthDbContext authDbContext) : IAnalyticsRepository
+public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnalyticsRepository
 {
     private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    private readonly AuthDbContext _authDbContext = authDbContext ?? throw new ArgumentNullException(nameof(authDbContext));
-
-    public async Task<List<string>> GetUserIdsByTenantAsync(Guid tenantPublicId, CancellationToken cancellationToken = default)
-    {
-        var tenant = await _authDbContext.Tenants
-            .FirstOrDefaultAsync(t => t.PublicId == tenantPublicId, cancellationToken);
-
-        if (tenant == null) return [];
-
-        return await _authDbContext.Users
-            .Where(u => u.TenantId == tenant.Id)
-            .Select(u => u.Id)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IEnumerable<(string EntityName, int Count)>> GetActivityByEntityTypeAsync(
-        List<string> userIds, DateTime from, DateTime to, CancellationToken cancellationToken = default)
-    {
-        var logs = await _dbContext.AuditLogs
-            .Where(al => al.UserId != null && userIds.Contains(al.UserId) && al.Timestamp >= from && al.Timestamp <= to)
-            .Select(al => new { al.EntityName })
-            .ToListAsync(cancellationToken);
-
-        return logs
-            .GroupBy(al => al.EntityName ?? "Unknown")
-            .Select(g => (g.Key, g.Count()))
-            .OrderByDescending(x => x.Item2);
-    }
-
-    public async Task<IEnumerable<(string Action, int Count)>> GetActivityByActionTypeAsync(
-        List<string> userIds, DateTime from, DateTime to, CancellationToken cancellationToken = default)
-    {
-        var logs = await _dbContext.AuditLogs
-            .Where(al => al.UserId != null && userIds.Contains(al.UserId) && al.Timestamp >= from && al.Timestamp <= to)
-            .Select(al => new { al.Action })
-            .ToListAsync(cancellationToken);
-
-        return logs
-            .GroupBy(al => al.Action ?? "Unknown")
-            .Select(g => (g.Key, g.Count()))
-            .OrderByDescending(x => x.Item2);
-    }
-
-    public async Task<IEnumerable<(string UserEmail, int Count)>> GetTopActiveUsersAsync(
-        List<string> userIds, DateTime from, DateTime to, int topN, CancellationToken cancellationToken = default)
-    {
-        var logs = await _dbContext.AuditLogs
-            .Where(al => al.UserId != null && userIds.Contains(al.UserId) && al.Timestamp >= from && al.Timestamp <= to)
-            .Select(al => new { al.UserEmail })
-            .ToListAsync(cancellationToken);
-
-        return logs
-            .GroupBy(al => al.UserEmail ?? "Unknown")
-            .Select(g => (g.Key, g.Count()))
-            .OrderByDescending(x => x.Item2)
-            .Take(topN);
-    }
-
-    public async Task<IEnumerable<(string Period, int Count)>> GetRegistrationTrendAsync(
-        Guid tenantPublicId, DateTime from, DateTime to, CancellationToken cancellationToken = default)
-    {
-        var tenant = await _authDbContext.Tenants
-            .FirstOrDefaultAsync(t => t.PublicId == tenantPublicId, cancellationToken);
-
-        if (tenant == null) return [];
-
-        var dates = await _authDbContext.Users
-            .Where(u => u.TenantId == tenant.Id && u.CreatedAt >= from && u.CreatedAt <= to)
-            .Select(u => u.CreatedAt)
-            .ToListAsync(cancellationToken);
-
-        var totalDays = (to - from).TotalDays;
-
-        if (totalDays <= 31)
-            return dates
-                .GroupBy(d => d.ToString("yyyy-MM-dd"))
-                .Select(g => (g.Key, g.Count()))
-                .OrderBy(x => x.Key);
-
-        if (totalDays <= 90)
-            return dates
-                .GroupBy(d => $"{ISOWeek.GetYear(d)}W{ISOWeek.GetWeekOfYear(d):D2}")
-                .Select(g => (g.Key, g.Count()))
-                .OrderBy(x => x.Key);
-
-        return dates
-            .GroupBy(d => d.ToString("yyyy-MM"))
-            .Select(g => (g.Key, g.Count()))
-            .OrderBy(x => x.Key);
-    }
 
     public async Task<IEnumerable<(Guid ProductPublicId, string ProductName, int CurrentStock, int MinimumStock)>> GetCurrentStockPerProductAsync(
         Guid tenantPublicId, CancellationToken cancellationToken = default)
