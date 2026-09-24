@@ -10,13 +10,9 @@
 
 ## Analytics Domain
 
-**Analytics** — a dedicated read-only section of the application (separate from Dashboard) providing deeper insights into user behaviour and business performance for a Tenant Admin. Filtered by a time range (preset or custom). Admin-only.
+**Analytics** — a dedicated read-only section of the application (separate from Dashboard) providing deeper insights into business performance for any authenticated user of a tenant. Filtered by a time range (preset or custom).
 
-**User Analytics** — the sub-section of Analytics covering:
-- *Activity* — aggregate action counts (CREATE / UPDATE / DELETE) per entity type, plus per-user breakdown of top active users. Sourced from AuditLog.
-- *Registration Trend* — count of new user registrations over time, grouped dynamically (day for ≤30d, week for ≤90d, month for >90d).
-
-**Business Analytics** — the sub-section of Analytics covering:
+**Business Analytics** — the Analytics section covering:
 - *Inventory Metrics* — current stock level per product, stock movement over time (In vs Out), products currently below MinimumStockQuantity.
 - *Order Metrics* — order volume over time, order value over time, orders by status, top suppliers by order count and value.
 

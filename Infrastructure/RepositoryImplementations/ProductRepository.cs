@@ -116,13 +116,6 @@ public sealed class ProductRepository(ApplicationDbContext dbContext) : IProduct
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> NumberOfProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken)
-    {
-        return await _dbContext.Products
-            .Include(p => p.StockEntries)
-            .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive && p.StockEntries.Sum(se => se.StockEntryType == Domain.Enums.StockEntryType.In ? +se.Quantity : -se.Quantity) < p.MinimumStockQuantity)
-            .CountAsync(cancellationToken);
-    }
     public async Task<ICollection<(Product Product, int CurrentStock)>> Top5ProductsWithLowStock(Guid tenantPublicId, CancellationToken cancellationToken)
     {
         return await _dbContext.Products

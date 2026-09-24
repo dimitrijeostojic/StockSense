@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.Services;
+using Application.Abstractions.Services;
 using Domain.Core;
 using Domain.RepositoryInterfaces;
 using MediatR;
@@ -8,19 +8,21 @@ namespace Application.DashboardManagement.Get;
 internal sealed class GetDashboardRequestHandler(
     IProductRepository productRepository,
     ICurrentUserAccessor currentUserAccessor,
-    IOrderRepository orderRepository
+    IOrderRepository orderRepository,
+    IAnalyticsRepository analyticsRepository
     )
     : IRequestHandler<GetDashboardRequest, TResult<GetDashboardResponse>>
 {
     private readonly IProductRepository _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
     private readonly IOrderRepository _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+    private readonly IAnalyticsRepository _analyticsRepository = analyticsRepository ?? throw new ArgumentNullException(nameof(analyticsRepository));
 
     public async Task<TResult<GetDashboardResponse>> Handle(GetDashboardRequest request, CancellationToken cancellationToken)
     {
         var tenantPublicId = _currentUserAccessor.TenantPublicId;
         var numberOfProducts = await _productRepository.CountAsync(tenantPublicId, cancellationToken);
-        var numberOfProductsWithLowStock = await _productRepository.NumberOfProductsWithLowStock(tenantPublicId, cancellationToken);
+        var numberOfProductsWithLowStock = await _analyticsRepository.GetBelowMinimumStockCountAsync(tenantPublicId, cancellationToken);
         var numberOfActiveOrders = await _orderRepository.GetNumberOfActiveOrders(tenantPublicId, cancellationToken);
         var latestOrders = await _orderRepository.GetLatestOrders(tenantPublicId, cancellationToken);
         var top5ProductWithLowStock = await _productRepository.Top5ProductsWithLowStock(tenantPublicId, cancellationToken);
