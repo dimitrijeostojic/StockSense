@@ -12,9 +12,9 @@
 
 **Analytics** — a dedicated read-only section of the application (separate from Dashboard) providing deeper insights into business performance for any authenticated user of a tenant. Filtered by a time range (preset or custom).
 
-**Business Analytics** — the Analytics section covering:
-- *Inventory Metrics* — current stock level per product, stock movement over time (In vs Out), products currently below MinimumStockQuantity.
-- *Order Metrics* — order volume over time, order value over time, orders by status, top suppliers by order count and value.
+**Business Analytics** — the analytics section of Dashboard covering:
+- *Inventory Metrics* — stock movement over time (In vs Out).
+- *Order Metrics* — total order value over time, top suppliers by order count.
 
 **Stock Movement** — a StockEntry record with type In or Out. Current stock level for a product = Σ In quantities − Σ Out quantities.
 

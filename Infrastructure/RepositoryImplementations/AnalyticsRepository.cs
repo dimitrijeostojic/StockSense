@@ -9,21 +9,6 @@ public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnaly
 {
     private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-    public async Task<IEnumerable<(Guid ProductPublicId, string ProductName, int CurrentStock, int MinimumStock)>> GetCurrentStockPerProductAsync(
-        Guid tenantPublicId, CancellationToken cancellationToken = default)
-    {
-        var products = await _dbContext.Products
-            .Include(p => p.StockEntries)
-            .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive)
-            .ToListAsync(cancellationToken);
-
-        return products.Select(p => (
-            p.PublicId,
-            p.Name,
-            p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity),
-            p.MinimumStockQuantity));
-    }
-
     public async Task<int> GetBelowMinimumStockCountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
@@ -51,7 +36,7 @@ public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnaly
             .OrderBy(x => x.Item1);
     }
 
-    public async Task<(int TotalCount, decimal TotalValue)> GetOrderVolumeAndValueAsync(
+    public async Task<decimal> GetTotalOrderValueAsync(
         Guid tenantPublicId, DateTime from, DateTime to, CancellationToken cancellationToken = default)
     {
         var orders = await _dbContext.Orders
@@ -59,20 +44,7 @@ public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnaly
             .Where(o => o.TenantPublicId == tenantPublicId && o.OrderDate >= from && o.OrderDate <= to)
             .ToListAsync(cancellationToken);
 
-        var totalValue = orders.Sum(o => o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity));
-        return (orders.Count, totalValue);
-    }
-
-    public async Task<IEnumerable<(OrderStatus Status, int Count)>> GetOrderStatusBreakdownAsync(
-        Guid tenantPublicId, DateTime from, DateTime to, CancellationToken cancellationToken = default)
-    {
-        var breakdown = await _dbContext.Orders
-            .Where(o => o.TenantPublicId == tenantPublicId && o.OrderDate >= from && o.OrderDate <= to)
-            .GroupBy(o => o.OrderStatus)
-            .Select(g => new { Status = g.Key, Count = g.Count() })
-            .ToListAsync(cancellationToken);
-
-        return breakdown.Select(x => (x.Status, x.Count));
+        return orders.Sum(o => o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity));
     }
 
     public async Task<IEnumerable<(Guid SupplierPublicId, string SupplierName, int OrderCount, decimal TotalValue)>> GetTopSuppliersAsync(
@@ -91,7 +63,7 @@ public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnaly
                 g.Key.Name,
                 g.Count(),
                 g.Sum(o => o.OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity))))
-            .OrderByDescending(x => x.Item4)
+            .OrderByDescending(x => x.Item3)
             .Take(topN);
     }
 }

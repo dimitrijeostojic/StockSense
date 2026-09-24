@@ -2,24 +2,27 @@
 
 Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
 
-## Two-repo setup
+## Two-repo setup — READ FIRST, this overrides the rest of this file
 
 This app has two GitHub repos that form ONE application:
-- Backend: dimitrijeostojic/StockSense (this repo)
-- Frontend: dimitrijeostojic/StockSenseUI2 (local: ../StockSenseUI2)
+- Backend: dimitrijeostojic/StockSense (this repo, local: .)
+- Frontend: dimitrijeostojic/StockSenseUI (local: ../StockSenseUI2)
 
-Put each ticket in the repo where the work happens:
-- Backend tickets: `gh issue create` (this repo)
-- Frontend tickets: `gh issue create --repo dimitrijeostojic/StockSenseUI`
-If work spans both, split it into one ticket per repo.
-If a frontend ticket depends on a backend one, add
-`Blocked by dimitrijeostojic/StockSense#<n>` at the top of its body.
-Specs (from /to-spec) live in this repo, since they cover both halves.
+Every ticket belongs to exactly ONE repo. Never create a ticket that
+requires changes in both repos. If a slice spans both, split it into a
+backend ticket and a frontend ticket.
+
+- Backend ticket (API, domain, DB, migrations):
+  `gh issue create --repo dimitrijeostojic/StockSense`
+- Frontend ticket (pages, components, UI state, API client):
+  `gh issue create --repo dimitrijeostojic/StockSenseUI`
+
+A frontend ticket that needs a backend ticket starts its body with:
+`Blocked by dimitrijeostojic/StockSense#<n>`
+Specs (from /to-spec) live in StockSense.
 
 After creating any issue, add it to the StockSense project:
 `gh project item-add 2 --owner @me --url <issue-url>`
-
-Issues and specs for this repo live as GitHub issues.
 
 ## Conventions
 
@@ -46,7 +49,8 @@ GitHub shares one number space across issues and PRs, so a bare `#42` may be eit
 
 ## When a skill says "publish to the issue tracker"
 
-Create a GitHub issue.
+Specs: create a GitHub issue in StockSense. Tickets: follow
+"Two-repo setup" above — each ticket goes to exactly one repo.
 
 ## When a skill says "fetch the relevant ticket"
 

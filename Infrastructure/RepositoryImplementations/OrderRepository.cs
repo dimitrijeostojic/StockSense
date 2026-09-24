@@ -77,7 +77,7 @@ public sealed class OrderRepository(ApplicationDbContext dbContext) : IOrderRepo
 
     public async Task<ICollection<Order>> GetLatestOrders(Guid tenantPublicId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Orders.Include(o => o.Supplier).Where(o => o.TenantPublicId == tenantPublicId).OrderByDescending(o => o.CreatedAt).Take(3).ToListAsync(cancellationToken);
+        return await _dbContext.Orders.Include(o => o.Supplier).Where(o => o.TenantPublicId == tenantPublicId).OrderByDescending(o => o.CreatedAt).Take(5).ToListAsync(cancellationToken);
     }
 
     public async Task<int> GetNumberOfActiveOrders(Guid tenantPublicId, CancellationToken cancellationToken = default)

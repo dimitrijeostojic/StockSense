@@ -1,7 +1,6 @@
 using Application.Abstractions.Services;
 using Application.AnalyticsManagement.Common;
 using Application.AnalyticsManagement.GetBusinessAnalytics;
-using Domain.Enums;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
 using NSubstitute;
@@ -26,28 +25,11 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
         _sut = new GetBusinessAnalyticsRequestHandler(_analyticsRepository, _currentUserAccessor);
 
         _analyticsRepository
-            .GetCurrentStockPerProductAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new List<(Guid, string, int, int)>
-            {
-                (Guid.NewGuid(), "Widget A", 50, 10),
-                (Guid.NewGuid(), "Widget B", 3, 20)
-            });
-        _analyticsRepository
-            .GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(1);
-        _analyticsRepository
             .GetStockMovementAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(new List<(DateTime, int, int)> { (new DateTime(2026, 5, 1), 100, 40) });
         _analyticsRepository
-            .GetOrderVolumeAndValueAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns((TotalCount: 12, TotalValue: 4800m));
-        _analyticsRepository
-            .GetOrderStatusBreakdownAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(new List<(OrderStatus, int)>
-            {
-                (OrderStatus.Pending, 3),
-                (OrderStatus.Received, 9)
-            });
+            .GetTotalOrderValueAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(4800m);
         _analyticsRepository
             .GetTopSuppliersAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new List<(Guid, string, int, decimal)>
@@ -69,9 +51,7 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     {
         var result = await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
 
-        result.Value!.InventoryMetrics.CurrentStockPerProduct.Should().HaveCount(2);
-        result.Value.InventoryMetrics.BelowMinimumCount.Should().Be(1);
-        result.Value.InventoryMetrics.StockMovement.Should().HaveCount(1);
+        result.Value!.InventoryMetrics.StockMovement.Should().HaveCount(1);
     }
 
     [Fact]
@@ -79,19 +59,8 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     {
         var result = await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
 
-        result.Value!.OrderMetrics.TotalCount.Should().Be(12);
-        result.Value.OrderMetrics.TotalValue.Should().Be(4800m);
-        result.Value.OrderMetrics.StatusBreakdown.Should().HaveCount(2);
+        result.Value!.OrderMetrics.TotalValue.Should().Be(4800m);
         result.Value.OrderMetrics.TopSuppliers.Should().HaveCount(1);
-    }
-
-    [Fact]
-    public async Task Handle_MapsOrderStatusToString()
-    {
-        var result = await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
-
-        result.Value!.OrderMetrics.StatusBreakdown.Should().Contain(x => x.Name == "Pending" && x.Count == 3);
-        result.Value.OrderMetrics.StatusBreakdown.Should().Contain(x => x.Name == "Received" && x.Count == 9);
     }
 
     [Fact]
@@ -99,9 +68,7 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     {
         await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
 
-        await _analyticsRepository.Received(1).GetCurrentStockPerProductAsync(_tenantId, Arg.Any<CancellationToken>());
-        await _analyticsRepository.Received(1).GetBelowMinimumStockCountAsync(_tenantId, Arg.Any<CancellationToken>());
-        await _analyticsRepository.Received(1).GetOrderVolumeAndValueAsync(_tenantId, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>());
+        await _analyticsRepository.Received(1).GetTotalOrderValueAsync(_tenantId, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -121,20 +88,11 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     public async Task Handle_WhenNoData_ReturnsSuccessWithZeroValues()
     {
         _analyticsRepository
-            .GetCurrentStockPerProductAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Enumerable.Empty<(Guid, string, int, int)>());
-        _analyticsRepository
-            .GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(0);
-        _analyticsRepository
             .GetStockMovementAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Enumerable.Empty<(DateTime, int, int)>());
         _analyticsRepository
-            .GetOrderVolumeAndValueAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns((0, 0m));
-        _analyticsRepository
-            .GetOrderStatusBreakdownAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-            .Returns(Enumerable.Empty<(OrderStatus, int)>());
+            .GetTotalOrderValueAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
+            .Returns(0m);
         _analyticsRepository
             .GetTopSuppliersAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(Enumerable.Empty<(Guid, string, int, decimal)>());
@@ -142,8 +100,7 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
         var result = await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value!.InventoryMetrics.CurrentStockPerProduct.Should().BeEmpty();
-        result.Value.OrderMetrics.TotalCount.Should().Be(0);
+        result.Value!.InventoryMetrics.StockMovement.Should().BeEmpty();
         result.Value.OrderMetrics.TotalValue.Should().Be(0m);
     }
 }
