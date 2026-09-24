@@ -1,4 +1,5 @@
 using Application.Abstractions.Services;
+using Application.AnalyticsManagement.Common;
 using Domain.Core;
 using Domain.RepositoryInterfaces;
 using MediatR;
@@ -16,8 +17,7 @@ internal sealed class GetUserAnalyticsRequestHandler(
     public async Task<TResult<GetUserAnalyticsResponse>> Handle(GetUserAnalyticsRequest request, CancellationToken cancellationToken)
     {
         var tenantPublicId = _currentUserAccessor.TenantPublicId;
-        var from = request.TimeRange.From;
-        var to = request.TimeRange.To;
+        var (from, to) = request.TimeRange;
 
         var userIds = await _analyticsRepository.GetUserIdsByTenantAsync(tenantPublicId, cancellationToken);
 
@@ -27,10 +27,10 @@ internal sealed class GetUserAnalyticsRequestHandler(
         var registrationTrend = await _analyticsRepository.GetRegistrationTrendAsync(tenantPublicId, from, to, cancellationToken);
 
         var response = new GetUserAnalyticsResponse(
-            activityByEntity.Select(x => new ActivityByEntityDto(x.EntityName, x.Count)).ToList(),
-            activityByAction.Select(x => new ActivityByActionDto(x.Action, x.Count)).ToList(),
-            topUsers.Select(x => new TopActiveUserDto(x.UserEmail, x.Count)).ToList(),
-            registrationTrend.Select(x => new RegistrationTrendPointDto(x.Period, x.Count)).ToList());
+            activityByEntity.Select(x => new NamedCountDto(x.EntityName, x.Count)).ToList(),
+            activityByAction.Select(x => new NamedCountDto(x.Action, x.Count)).ToList(),
+            topUsers.Select(x => new NamedCountDto(x.UserEmail, x.Count)).ToList(),
+            registrationTrend.Select(x => new NamedCountDto(x.Period, x.Count)).ToList());
 
         return TResult<GetUserAnalyticsResponse>.Success(response);
     }
