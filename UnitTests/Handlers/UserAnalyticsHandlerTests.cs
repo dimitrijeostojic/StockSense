@@ -64,7 +64,7 @@ public sealed class GetUserAnalyticsRequestHandlerTests
     {
         var result = await _sut.Handle(new GetUserAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
 
-        result.Value!.ActivityByEntityType[0].EntityName.Should().Be("Product");
+        result.Value!.ActivityByEntityType[0].Name.Should().Be("Product");
         result.Value.ActivityByEntityType[0].Count.Should().Be(5);
     }
 

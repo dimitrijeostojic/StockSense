@@ -1,4 +1,5 @@
 using Application.AnalyticsManagement.Common;
+using Application.AnalyticsManagement.GetBusinessAnalytics;
 using Application.AnalyticsManagement.GetUserAnalytics;
 using Application.Common.Constants;
 using MediatR;
@@ -24,6 +25,19 @@ public class AnalyticsController(IMediator mediator) : ControllerBase
     {
         var result = await _mediator.Send(
             new GetUserAnalyticsRequest(new TimeRangeQuery(from, to), topN),
+            cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("business")]
+    public async Task<IActionResult> GetBusinessAnalytics(
+        [FromQuery] DateTime from,
+        [FromQuery] DateTime to,
+        [FromQuery] int topN = 5,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(
+            new GetBusinessAnalyticsRequest(new TimeRangeQuery(from, to), topN),
             cancellationToken);
         return result.ToActionResult();
     }
