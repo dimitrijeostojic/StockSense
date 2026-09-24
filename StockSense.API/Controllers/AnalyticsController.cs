@@ -1,6 +1,5 @@
 using Application.AnalyticsManagement.Common;
 using Application.AnalyticsManagement.GetBusinessAnalytics;
-using Application.Common.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ namespace StockSense.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = Roles.Admin)]
+[Authorize]
 public class AnalyticsController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
