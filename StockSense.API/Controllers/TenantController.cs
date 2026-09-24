@@ -1,4 +1,5 @@
 ﻿using Application.Common.Constants;
+using Application.TenantManagement.CompleteOnboarding;
 using Application.TenantManagement.GetMyTenant;
 using Application.TenantManagement.Update;
 using MediatR;
@@ -19,6 +20,13 @@ public class TenantController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetMyTenantAsync(CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new GetMyTenantRequest(), cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("complete-onboarding")]
+    public async Task<IActionResult> CompleteOnboardingAsync(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new CompleteOnboardingRequest(), cancellationToken);
         return result.ToActionResult();
     }
 

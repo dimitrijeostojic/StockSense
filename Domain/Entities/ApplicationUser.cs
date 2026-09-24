@@ -8,6 +8,7 @@ public sealed class ApplicationUser : IdentityUser
     public string? LastName { get; private set; }
     public int TenantId { get; private set; }
     public bool IsActive { get; private set; }
+    public bool HasSeenOnboarding { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Tenant? Tenant { get; private set; }
 
@@ -31,6 +32,8 @@ public sealed class ApplicationUser : IdentityUser
     }
 
     public void Deactivate() => IsActive = false;
+
+    public void CompleteOnboarding() => HasSeenOnboarding = true;
 
     public ApplicationUser WithFirstName(string? firstName)
     {

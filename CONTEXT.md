@@ -4,6 +4,8 @@
 
 **Tenant** — an isolated business account. All data (products, orders, stock, users) belongs to exactly one tenant. Analytics are always scoped to the requesting user's tenant.
 
+**Onboarding** — a first-time setup wizard shown to every user on their first login. Guides the user through creating suppliers, categories, an optional product, and an optional order. Completion is tracked per user via `ApplicationUser.HasSeenOnboarding`; the flag is set when the user reaches the final step of the wizard.
+
 **Tenant Admin** — a user with the Admin role. Sees and manages only their own tenant's data. Distinct from a platform-level super-admin (which does not exist in this system).
 
 **User** — a user with the User role, belonging to a tenant.
