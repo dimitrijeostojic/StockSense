@@ -1,0 +1,3 @@
+namespace Application.TenantManagement.CompleteOnboarding;
+
+public sealed record CompleteOnboardingResponse;
