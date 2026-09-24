@@ -8,6 +8,7 @@ public record GetBusinessAnalyticsResponse(
 
 public record InventoryMetricsDto(
     IReadOnlyList<StockLevelDto> CurrentStockPerProduct,
+    int StockTotalCount,
     int BelowMinimumCount,
     IReadOnlyList<StockMovementPointDto> StockMovement);
 

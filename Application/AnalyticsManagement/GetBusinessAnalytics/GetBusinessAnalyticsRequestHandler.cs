@@ -19,7 +19,7 @@ internal sealed class GetBusinessAnalyticsRequestHandler(
         var tenantPublicId = _currentUserAccessor.TenantPublicId;
         var (from, to) = request.TimeRange;
 
-        var currentStock = await _analyticsRepository.GetCurrentStockPerProductAsync(tenantPublicId, cancellationToken);
+        var (currentStock, stockTotalCount) = await _analyticsRepository.GetCurrentStockPerProductAsync(tenantPublicId, request.StockPage, request.StockPageSize, cancellationToken);
         var belowMinimum = await _analyticsRepository.GetBelowMinimumStockCountAsync(tenantPublicId, cancellationToken);
         var stockMovement = await _analyticsRepository.GetStockMovementAsync(tenantPublicId, from, to, cancellationToken);
 
@@ -29,6 +29,7 @@ internal sealed class GetBusinessAnalyticsRequestHandler(
 
         var inventory = new InventoryMetricsDto(
             currentStock.Select(x => new StockLevelDto(x.ProductPublicId, x.ProductName, x.CurrentStock, x.MinimumStock)).ToList(),
+            stockTotalCount,
             belowMinimum,
             stockMovement.Select(x => new StockMovementPointDto(x.Date, x.InQuantity, x.OutQuantity)).ToList());
 
