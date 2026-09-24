@@ -9,19 +9,26 @@ public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnaly
 {
     private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-    public async Task<IEnumerable<(Guid ProductPublicId, string ProductName, int CurrentStock, int MinimumStock)>> GetCurrentStockPerProductAsync(
-        Guid tenantPublicId, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<(Guid ProductPublicId, string ProductName, int CurrentStock, int MinimumStock)> Items, int TotalCount)> GetCurrentStockPerProductAsync(
+        Guid tenantPublicId, int pageNumber = 1, int pageSize = 5, CancellationToken cancellationToken = default)
     {
         var products = await _dbContext.Products
             .Include(p => p.StockEntries)
             .Where(p => p.TenantPublicId == tenantPublicId && p.IsActive)
+            .OrderBy(p => p.Name)
             .ToListAsync(cancellationToken);
 
-        return products.Select(p => (
-            p.PublicId,
-            p.Name,
-            p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity),
-            p.MinimumStockQuantity));
+        var totalCount = products.Count;
+        var items = products
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => (
+                p.PublicId,
+                p.Name,
+                p.StockEntries.Sum(se => se.StockEntryType == StockEntryType.In ? se.Quantity : -se.Quantity),
+                p.MinimumStockQuantity));
+
+        return (items, totalCount);
     }
 
     public async Task<int> GetBelowMinimumStockCountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default)

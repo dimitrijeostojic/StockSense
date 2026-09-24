@@ -4,5 +4,9 @@ using MediatR;
 
 namespace Application.AnalyticsManagement.GetBusinessAnalytics;
 
-public record GetBusinessAnalyticsRequest(TimeRangeQuery TimeRange, int TopN = 5)
+public record GetBusinessAnalyticsRequest(
+    TimeRangeQuery TimeRange,
+    int TopN = 5,
+    int StockPage = 1,
+    int StockPageSize = 5)
     : IRequest<TResult<GetBusinessAnalyticsResponse>>;

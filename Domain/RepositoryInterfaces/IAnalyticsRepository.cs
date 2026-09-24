@@ -4,7 +4,7 @@ namespace Domain.RepositoryInterfaces;
 
 public interface IAnalyticsRepository
 {
-    Task<IEnumerable<(Guid ProductPublicId, string ProductName, int CurrentStock, int MinimumStock)>> GetCurrentStockPerProductAsync(Guid tenantPublicId, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<(Guid ProductPublicId, string ProductName, int CurrentStock, int MinimumStock)> Items, int TotalCount)> GetCurrentStockPerProductAsync(Guid tenantPublicId, int pageNumber = 1, int pageSize = 5, CancellationToken cancellationToken = default);
 
     Task<int> GetBelowMinimumStockCountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default);
 
