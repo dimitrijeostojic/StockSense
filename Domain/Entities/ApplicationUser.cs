@@ -8,6 +8,7 @@ public sealed class ApplicationUser : IdentityUser
     public string? LastName { get; private set; }
     public int TenantId { get; private set; }
     public bool IsActive { get; private set; }
+    public DateTime CreatedAt { get; private set; }
     public Tenant? Tenant { get; private set; }
 
     private ApplicationUser()
@@ -24,7 +25,8 @@ public sealed class ApplicationUser : IdentityUser
             FirstName = firstName,
             LastName = lastName,
             TenantId = tenantId,
-            IsActive = true
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
         };
     }
 
