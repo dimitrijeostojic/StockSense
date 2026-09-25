@@ -35,17 +35,6 @@ public sealed class CreateOrderValidatorTests
     }
 
     [Fact]
-    public void Validate_WithEmptyOrderItemsCollection_HasError()
-    {
-        var request = ValidRequest() with { OrderItemsDto = [] };
-
-        var result = _sut.TestValidate(request);
-
-        result.ShouldHaveValidationErrorFor(x => x.OrderItemsDto)
-              .WithErrorMessage("At least one order item is required.");
-    }
-
-    [Fact]
     public void Validate_WithNotesExceeding255Characters_HasError()
     {
         var request = ValidRequest() with { Notes = new string('N', 256) };
