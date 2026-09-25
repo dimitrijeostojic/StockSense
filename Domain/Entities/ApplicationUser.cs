@@ -9,7 +9,6 @@ public sealed class ApplicationUser : IdentityUser
     public int TenantId { get; private set; }
     public bool IsActive { get; private set; }
     public string? SeenTourPages { get; private set; }
-    public DateTime CreatedAt { get; private set; }
     public Tenant? Tenant { get; private set; }
 
     private ApplicationUser()
@@ -26,8 +25,7 @@ public sealed class ApplicationUser : IdentityUser
             FirstName = firstName,
             LastName = lastName,
             TenantId = tenantId,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
+            IsActive = true
         };
     }
 

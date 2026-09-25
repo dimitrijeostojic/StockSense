@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations.AuthDb
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20260925120000_AddSeenTourPagesToApplicationUser")]
-    partial class AddSeenTourPagesToApplicationUser
+    [Migration("20260925120002_RemoveCreatedAtFromApplicationUser")]
+    partial class RemoveCreatedAtFromApplicationUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,9 +47,6 @@ namespace Infrastructure.Migrations.AuthDb
                     b.Property<string>("FirstName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("HasSeenOnboarding")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
