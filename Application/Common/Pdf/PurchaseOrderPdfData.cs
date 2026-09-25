@@ -1,6 +1,6 @@
 namespace Application.Common.Pdf;
 
-public sealed record OrderPdfData(
+public sealed record PurchaseOrderPdfData(
     string OrderPublicId,
     DateTime OrderDate,
     string TenantName,
@@ -13,4 +13,4 @@ public sealed record OrderPdfData(
     string? SupplierCountry,
     string? Notes,
     string CurrencyCode,
-    IReadOnlyCollection<OrderPdfItem> Items);
+    IReadOnlyCollection<PurchaseOrderPdfItem> Items);
