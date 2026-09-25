@@ -27,11 +27,18 @@ internal sealed class DeleteUserRequestHandler(
         {
             return Result.Failure(ApplicationErrors.NotFound);
         }
+
         var roles = await _userManager.GetRolesAsync(user);
         if (roles.Contains(Roles.Admin))
         {
-            return Result.Failure(ApplicationErrors.CannotDeleteAdminUser);
+            var allAdmins = await _userManager.GetUsersInRoleAsync(Roles.Admin);
+            var tenantAdminCount = allAdmins.Count(u => u.TenantId == user.TenantId);
+            if (tenantAdminCount <= 1)
+            {
+                return Result.Failure(ApplicationErrors.CannotDeleteAdminUser);
+            }
         }
+
         user.Deactivate();
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();

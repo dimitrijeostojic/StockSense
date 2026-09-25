@@ -52,18 +52,37 @@ public sealed class DeleteUserRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenUserIsAdmin_ReturnsCannotDeleteAdminError()
+    public async Task Handle_WhenLastAdminDeleted_ReturnsCannotDeleteAdminError()
     {
         var user = ApplicationUser.Create("admin", "admin@test.com", "Admin", "User", 1);
         _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(user);
         _userManager.GetRolesAsync(user).Returns(new List<string> { "Admin" });
+        _userManager.GetUsersInRoleAsync("Admin").Returns(new List<ApplicationUser> { user });
 
         var result = await _sut.Handle(
             new DeleteUserRequest { UserPublicId = Guid.NewGuid() }, CancellationToken.None);
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Code.Should().Contain("CannotDeleteAdminUser");
+    }
+
+    [Fact]
+    public async Task Handle_WhenNotLastAdmin_AdminCanBeDeleted()
+    {
+        var user = ApplicationUser.Create("admin", "admin@test.com", "Admin", "User", 1);
+        var otherAdmin = ApplicationUser.Create("admin2", "admin2@test.com", "Admin2", "User", 1);
+        _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(user);
+        _userManager.GetRolesAsync(user).Returns(new List<string> { "Admin" });
+        _userManager.GetUsersInRoleAsync("Admin").Returns(new List<ApplicationUser> { user, otherAdmin });
+
+        var result = await _sut.Handle(
+            new DeleteUserRequest { UserPublicId = Guid.NewGuid() }, CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        user.IsActive.Should().BeFalse();
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
