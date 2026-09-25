@@ -7,31 +7,43 @@ namespace UnitTests.Domain;
 public sealed class ApplicationUserEntityTests
 {
     [Fact]
-    public void Create_HasSeenOnboardingDefaultsToFalse()
+    public void GetSeenTourPages_WhenSeenTourPagesIsNull_ReturnsEmptyList()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
 
-        user.HasSeenOnboarding.Should().BeFalse();
+        user.GetSeenTourPages().Should().BeEmpty();
     }
 
     [Fact]
-    public void CompleteOnboarding_SetsHasSeenOnboardingToTrue()
+    public void CompleteTour_AddsPageName()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
 
-        user.CompleteOnboarding();
+        user.CompleteTour("products");
 
-        user.HasSeenOnboarding.Should().BeTrue();
+        user.GetSeenTourPages().Should().ContainSingle().Which.Should().Be("products");
     }
 
     [Fact]
-    public void CompleteOnboarding_CalledTwice_RemainsTrue()
+    public void CompleteTour_IsIdempotent()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
 
-        user.CompleteOnboarding();
-        user.CompleteOnboarding();
+        user.CompleteTour("products");
+        user.CompleteTour("products");
 
-        user.HasSeenOnboarding.Should().BeTrue();
+        user.GetSeenTourPages().Should().ContainSingle().Which.Should().Be("products");
+    }
+
+    [Fact]
+    public void CompleteTour_MultiplePages_AddsAll()
+    {
+        var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
+
+        user.CompleteTour("products");
+        user.CompleteTour("suppliers");
+        user.CompleteTour("orders");
+
+        user.GetSeenTourPages().Should().BeEquivalentTo(["products", "suppliers", "orders"]);
     }
 }

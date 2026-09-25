@@ -24,4 +24,5 @@ public static class ApplicationErrors
     public static readonly Error SupplierHasProducts = new Error("ApplicationErrors.SupplierHasProducts", "Cannot delete supplier because it has associated products.");
     public static readonly Error SupplierHasOrders = new Error("ApplicationErrors.SupplierHasOrders", "Cannot delete supplier because it has associated orders.");
     public static readonly Error CannotDeleteNonCancelledOrder = new Error("ApplicationErrors.CannotDeleteNonCancelledOrder", "Only cancelled orders can be deleted.");
+    public static readonly Error InvalidPageName = new Error("ApplicationErrors.InvalidPageName", "The specified page name is not valid.");
 }

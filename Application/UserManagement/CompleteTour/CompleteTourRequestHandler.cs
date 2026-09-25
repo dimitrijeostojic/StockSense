@@ -6,29 +6,36 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Application.TenantManagement.CompleteOnboarding;
+namespace Application.UserManagement.CompleteTour;
 
-internal sealed class CompleteOnboardingRequestHandler(
+internal sealed class CompleteTourRequestHandler(
     UserManager<ApplicationUser> userManager,
     IAuthUnitOfWork authUnitOfWork,
     ICurrentUserAccessor currentUserAccessor)
-    : IRequestHandler<CompleteOnboardingRequest, TResult<CompleteOnboardingResponse>>
+    : IRequestHandler<CompleteTourRequest, Result>
 {
+    private static readonly HashSet<string> AllowedPages = ["dashboard", "products", "suppliers", "orders", "categories", "users"];
+
     private readonly UserManager<ApplicationUser> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly IAuthUnitOfWork _authUnitOfWork = authUnitOfWork ?? throw new ArgumentNullException(nameof(authUnitOfWork));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
 
-    public async Task<TResult<CompleteOnboardingResponse>> Handle(CompleteOnboardingRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CompleteTourRequest request, CancellationToken cancellationToken)
     {
+        if (!AllowedPages.Contains(request.PageName))
+        {
+            return Result.Failure(ApplicationErrors.InvalidPageName);
+        }
+
         var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId);
         if (user is null)
         {
-            return TResult<CompleteOnboardingResponse>.Failure(ApplicationErrors.NotFound);
+            return Result.Failure(ApplicationErrors.NotFound);
         }
 
-        user.CompleteOnboarding();
+        user.CompleteTour(request.PageName);
         await _authUnitOfWork.SaveChangesAsync(cancellationToken);
 
-        return TResult<CompleteOnboardingResponse>.Success(new CompleteOnboardingResponse());
+        return Result.Success();
     }
 }

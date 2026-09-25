@@ -38,3 +38,6 @@ StockSense.API/Logs/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# scratch
+.scratch/
