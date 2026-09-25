@@ -90,6 +90,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
+        services.AddScoped<IGoodsReceiptRepository, GoodsReceiptRepository>();
         return services;
     }
 
@@ -98,7 +99,8 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<INotificationSender<EmailMessageDto>, EmailSender>();
-        services.AddScoped<IOrderPdfGenerator, OrderPdfGenerator>();
+        services.AddScoped<IPurchaseOrderPdfGenerator, PurchaseOrderPdfGenerator>();
+        services.AddScoped<IGoodsReceiptPdfGenerator, GoodsReceiptPdfGenerator>();
         services.AddScoped<IIdempotencyService, IdempotencyService>();
         services.AddScoped<INotificationService, NotificationService>();
         return services;

@@ -257,12 +257,13 @@ public sealed class LowStockDomainEventHandlerTests
 public sealed class OrderReceivedDomainEventHandlerTests
 {
     private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
+    private readonly IGoodsReceiptRepository _goodsReceiptRepository = Substitute.For<IGoodsReceiptRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly OrderReceivedDomainEventHandler _sut;
 
     public OrderReceivedDomainEventHandlerTests()
     {
-        _sut = new OrderReceivedDomainEventHandler(_productRepository, _unitOfWork);
+        _sut = new OrderReceivedDomainEventHandler(_productRepository, _goodsReceiptRepository, _unitOfWork);
     }
 
     [Fact]

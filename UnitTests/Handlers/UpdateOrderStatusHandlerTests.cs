@@ -15,6 +15,7 @@ namespace UnitTests.Handlers;
 public sealed class UpdateOrderStatusRequestHandlerTests
 {
     private readonly IOrderRepository _orderRepository = Substitute.For<IOrderRepository>();
+    private readonly IGoodsReceiptRepository _goodsReceiptRepository = Substitute.For<IGoodsReceiptRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
 
@@ -23,7 +24,7 @@ public sealed class UpdateOrderStatusRequestHandlerTests
     public UpdateOrderStatusRequestHandlerTests()
     {
         _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
-        _sut = new UpdateOrderStatusRequestHandler(_orderRepository, _currentUserAccessor, _unitOfWork);
+        _sut = new UpdateOrderStatusRequestHandler(_orderRepository, _goodsReceiptRepository, _currentUserAccessor, _unitOfWork);
     }
 
     [Fact]
@@ -68,17 +69,19 @@ public sealed class UpdateOrderStatusRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenInvalidTransition_PendingToReceived_ReturnsInvalidTransitionFailure()
+    public async Task Handle_WhenTransitionToReceived_WithoutGoodsReceipt_ReturnsGoodsReceiptRequiredFailure()
     {
         var publicId = Guid.NewGuid();
         _orderRepository.GetByPublicIdAsync(publicId, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(EntityFactory.CreateOrder());
+        _goodsReceiptRepository.ExistsForOrderAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(false);
 
         var result = await _sut.Handle(
             new UpdateOrderStatusRequest(publicId, OrderStatus.Received), CancellationToken.None);
 
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().Be(ApplicationErrors.InvalidOrderStatusTransition);
+        result.Error.Should().Be(ApplicationErrors.GoodsReceiptRequired);
     }
 
     [Fact]
