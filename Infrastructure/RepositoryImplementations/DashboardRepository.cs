@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.RepositoryImplementations;
 
-public sealed class AnalyticsRepository(ApplicationDbContext dbContext) : IAnalyticsRepository
+public sealed class DashboardRepository(ApplicationDbContext dbContext) : IDashboardRepository
 {
     private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 

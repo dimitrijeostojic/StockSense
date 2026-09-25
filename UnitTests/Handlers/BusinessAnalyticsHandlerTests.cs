@@ -10,7 +10,7 @@ namespace UnitTests.Handlers;
 
 public sealed class GetBusinessAnalyticsRequestHandlerTests
 {
-    private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
+    private readonly IDashboardRepository _dashboardRepository = Substitute.For<IDashboardRepository>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
 
     private readonly GetBusinessAnalyticsRequestHandler _sut;
@@ -22,15 +22,15 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     public GetBusinessAnalyticsRequestHandlerTests()
     {
         _currentUserAccessor.TenantPublicId.Returns(_tenantId);
-        _sut = new GetBusinessAnalyticsRequestHandler(_analyticsRepository, _currentUserAccessor);
+        _sut = new GetBusinessAnalyticsRequestHandler(_dashboardRepository, _currentUserAccessor);
 
-        _analyticsRepository
+        _dashboardRepository
             .GetStockMovementAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(new List<(DateTime, int, int)> { (new DateTime(2026, 5, 1), 100, 40) });
-        _analyticsRepository
+        _dashboardRepository
             .GetTotalOrderValueAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(4800m);
-        _analyticsRepository
+        _dashboardRepository
             .GetTopSuppliersAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new List<(Guid, string, int, decimal)>
             {
@@ -68,7 +68,7 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     {
         await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to)), CancellationToken.None);
 
-        await _analyticsRepository.Received(1).GetTotalOrderValueAsync(_tenantId, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>());
+        await _dashboardRepository.Received(1).GetTotalOrderValueAsync(_tenantId, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     {
         await _sut.Handle(new GetBusinessAnalyticsRequest(new TimeRangeQuery(_from, _to), TopN: 3), CancellationToken.None);
 
-        await _analyticsRepository.Received(1).GetTopSuppliersAsync(
+        await _dashboardRepository.Received(1).GetTopSuppliersAsync(
             Arg.Any<Guid>(),
             Arg.Any<DateTime>(),
             Arg.Any<DateTime>(),
@@ -87,13 +87,13 @@ public sealed class GetBusinessAnalyticsRequestHandlerTests
     [Fact]
     public async Task Handle_WhenNoData_ReturnsSuccessWithZeroValues()
     {
-        _analyticsRepository
+        _dashboardRepository
             .GetStockMovementAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(Enumerable.Empty<(DateTime, int, int)>());
-        _analyticsRepository
+        _dashboardRepository
             .GetTotalOrderValueAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns(0m);
-        _analyticsRepository
+        _dashboardRepository
             .GetTopSuppliersAsync(Arg.Any<Guid>(), Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(Enumerable.Empty<(Guid, string, int, decimal)>());
 

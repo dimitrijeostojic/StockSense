@@ -1,6 +1,6 @@
 namespace Domain.RepositoryInterfaces;
 
-public interface IAnalyticsRepository
+public interface IDashboardRepository
 {
     Task<int> GetBelowMinimumStockCountAsync(Guid tenantPublicId, CancellationToken cancellationToken = default);
 

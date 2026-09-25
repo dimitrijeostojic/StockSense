@@ -14,21 +14,21 @@ public sealed class GetDashboardRequestHandlerTests
     private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
     private readonly IOrderRepository _orderRepository = Substitute.For<IOrderRepository>();
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
-    private readonly IAnalyticsRepository _analyticsRepository = Substitute.For<IAnalyticsRepository>();
+    private readonly IDashboardRepository _dashboardRepository = Substitute.For<IDashboardRepository>();
 
     private readonly GetDashboardRequestHandler _sut;
 
     public GetDashboardRequestHandlerTests()
     {
         _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
-        _sut = new GetDashboardRequestHandler(_productRepository, _currentUserAccessor, _orderRepository, _analyticsRepository);
+        _sut = new GetDashboardRequestHandler(_productRepository, _currentUserAccessor, _orderRepository, _dashboardRepository);
     }
 
     [Fact]
     public async Task Handle_ReturnsSuccessWithAggregatedCounts()
     {
         _productRepository.CountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(5);
-        _analyticsRepository.GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(2);
+        _dashboardRepository.GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(2);
         _productRepository.Top5ProductsWithLowStock(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new List<(Product, int)>());
         _orderRepository.GetNumberOfActiveOrders(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(3);
@@ -47,7 +47,7 @@ public sealed class GetDashboardRequestHandlerTests
     public async Task Handle_WhenNoData_ReturnsZeroCountsAndEmptyCollections()
     {
         _productRepository.CountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(0);
-        _analyticsRepository.GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(0);
+        _dashboardRepository.GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(0);
         _productRepository.Top5ProductsWithLowStock(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new List<(Product, int)>());
         _orderRepository.GetNumberOfActiveOrders(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(0);
@@ -67,7 +67,7 @@ public sealed class GetDashboardRequestHandlerTests
     {
         var order = EntityFactory.CreateOrderWithNavigation();
         _productRepository.CountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(1);
-        _analyticsRepository.GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(0);
+        _dashboardRepository.GetBelowMinimumStockCountAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(0);
         _productRepository.Top5ProductsWithLowStock(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new List<(Product, int)>());
         _orderRepository.GetNumberOfActiveOrders(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(1);
