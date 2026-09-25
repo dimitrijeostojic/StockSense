@@ -78,15 +78,19 @@ internal static class EmailTemplates
         return new EmailMessageDto(to, subject, body);
     }
 
-    public static EmailMessageDto UserInvited(string to, string firstName, string companyName)
+    public static EmailMessageDto UserInvited(string to, string firstName, string companyName, string inviteLink)
     {
-        var subject = $"You've been added to {companyName} on StockSense";
+        var subject = $"You've been invited to join {companyName} on StockSense";
         var body = $"""
             Hi {firstName},
 
-            You've been added as a team member for {companyName} on StockSense — a tool that helps your team keep track of inventory, suppliers, and orders in one place.
+            You've been invited to join {companyName} on StockSense — a tool that helps teams track inventory, suppliers, and orders in one place.
 
-            You can log in using the email address this invitation was sent to, along with the password provided to you by your team admin.
+            Click the link below to set your password and activate your account:
+
+            {inviteLink}
+
+            This link will expire in 72 hours. If it expires, ask your Admin to resend the invite.
 
             Once you're in, you'll be able to:
 
@@ -94,7 +98,7 @@ internal static class EmailTemplates
               - Create and track purchase orders
               - Keep an eye on stock levels across the business
 
-            If you weren't expecting this invitation or believe you received it by mistake, please reach out to your team admin at {companyName}.
+            If you weren't expecting this invitation, you can safely ignore this email.
 
             Welcome to the team!
 

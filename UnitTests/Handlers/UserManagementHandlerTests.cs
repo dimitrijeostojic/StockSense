@@ -1,8 +1,9 @@
 using Application.Abstractions.Services;
 using Application.Common.Errors;
+using Application.Common.Options;
 using Application.UserManagement.Delete;
 using Application.UserManagement.GetAll;
-using Application.UserManagement.RegisterUser;
+using Application.UserManagement.InviteUser;
 using Domain.Abstractions;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
@@ -10,6 +11,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using UnitTests.Helpers;
 using Xunit;
@@ -136,28 +138,28 @@ public sealed class GetAllUsersRequestHandlerTests
     }
 }
 
-public sealed class RegisterUserRequestHandlerTests
+public sealed class InviteUserRequestHandlerTests
 {
     private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
     private readonly ITenantRepository _tenantRepository = Substitute.For<ITenantRepository>();
     private readonly IEmailService _emailService = Substitute.For<IEmailService>();
-    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
-    private readonly ILogger<RegisterUserRequestHandler> _logger = NullLogger<RegisterUserRequestHandler>.Instance;
+    private readonly ILogger<InviteUserRequestHandler> _logger = NullLogger<InviteUserRequestHandler>.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IOptions<AppOptions> _options;
 
-    private readonly RegisterUserRequestHandler _sut;
+    private readonly InviteUserRequestHandler _sut;
 
-    public RegisterUserRequestHandlerTests()
+    public InviteUserRequestHandlerTests()
     {
         _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
         var store = Substitute.For<IUserStore<ApplicationUser>>();
         _userManager = Substitute.For<UserManager<ApplicationUser>>(
             store, null, null, null, null, null, null, null, null);
-        _sut = new RegisterUserRequestHandler(_currentUserAccessor, _tenantRepository, _userManager, _emailService, _unitOfWork, _logger);
+        _options = Options.Create(new AppOptions { FrontendBaseUrl = "https://app.test" });
+        _sut = new InviteUserRequestHandler(_currentUserAccessor, _tenantRepository, _userManager, _emailService, _options, _logger);
     }
 
-    private static RegisterUserRequest ValidRequest() => new(
-        "Jane", "Doe", "janedoe", "jane@test.com", "Password1!");
+    private static InviteUserRequest ValidRequest() => new("Jane", "Doe", "jane@test.com", "User");
 
     [Fact]
     public async Task Handle_WhenTenantNotFound_ReturnsNotFoundFailure()
@@ -172,14 +174,13 @@ public sealed class RegisterUserRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenEmailAlreadyExistsInTenant_ReturnsEmailAlreadyExistsError()
+    public async Task Handle_WhenEmailAlreadyExists_ReturnsEmailAlreadyExistsError()
     {
         var tenant = Tenant.Create("TestCo", "987654321", "Main St 1");
-        var existingUser = ApplicationUser.Create("existing", "jane@test.com", "Jane", "Doe", tenant.Id);
-        var userList = EntityFactory.GetPrivateField<List<ApplicationUser>>(tenant, "_applicationUsers");
-        userList.Add(existingUser);
         _tenantRepository.GetByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(tenant);
+        _userManager.FindByEmailAsync("jane@test.com")
+            .Returns(ApplicationUser.Create("jane", "jane@test.com", "Jane", "Doe", 1));
 
         var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
 
@@ -193,8 +194,9 @@ public sealed class RegisterUserRequestHandlerTests
         var tenant = Tenant.Create("TestCo", "987654321", "Main St 1");
         _tenantRepository.GetByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(tenant);
-        _userManager.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
-            .Returns(IdentityResult.Failed(new IdentityError { Description = "Password too weak" }));
+        _userManager.FindByEmailAsync(Arg.Any<string>()).Returns((ApplicationUser?)null);
+        _userManager.CreateAsync(Arg.Any<ApplicationUser>())
+            .Returns(IdentityResult.Failed(new IdentityError { Description = "Create failed" }));
 
         var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
 
@@ -202,18 +204,39 @@ public sealed class RegisterUserRequestHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenAllValid_ReturnsSuccess()
+    public async Task Handle_WhenAllValid_CreatesUserWithNoPasswordAndReturnsSuccess()
     {
         var tenant = Tenant.Create("TestCo", "987654321", "Main St 1");
         _tenantRepository.GetByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(tenant);
-        _userManager.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
-            .Returns(IdentityResult.Success);
-        _userManager.AddToRoleAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
-            .Returns(IdentityResult.Success);
+        _userManager.FindByEmailAsync(Arg.Any<string>()).Returns((ApplicationUser?)null);
+        _userManager.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+        _userManager.AddToRoleAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+        _userManager.GenerateUserTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns("invite-token");
 
         var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
+        // CreateAsync called without password
+        await _userManager.Received(1).CreateAsync(Arg.Is<ApplicationUser>(u => u.Email == "jane@test.com"));
+        await _userManager.DidNotReceive().CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenAllValid_AssignsRequestedRole()
+    {
+        var tenant = Tenant.Create("TestCo", "987654321", "Main St 1");
+        _tenantRepository.GetByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(tenant);
+        _userManager.FindByEmailAsync(Arg.Any<string>()).Returns((ApplicationUser?)null);
+        _userManager.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+        _userManager.AddToRoleAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+        _userManager.GenerateUserTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns("invite-token");
+
+        await _sut.Handle(new InviteUserRequest("Jane", "Doe", "jane@test.com", "Admin"), CancellationToken.None);
+
+        await _userManager.Received(1).AddToRoleAsync(Arg.Any<ApplicationUser>(), "Admin");
     }
 }

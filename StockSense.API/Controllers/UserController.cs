@@ -1,8 +1,8 @@
-﻿using Application.Common.Constants;
+using Application.Common.Constants;
 using Application.UserManagement.Delete;
 using Application.UserManagement.GetAll;
 using Application.UserManagement.GetMyUser;
-using Application.UserManagement.RegisterUser;
+using Application.UserManagement.InviteUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,9 +34,9 @@ public class UserController(IMediator mediator) : ControllerBase
         return response.ToActionResult();
     }
 
-    [HttpPost("register-user")]
+    [HttpPost("invite-user")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> RegisterUserAsync([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> InviteUserAsync([FromBody] InviteUserRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
