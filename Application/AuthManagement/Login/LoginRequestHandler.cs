@@ -26,7 +26,12 @@ internal sealed class LoginRequestHandler(
     public async Task<TResult<LoginResponse>> Handle(LoginRequest request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password) || !user.IsActive)
+        if (user is null || !user.IsActive || !user.EmailConfirmed)
+        {
+            return TResult<LoginResponse>.Failure(ApplicationErrors.InvalidCredentials);
+        }
+
+        if (!await _userManager.CheckPasswordAsync(user, request.Password))
         {
             return TResult<LoginResponse>.Failure(ApplicationErrors.InvalidCredentials);
         }

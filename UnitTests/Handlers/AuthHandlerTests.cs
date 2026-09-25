@@ -51,6 +51,7 @@ public sealed class LoginRequestHandlerTests
     public async Task Handle_WhenPasswordWrong_ReturnsInvalidCredentials()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
+        user.EmailConfirmed = true;
         _userManager.FindByEmailAsync("john@test.com").Returns(user);
         _userManager.CheckPasswordAsync(user, Arg.Any<string>()).Returns(false);
 
@@ -62,9 +63,25 @@ public sealed class LoginRequestHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WhenEmailNotConfirmed_ReturnsInvalidCredentials()
+    {
+        var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
+        // EmailConfirmed defaults to false — pending invite user
+        _userManager.FindByEmailAsync("john@test.com").Returns(user);
+
+        var result = await _sut.Handle(
+            new LoginRequest("john@test.com", "Password1!"), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.InvalidCredentials);
+        await _userManager.DidNotReceive().CheckPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>());
+    }
+
+    [Fact]
     public async Task Handle_WhenTenantNotFound_ReturnsNotFoundFailure()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
+        user.EmailConfirmed = true;
         _userManager.FindByEmailAsync("john@test.com").Returns(user);
         _userManager.CheckPasswordAsync(user, "Password1!").Returns(true);
         _tenantRepository.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns((Tenant?)null);
@@ -80,6 +97,7 @@ public sealed class LoginRequestHandlerTests
     public async Task Handle_WhenCredentialsAndTenantValid_ReturnsTokens()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
+        user.EmailConfirmed = true;
         var tenant = Tenant.Create("TestCo", "123456789", "Street 1");
         _userManager.FindByEmailAsync("john@test.com").Returns(user);
         _userManager.CheckPasswordAsync(user, "Password1!").Returns(true);
@@ -100,6 +118,7 @@ public sealed class LoginRequestHandlerTests
     public async Task Handle_WhenLoginSucceeds_SavesRefreshToken()
     {
         var user = ApplicationUser.Create("john", "john@test.com", "John", "Doe", 1);
+        user.EmailConfirmed = true;
         var tenant = Tenant.Create("TestCo", "123456789", "Street 1");
         _userManager.FindByEmailAsync("john@test.com").Returns(user);
         _userManager.CheckPasswordAsync(user, "Password1!").Returns(true);
