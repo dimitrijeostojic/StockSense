@@ -3,7 +3,6 @@ using Application.AuthManagement.ForgotPassword;
 using Application.AuthManagement.Login;
 using Application.AuthManagement.Logout;
 using Application.AuthManagement.RefreshToken;
-using Application.AuthManagement.Register;
 using Application.AuthManagement.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -18,34 +17,6 @@ namespace StockSense.API.Controllers;
 public class AuthController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-
-    [HttpPost("register")]
-    [EnableRateLimiting("Auth")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> RegisterAsync(
-        [FromForm] string firstName,
-        [FromForm] string lastName,
-        [FromForm] string username,
-        [FromForm] string email,
-        [FromForm] string password,
-        [FromForm] string companyName,
-        [FromForm] string pib,
-        [FromForm] string? address,
-        IFormFile? logo,
-        CancellationToken cancellationToken)
-    {
-        byte[]? logoBytes = null;
-        if (logo is not null)
-        {
-            using var ms = new MemoryStream();
-            await logo.CopyToAsync(ms, cancellationToken);
-            logoBytes = ms.ToArray();
-        }
-
-        var request = new RegisterRequest(firstName, lastName, username, email, password, companyName, pib, address, logoBytes);
-        var result = await _mediator.Send(request, cancellationToken);
-        return result.ToActionResult();
-    }
 
     [HttpPost("login")]
     [EnableRateLimiting("Auth")]
