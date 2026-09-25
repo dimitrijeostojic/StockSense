@@ -61,11 +61,10 @@ public static class DependencyInjection
 
         QuestPDF.Settings.License = LicenseType.Community;
 
-        services.AddIdentityCore<ApplicationUser>() //konfiguracija identity servisa
-          .AddRoles<IdentityRole>() //dodavanje podrske za role
-                                    //.AddTokenProvider<DataProtectorTokenProvider<User>>("") //dodavanje token provajdera
-          .AddEntityFrameworkStores<AuthDbContext>() //podesavanje entity framework skladista
-          .AddDefaultTokenProviders(); //dodavanje podrazumevanih token provajdera
+        services.AddIdentityCore<ApplicationUser>()
+          .AddRoles<IdentityRole>()
+          .AddEntityFrameworkStores<AuthDbContext>()
+          .AddDefaultTokenProviders();
 
         services.AddStackExchangeRedisCache(options =>
         {
@@ -90,7 +89,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
         return services;
     }
 

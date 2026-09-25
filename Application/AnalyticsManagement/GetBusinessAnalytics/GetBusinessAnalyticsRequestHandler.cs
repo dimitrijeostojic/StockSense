@@ -6,11 +6,11 @@ using MediatR;
 namespace Application.AnalyticsManagement.GetBusinessAnalytics;
 
 internal sealed class GetBusinessAnalyticsRequestHandler(
-    IAnalyticsRepository analyticsRepository,
+    IDashboardRepository dashboardRepository,
     ICurrentUserAccessor currentUserAccessor)
     : IRequestHandler<GetBusinessAnalyticsRequest, TResult<GetBusinessAnalyticsResponse>>
 {
-    private readonly IAnalyticsRepository _analyticsRepository = analyticsRepository ?? throw new ArgumentNullException(nameof(analyticsRepository));
+    private readonly IDashboardRepository _dashboardRepository = dashboardRepository ?? throw new ArgumentNullException(nameof(dashboardRepository));
     private readonly ICurrentUserAccessor _currentUserAccessor = currentUserAccessor ?? throw new ArgumentNullException(nameof(currentUserAccessor));
 
     public async Task<TResult<GetBusinessAnalyticsResponse>> Handle(GetBusinessAnalyticsRequest request, CancellationToken cancellationToken)
@@ -18,9 +18,9 @@ internal sealed class GetBusinessAnalyticsRequestHandler(
         var tenantPublicId = _currentUserAccessor.TenantPublicId;
         var (from, to) = request.TimeRange;
 
-        var stockMovement = await _analyticsRepository.GetStockMovementAsync(tenantPublicId, from, to, cancellationToken);
-        var totalValue = await _analyticsRepository.GetTotalOrderValueAsync(tenantPublicId, from, to, cancellationToken);
-        var topSuppliers = await _analyticsRepository.GetTopSuppliersAsync(tenantPublicId, from, to, request.TopN, cancellationToken);
+        var stockMovement = await _dashboardRepository.GetStockMovementAsync(tenantPublicId, from, to, cancellationToken);
+        var totalValue = await _dashboardRepository.GetTotalOrderValueAsync(tenantPublicId, from, to, cancellationToken);
+        var topSuppliers = await _dashboardRepository.GetTopSuppliersAsync(tenantPublicId, from, to, request.TopN, cancellationToken);
 
         var inventory = new InventoryMetricsDto(
             stockMovement.Select(x => new StockMovementPointDto(x.Date, x.InQuantity, x.OutQuantity)).ToList());
