@@ -37,10 +37,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks();
 
 #region Logging
-if (!string.IsNullOrEmpty(builder.Configuration["ApplicationInsights:ConnectionString"]))
-{
-    builder.Services.AddApplicationInsightsTelemetry();
-}
+
+builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddHttpLogging(options =>
 {
