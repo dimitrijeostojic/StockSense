@@ -16,9 +16,16 @@ public sealed class CreateOrderValidator
         RuleFor(x => x.Notes)
             .MaximumLength(255)
             .WithMessage("Notes must not exceed 255 characters.");
-        RuleFor(x => x.OrderItemsDto)
-            .NotEmpty()
-            .WithMessage("At least one order item is required.");
+        RuleForEach(x => x.OrderItemsDto)
+              .ChildRules(item =>
+              {
+                  item.RuleFor(i => i.ProductPublicId)
+                      .NotEmpty()
+                      .WithMessage("Product ID is required.");
+                  item.RuleFor(i => i.Quantity)
+                      .GreaterThan(0)
+                      .WithMessage("Quantity must be greater than 0.");
+              });
 
     }
 }
