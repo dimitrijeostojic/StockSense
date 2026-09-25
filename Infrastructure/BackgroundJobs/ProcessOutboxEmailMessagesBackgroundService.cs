@@ -67,6 +67,7 @@ public sealed class ProcessOutboxEmailMessagesBackgroundService(
                 }
             }
             await _applicationDbContext.SaveChangesAsync(stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }
 }
