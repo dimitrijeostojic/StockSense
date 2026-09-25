@@ -37,8 +37,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks();
 
 #region Logging
-
-builder.Services.AddApplicationInsightsTelemetry();
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
 
 builder.Services.AddHttpLogging(options =>
 {
