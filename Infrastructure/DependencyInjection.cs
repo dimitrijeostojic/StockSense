@@ -14,6 +14,7 @@ using Infrastructure.Pdf;
 using Infrastructure.RepositoryImplementations;
 using Infrastructure.RepositoryImplementations.Cached;
 using Infrastructure.Services;
+using Infrastructure.TokenProviders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -61,10 +62,16 @@ public static class DependencyInjection
 
         QuestPDF.Settings.License = LicenseType.Community;
 
+        services.Configure<InviteTokenProviderOptions>(options =>
+        {
+            options.TokenLifespan = TimeSpan.FromHours(72);
+        });
+
         services.AddIdentityCore<ApplicationUser>()
           .AddRoles<IdentityRole>()
           .AddEntityFrameworkStores<AuthDbContext>()
-          .AddDefaultTokenProviders();
+          .AddDefaultTokenProviders()
+          .AddTokenProvider<InviteTokenProvider>(Application.Common.Constants.InviteTokenConstants.ProviderName);
 
         services.AddStackExchangeRedisCache(options =>
         {
