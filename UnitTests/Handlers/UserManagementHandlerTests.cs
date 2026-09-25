@@ -157,6 +157,24 @@ public sealed class GetAllUsersRequestHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.Items.Should().HaveCount(2);
     }
+
+    [Fact]
+    public async Task Handle_ActiveUserHasStatusActive_PendingUserHasStatusPending()
+    {
+        var activeUser = ApplicationUser.Create("alice", "alice@test.com", "Alice", "Smith", 1);
+        activeUser.EmailConfirmed = true;
+        var pendingUser = ApplicationUser.Create("bob", "bob@test.com", "Bob", "Jones", 1);
+        // pendingUser.EmailConfirmed defaults to false
+        _userRepository.GetAllUsersAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new List<ApplicationUser> { activeUser, pendingUser });
+        _userManager.GetRolesAsync(Arg.Any<ApplicationUser>()).Returns(new List<string> { "User" });
+
+        var result = await _sut.Handle(new GetAllUsersRequest(), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Items.First(u => u.Email == "alice@test.com").Status.Should().Be("Active");
+        result.Value!.Items.First(u => u.Email == "bob@test.com").Status.Should().Be("Pending");
+    }
 }
 
 public sealed class InviteUserRequestHandlerTests

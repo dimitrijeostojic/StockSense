@@ -30,7 +30,8 @@ internal sealed class GetAllUsersRequestHandler(
                 FirstName = user.FirstName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
                 LastName = user.LastName ?? string.Empty,
-                Username = user.UserName ?? string.Empty
+                Username = user.UserName ?? string.Empty,
+                Status = user.EmailConfirmed ? "Active" : "Pending"
             });
         }
         var response = new GetAllUsersResponse(usersDto);
