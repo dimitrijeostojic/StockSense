@@ -1,3 +1,3 @@
 ﻿namespace Application.TenantManagement.GetMyTenant;
 
-public sealed record GetMyTenantResponse(Guid PublicId, string Name, string PIB, string? Address, byte[]? Logo, bool HasSeenOnboarding);
+public sealed record GetMyTenantResponse(Guid PublicId, string Name, string PIB, string? Address, byte[]? Logo, IReadOnlyList<string> SeenTourPages);

@@ -39,7 +39,8 @@ internal sealed class GetMyUserRequestHandler(
             FirstName = user.FirstName ?? string.Empty,
             LastName = user.LastName ?? string.Empty,
             Username = user.UserName ?? string.Empty,
-            Roles = [.. roles]
+            Roles = [.. roles],
+            SeenTourPages = [.. user.GetSeenTourPages()]
         });
     }
 }

@@ -27,7 +27,7 @@ internal sealed class GetMyTenantRequestHandler(
         }
 
         var user = await _userManager.FindByIdAsync(_currentUserAccessor.UserId);
-        var hasSeenOnboarding = user?.HasSeenOnboarding ?? false;
+        var seenTourPages = user?.GetSeenTourPages() ?? [];
 
         return TResult<GetMyTenantResponse>.Success(new GetMyTenantResponse(
             tenant.PublicId,
@@ -35,6 +35,6 @@ internal sealed class GetMyTenantRequestHandler(
             tenant.Pib,
             tenant.Address,
             tenant.Logo,
-            hasSeenOnboarding));
+            seenTourPages));
     }
 }
