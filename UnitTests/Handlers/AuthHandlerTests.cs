@@ -1,4 +1,5 @@
 using Application.Abstractions.Services;
+using Application.AuthManagement.AcceptInvite;
 using Application.AuthManagement.Login;
 using Application.AuthManagement.Logout;
 using Application.AuthManagement.RefreshToken;
@@ -311,5 +312,91 @@ public sealed class RefreshTokenRequestHandlerTests
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(ApplicationErrors.UserLockedOut);
+    }
+}
+
+public sealed class AcceptInviteRequestHandlerTests
+{
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IJwtTokenService _jwtTokenService = Substitute.For<IJwtTokenService>();
+    private readonly IRefreshTokenRepository _refreshTokenRepository = Substitute.For<IRefreshTokenRepository>();
+    private readonly IAuthUnitOfWork _authUnitOfWork = Substitute.For<IAuthUnitOfWork>();
+    private readonly ITenantRepository _tenantRepository = Substitute.For<ITenantRepository>();
+
+    private readonly AcceptInviteRequestHandler _sut;
+
+    public AcceptInviteRequestHandlerTests()
+    {
+        var store = Substitute.For<IUserStore<ApplicationUser>>();
+        _userManager = Substitute.For<UserManager<ApplicationUser>>(
+            store, null, null, null, null, null, null, null, null);
+        _sut = new AcceptInviteRequestHandler(
+            _userManager, _jwtTokenService, _refreshTokenRepository, _authUnitOfWork, _tenantRepository);
+    }
+
+    private static AcceptInviteRequest ValidRequest() =>
+        new("jane@test.com", "valid-token", "NewPassword1!");
+
+    [Fact]
+    public async Task Handle_WhenUserNotFound_ReturnsNotFound()
+    {
+        _userManager.FindByEmailAsync(Arg.Any<string>()).Returns((ApplicationUser?)null);
+
+        var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.NotFound);
+    }
+
+    [Fact]
+    public async Task Handle_WhenTokenInvalid_ReturnsInvalidInviteToken()
+    {
+        var user = ApplicationUser.Create("jane", "jane@test.com", "Jane", "Doe", 1);
+        _userManager.FindByEmailAsync("jane@test.com").Returns(user);
+        _userManager.VerifyUserTokenAsync(user, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(false);
+
+        var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.InvalidInviteToken);
+    }
+
+    [Fact]
+    public async Task Handle_WhenPasswordSetFails_ReturnsFailure()
+    {
+        var user = ApplicationUser.Create("jane", "jane@test.com", "Jane", "Doe", 1);
+        _userManager.FindByEmailAsync("jane@test.com").Returns(user);
+        _userManager.VerifyUserTokenAsync(user, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(true);
+        _userManager.AddPasswordAsync(user, Arg.Any<string>())
+            .Returns(IdentityResult.Failed(new IdentityError { Description = "Password too weak" }));
+
+        var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Handle_WhenValid_SetsEmailConfirmedAndReturnsTokens()
+    {
+        var user = ApplicationUser.Create("jane", "jane@test.com", "Jane", "Doe", 1);
+        var tenant = Tenant.Create("TestCo", "123456789", "Street 1");
+        _userManager.FindByEmailAsync("jane@test.com").Returns(user);
+        _userManager.VerifyUserTokenAsync(user, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(true);
+        _userManager.AddPasswordAsync(user, Arg.Any<string>()).Returns(IdentityResult.Success);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.GetRolesAsync(user).Returns(new List<string> { "User" });
+        _tenantRepository.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(tenant);
+        _jwtTokenService.GenerateToken(Arg.Any<ApplicationUser>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<IEnumerable<string>>())
+            .Returns("access-token");
+
+        var result = await _sut.Handle(ValidRequest(), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        user.EmailConfirmed.Should().BeTrue();
+        result.Value!.AccessToken.Should().Be("access-token");
+        result.Value.RefreshToken.Should().NotBeNullOrEmpty();
     }
 }

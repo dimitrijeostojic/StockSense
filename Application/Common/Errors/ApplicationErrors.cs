@@ -25,4 +25,5 @@ public static class ApplicationErrors
     public static readonly Error SupplierHasOrders = new Error("ApplicationErrors.SupplierHasOrders", "Cannot delete supplier because it has associated orders.");
     public static readonly Error CannotDeleteNonCancelledOrder = new Error("ApplicationErrors.CannotDeleteNonCancelledOrder", "Only cancelled orders can be deleted.");
     public static readonly Error InvalidPageName = new Error("ApplicationErrors.InvalidPageName", "The specified page name is not valid.");
+    public static readonly Error InvalidInviteToken = new Error("ApplicationErrors.InvalidInviteToken", "This invite link is no longer valid or has expired.");
 }

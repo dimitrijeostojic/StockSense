@@ -1,4 +1,5 @@
-﻿using Application.AuthManagement.ChangePassword;
+﻿using Application.AuthManagement.AcceptInvite;
+using Application.AuthManagement.ChangePassword;
 using Application.AuthManagement.ForgotPassword;
 using Application.AuthManagement.Login;
 using Application.AuthManagement.Logout;
@@ -61,6 +62,14 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("reset-password")]
     [EnableRateLimiting("Auth")]
     public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("accept-invite")]
+    [EnableRateLimiting("Auth")]
+    public async Task<IActionResult> AcceptInviteAsync([FromBody] AcceptInviteRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
         return result.ToActionResult();
