@@ -3,6 +3,7 @@ using Application.UserManagement.Delete;
 using Application.UserManagement.GetAll;
 using Application.UserManagement.GetMyUser;
 using Application.UserManagement.InviteUser;
+using Application.UserManagement.ResendInvite;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,14 @@ public class UserController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> InviteUserAsync([FromBody] InviteUserRequest request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("{userPublicId:Guid}/resend-invite")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> ResendInviteAsync([FromRoute] Guid userPublicId, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new ResendInviteRequest(userPublicId), cancellationToken);
         return result.ToActionResult();
     }
 

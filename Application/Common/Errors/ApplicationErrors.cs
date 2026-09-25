@@ -26,4 +26,5 @@ public static class ApplicationErrors
     public static readonly Error CannotDeleteNonCancelledOrder = new Error("ApplicationErrors.CannotDeleteNonCancelledOrder", "Only cancelled orders can be deleted.");
     public static readonly Error InvalidPageName = new Error("ApplicationErrors.InvalidPageName", "The specified page name is not valid.");
     public static readonly Error InvalidInviteToken = new Error("ApplicationErrors.InvalidInviteToken", "This invite link is no longer valid or has expired.");
+    public static readonly Error UserAlreadyActive = new Error("ApplicationErrors.UserAlreadyActive", "This user has already accepted their invite.");
 }

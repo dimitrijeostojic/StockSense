@@ -4,7 +4,9 @@ using Application.Common.Options;
 using Application.UserManagement.Delete;
 using Application.UserManagement.GetAll;
 using Application.UserManagement.InviteUser;
+using Application.UserManagement.ResendInvite;
 using Domain.Abstractions;
+using Domain.Dtos;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using FluentAssertions;
@@ -238,5 +240,69 @@ public sealed class InviteUserRequestHandlerTests
         await _sut.Handle(new InviteUserRequest("Jane", "Doe", "jane@test.com", "Admin"), CancellationToken.None);
 
         await _userManager.Received(1).AddToRoleAsync(Arg.Any<ApplicationUser>(), "Admin");
+    }
+}
+
+public sealed class ResendInviteRequestHandlerTests
+{
+    private readonly ICurrentUserAccessor _currentUserAccessor = Substitute.For<ICurrentUserAccessor>();
+    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IEmailService _emailService = Substitute.For<IEmailService>();
+    private readonly IOptions<AppOptions> _options = Options.Create(new AppOptions { FrontendBaseUrl = "https://app.test" });
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    private readonly ResendInviteRequestHandler _sut;
+
+    public ResendInviteRequestHandlerTests()
+    {
+        _currentUserAccessor.TenantPublicId.Returns(Guid.NewGuid());
+        var store = Substitute.For<IUserStore<ApplicationUser>>();
+        _userManager = Substitute.For<UserManager<ApplicationUser>>(
+            store, null, null, null, null, null, null, null, null);
+        _sut = new ResendInviteRequestHandler(
+            _currentUserAccessor, _userRepository, _userManager, _emailService, _options,
+            NullLogger<ResendInviteRequestHandler>.Instance);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserNotFound_ReturnsNotFound()
+    {
+        _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((ApplicationUser?)null);
+
+        var result = await _sut.Handle(new ResendInviteRequest(Guid.NewGuid()), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.NotFound);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserAlreadyActive_ReturnsUserAlreadyActiveError()
+    {
+        var user = ApplicationUser.Create("jane", "jane@test.com", "Jane", "Doe", 1);
+        user.EmailConfirmed = true;
+        _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(user);
+
+        var result = await _sut.Handle(new ResendInviteRequest(Guid.NewGuid()), CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(ApplicationErrors.UserAlreadyActive);
+    }
+
+    [Fact]
+    public async Task Handle_WhenPendingUser_GeneratesTokenAndSendsEmail()
+    {
+        var user = ApplicationUser.Create("jane", "jane@test.com", "Jane", "Doe", 1);
+        // EmailConfirmed defaults to false — pending
+        _userRepository.GetUserByPublicIdAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(user);
+        _userManager.GenerateUserTokenAsync(user, Arg.Any<string>(), Arg.Any<string>())
+            .Returns("new-token");
+
+        var result = await _sut.Handle(new ResendInviteRequest(Guid.NewGuid()), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        await _emailService.Received(1).SendAsync(Arg.Any<EmailMessageDto>(), Arg.Any<CancellationToken>());
     }
 }
