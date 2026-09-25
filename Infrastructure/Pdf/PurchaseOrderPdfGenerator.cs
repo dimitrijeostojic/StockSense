@@ -6,9 +6,9 @@ using QuestPDF.Helpers;
 
 namespace Infrastructure.Pdf;
 
-public sealed class OrderPdfGenerator : IOrderPdfGenerator
+public sealed class PurchaseOrderPdfGenerator : IPurchaseOrderPdfGenerator
 {
-    public byte[] Generate(OrderPdfData data)
+    public byte[] Generate(PurchaseOrderPdfData data)
     {
         var document = Document.Create(container =>
         {

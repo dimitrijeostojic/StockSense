@@ -25,7 +25,7 @@ internal sealed class GetOrderByIdRequestHandler(
             return TResult<GetOrderByIdResponse>.Failure(ApplicationErrors.NotFound);
         }
 
-        var orderItemsDto = order.OrderItems.Select(oi => new OrderItemDto(oi.Product!.PublicId, oi.Product.Name, oi.Quantity, oi.UnitPrice)).ToList();
+        var orderItemsDto = order.OrderItems.Select(oi => new OrderItemDto(oi.PublicId, oi.Product!.PublicId, oi.Product.Name, oi.Quantity, oi.UnitPrice)).ToList();
 
         var response = new GetOrderByIdResponse(order.PublicId, order.OrderDate, order.OrderStatus, order.Notes, order.Supplier!.PublicId, order.Supplier.Name, order.Currency, orderItemsDto);
         return TResult<GetOrderByIdResponse>.Success(response);

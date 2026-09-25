@@ -25,4 +25,8 @@ public static class ApplicationErrors
     public static readonly Error SupplierHasOrders = new Error("ApplicationErrors.SupplierHasOrders", "Cannot delete supplier because it has associated orders.");
     public static readonly Error CannotDeleteNonCancelledOrder = new Error("ApplicationErrors.CannotDeleteNonCancelledOrder", "Only cancelled orders can be deleted.");
     public static readonly Error InvalidPageName = new Error("ApplicationErrors.InvalidPageName", "The specified page name is not valid.");
+    public static readonly Error OrderNotConfirmed = new Error("ApplicationErrors.OrderNotConfirmed", "Goods receipt can only be created for confirmed orders.");
+    public static readonly Error GoodsReceiptAlreadyExists = new Error("ApplicationErrors.GoodsReceiptAlreadyExists", "A goods receipt already exists for this order.");
+    public static readonly Error GoodsReceiptRequired = new Error("ApplicationErrors.GoodsReceiptRequired", "A goods receipt must be created before marking the order as received.");
+    public static readonly Error ReceivedQuantityExceedsOrdered = new Error("ApplicationErrors.ReceivedQuantityExceedsOrdered", "Received quantity cannot exceed the ordered quantity.");
 }

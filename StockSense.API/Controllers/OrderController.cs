@@ -1,7 +1,7 @@
 ﻿using Application.Common.Constants;
 using Application.OrderManagement.CreateOrder;
 using Application.OrderManagement.DeleteOrder;
-using Application.OrderManagement.ExportPDF;
+using Application.OrderManagement.ExportPurchaseOrderPdf;
 using Application.OrderManagement.GetAllOrders;
 using Application.OrderManagement.GetOrderById;
 using Application.OrderManagement.UpdateOrder;
@@ -89,7 +89,7 @@ public class OrderController(IMediator mediator) : ControllerBase
     [Route("{publicId:guid}/export-pdf")]
     public async Task<ActionResult> ExportOrderPdf([FromRoute] Guid publicId, CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new ExportPDFRequest(publicId), cancellationToken);
+        var result = await _mediator.Send(new ExportPurchaseOrderPdfRequest(publicId), cancellationToken);
         if (!result.IsSuccess)
         {
             return (ActionResult)result.ToActionResult();

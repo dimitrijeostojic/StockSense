@@ -15,6 +15,8 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<OutboxEmailMessage> OutboxEmailMessages { get; set; }
     public DbSet<IdempotentRequest> IdempotentRequests { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<GoodsReceipt> GoodsReceipts { get; set; }
+    public DbSet<GoodsReceiptItem> GoodsReceiptItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
